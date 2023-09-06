@@ -1,0 +1,65 @@
+[package]
+name = "contracts-node"
+version = "0.30.0"
+authors = ["Parity Technologies <admin@parity.io>"]
+description = "Substrate node configured for smart contracts via `pallet-contracts`."
+edition = "2021"
+license = "Unlicense"
+build = "build.rs"
+homepage = "https://github.com/paritytech/substrate-contracts-node"
+repository = "https://github.com/paritytech/substrate-contracts-node"
+publish = false
+
+[package.metadata.docs.rs]
+targets = ["x86_64-unknown-linux-gnu"]
+
+[[bin]]
+name = "substrate-contracts-node"
+path = "src/main.rs"
+
+[dependencies]
+clap = { version = "4.2.7", features = ["derive"] }
+futures = { version = "0.3.21", features = ["thread-pool"]}
+
+sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-network = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-service = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+sc-telemetry = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-keystore = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-transaction-pool-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-offchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-consensus-manual-seal = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-client-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+
+# These dependencies are used for the node's RPCs
+jsonrpsee = { version = "0.16.2", features = ["server"] }
+sp-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-basic-authorship = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+substrate-frame-rpc-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+pallet-transaction-payment-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+
+# Local Dependencies
+contracts-node-runtime = { path = "../runtime" }
+# Eth RPC
+duck-rpc = { path = "../../client/rpc" }
+
+# yank this crate until
+# https://github.com/bluejekyll/enum-as-inner/issues/98
+# is fixed
+enum-as-inner = "=0.5.1"
+
+[build-dependencies]
+substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+
+[features]
+default = []

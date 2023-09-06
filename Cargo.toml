@@ -1,0 +1,30 @@
+[workspace.package]
+edition = "2021"
+
+[workspace]
+members = [
+    "client/rpc",
+	"template/node",
+	"template/runtime",
+    "primitives/rpc",
+]
+resolver = "2"
+
+[workspace.dependencies]
+ethereum = { version = "0.14.0", default-features = false }
+ethereum-types = { version = "0.14.1", default-features = false }
+evm = { git = "https://github.com/rust-blockchain/evm", rev = "b7b82c7e1fc57b7449d6dfa6826600de37cc1e65", default-features = false }
+jsonrpsee = "0.16.2"
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
+
+# Substrate
+sp-api = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+sp-state-machine = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+sp-std = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+
+# Local
+duck-rpc = { path = "client/rpc", default-features = false }
+dp-rpc = { path = "primitives/rpc", default-features = false }
