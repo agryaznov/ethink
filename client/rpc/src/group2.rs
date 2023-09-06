@@ -3,27 +3,26 @@ use super::*;
 impl<B, C> Duck<B, C>
 where
     B: BlockT,
-    C: ProvideRuntimeApi<B>,
 {
-    async fn block_by_hash(&self, hash: H256, full: bool) -> RpcResult<Option<RichBlock>> {
+    pub async fn block_by_hash(&self, _hash: H256, _full: bool) -> RpcResult<Option<RichBlock>> {
         Ok(None)
     }
 
-    async fn block_by_number(
+    pub async fn block_by_number(
         &self,
-        number: BlockNumber,
-        full: bool,
+        _number: BlockNumber,
+        _full: bool,
     ) -> RpcResult<Option<RichBlock>> {
         Ok(None)
     }
 
-    async fn block_transaction_count_by_hash(&self, hash: H256) -> RpcResult<Option<U256>> {
+    pub async fn block_transaction_count_by_hash(&self, _hash: H256) -> RpcResult<Option<U256>> {
         Ok(None)
     }
 
-    async fn block_transaction_count_by_number(
+    pub async fn block_transaction_count_by_number(
         &self,
-        number: BlockNumber,
+        _number: BlockNumber,
     ) -> RpcResult<Option<U256>> {
         Ok(None)
     }

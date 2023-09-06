@@ -1,11 +1,7 @@
 use super::*;
 
-impl<B, C> Duck<B, C>
-where
-    B: BlockT,
-    C: ProvideRuntimeApi<B>,
-{
-    async fn fee_history(
+impl<B: BlockT, C> Duck<B, C> {
+    pub async fn fee_history(
         &self,
         _block_count: U256,
         _newest_block: BlockNumber,
@@ -19,55 +15,55 @@ where
         })
     }
 
-    fn is_mining(&self) -> RpcResult<bool> {
+    pub fn is_mining(&self) -> RpcResult<bool> {
         Ok(false)
     }
 
-    fn max_priority_fee_per_gas(&self) -> RpcResult<U256> {
+    pub fn max_priority_fee_per_gas(&self) -> RpcResult<U256> {
         Ok(U256::zero())
     }
 
-    fn hashrate(&self) -> RpcResult<U256> {
+    pub fn hashrate(&self) -> RpcResult<U256> {
         Ok(U256::zero())
     }
 
-    fn protocol_version(&self) -> RpcResult<u64> {
+    pub fn protocol_version(&self) -> RpcResult<u64> {
         Ok(0)
     }
 
-    fn submit_hashrate(&self, hashrate: U256, id: H256) -> RpcResult<bool> {
+    pub fn submit_hashrate(&self, _hashrate: U256, _id: H256) -> RpcResult<bool> {
         Ok(false)
     }
 
-    fn submit_work(&self, nonce: H64, pow_hash: H256, mix_digest: H256) -> RpcResult<bool> {
+    pub fn submit_work(&self, _nonce: H64, _pow_hash: H256, _mix_digest: H256) -> RpcResult<bool> {
         Ok(false)
     }
 
-    fn block_uncles_count_by_number(&self, number: BlockNumber) -> RpcResult<U256> {
+    pub fn block_uncles_count_by_number(&self, _number: BlockNumber) -> RpcResult<U256> {
         Ok(U256::zero())
     }
 
-    fn block_uncles_count_by_hash(&self, hash: H256) -> RpcResult<U256> {
+    pub fn block_uncles_count_by_hash(&self, _hash: H256) -> RpcResult<U256> {
         Ok(U256::zero())
     }
 
-    fn uncle_by_block_hash_and_index(
+    pub fn uncle_by_block_hash_and_index(
         &self,
-        hash: H256,
-        index: Index,
+        _hash: H256,
+        _index: Index,
     ) -> RpcResult<Option<RichBlock>> {
         Ok(None)
     }
 
-    fn uncle_by_block_number_and_index(
+    pub fn uncle_by_block_number_and_index(
         &self,
-        number: BlockNumber,
-        index: Index,
+        _number: BlockNumber,
+        _index: Index,
     ) -> RpcResult<Option<RichBlock>> {
         Ok(None)
     }
 
-    fn work(&self) -> RpcResult<Work> {
+    pub fn work(&self) -> RpcResult<Work> {
         Ok(Work::default())
     }
 }

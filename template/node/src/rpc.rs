@@ -8,6 +8,7 @@
 use std::sync::Arc;
 
 use contracts_node_runtime::{opaque::Block, AccountId, Balance, Nonce};
+use duck_rpc::{Duck, EthApiServer};
 use jsonrpsee::RpcModule;
 use sc_client_api::BlockBackend;
 use sc_rpc::dev::{Dev, DevApiServer};
@@ -61,7 +62,10 @@ where
     // `module.merge(YourRpcTrait::into_rpc(YourRpcStruct::new(ReferenceToClient, ...)))?;`
 
     // Dev RPC API extension
-    module.merge(Dev::new(client, deny_unsafe).into_rpc())?;
+    module.merge(Dev::new(client.clone(), deny_unsafe).into_rpc())?;
+
+    // Eth RPC
+    module.merge(Duck::new(client).into_rpc())?;
 
     Ok(module)
 }

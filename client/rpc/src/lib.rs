@@ -4,9 +4,9 @@ mod group3;
 mod group4;
 mod group5;
 
-use dp_rpc::EthereumRuntimeRPCApi;
 use ethereum_types::{H160, H256, H64, U256, U64};
-use fc_rpc_core::{types::*, EthApiServer};
+use fc_rpc_core::types::*;
+pub use fc_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use sp_api::ProvideRuntimeApi;
 use sp_runtime::traits::{Block as BlockT, PhantomData};
@@ -35,9 +35,9 @@ where
 #[async_trait]
 impl<B, C> EthApiServer for Duck<B, C>
 where
-    B: BlockT,
+    B: BlockT + 'static,
     C: ProvideRuntimeApi<B> + Sync + Send + 'static,
-    C::Api: EthereumRuntimeRPCApi<B>,
+    //C::Api: EthereumRuntimeRPCApi<B>,
 {
     // ########################################################################
     // Group 5: Mocked
