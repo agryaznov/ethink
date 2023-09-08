@@ -1,5 +1,5 @@
 [package]
-name = "contracts-node-runtime"
+name = "duck-runtime"
 version = "0.30.0"
 authors = ["Parity Technologies <admin@parity.io>"]
 edition = "2021"

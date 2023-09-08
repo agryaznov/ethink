@@ -15,7 +15,7 @@ dp-rpc = { workspace = true, features = ["default"] }
 # Substrate
 sp-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false }
 sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false }
-#sp-runtime-interface = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false }
+sp-blockchain  = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false }
 
 [features]
 default = []

@@ -9,6 +9,7 @@ use fc_rpc_core::types::*;
 pub use fc_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use sp_api::ProvideRuntimeApi;
+use sp_blockchain::HeaderBackend;
 use sp_runtime::traits::{Block as BlockT, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -36,7 +37,7 @@ where
 impl<B, C> EthApiServer for Duck<B, C>
 where
     B: BlockT + 'static,
-    C: ProvideRuntimeApi<B> + Sync + Send + 'static,
+    C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     //C::Api: EthereumRuntimeRPCApi<B>,
 {
     // ########################################################################

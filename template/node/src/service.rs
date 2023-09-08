@@ -1,33 +1,34 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
-use contracts_node_runtime::{self, opaque::Block, RuntimeApi};
+use duck_runtime::{self, opaque::Block, RuntimeApi};
 use futures::FutureExt;
-use sc_client_api::{Backend, BlockBackend, ExecutorProvider};
-pub use sc_executor::NativeElseWasmExecutor;
+use sc_client_api::{Backend, BlockBackend};
+use sc_consensus_aura::{ImportQueueParams, SlotProportion, StartAuraParams};
 use sc_consensus_grandpa::SharedVoterState;
-use sc_service::{error::Error as ServiceError, Configuration, TaskManager};
+pub use sc_executor::NativeElseWasmExecutor;
+use sc_service::{error::Error as ServiceError, Configuration, TaskManager, WarpSyncParams};
 use sc_telemetry::{Telemetry, TelemetryWorker};
 use sc_transaction_pool_api::OffchainTransactionPoolFactory;
 use sp_consensus_aura::sr25519::AuthorityPair as AuraPair;
-use sc_consensus_aura::ImportQueueParams;
-use sc_consensus_aura::StartAuraParams;
-use sc_consensus_aura::SlotProportion;
-
 use std::{sync::Arc, time::Duration};
 
 // Our native executor instance.
 pub struct ExecutorDispatch;
 
 impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
-    /// We only use the default Substrate host functions as runtime benchmarks are not supported.
+    /// Only enable the benchmarking host functions when we actually want to benchmark.
+    #[cfg(feature = "runtime-benchmarks")]
+    type ExtendHostFunctions = frame_benchmarking::benchmarking::HostFunctions;
+    /// Otherwise we only use the default Substrate host functions.
+    #[cfg(not(feature = "runtime-benchmarks"))]
     type ExtendHostFunctions = ();
 
     fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-        contracts_node_runtime::api::dispatch(method, data)
+        duck_runtime::api::dispatch(method, data)
     }
 
     fn native_version() -> sc_executor::NativeVersion {
-        contracts_node_runtime::native_version()
+        duck_runtime::native_version()
     }
 }
 
@@ -35,6 +36,10 @@ pub(crate) type FullClient =
     sc_service::TFullClient<Block, RuntimeApi, NativeElseWasmExecutor<ExecutorDispatch>>;
 type FullBackend = sc_service::TFullBackend<Block>;
 type FullSelectChain = sc_consensus::LongestChain<FullBackend, Block>;
+
+/// The minimum period of blocks on which justifications will be
+/// imported and generated.
+const GRANDPA_JUSTIFICATION_PERIOD: u32 = 512;
 
 #[allow(clippy::type_complexity)]
 pub fn new_partial(
@@ -71,7 +76,6 @@ pub fn new_partial(
         .transpose()?;
 
     let executor = sc_service::new_native_or_wasm_executor(config);
-
     let (client, backend, keystore_container, task_manager) =
         sc_service::new_full_parts::<Block, RuntimeApi, _>(
             config,
@@ -80,14 +84,14 @@ pub fn new_partial(
         )?;
     let client = Arc::new(client);
 
-    let select_chain = sc_consensus::LongestChain::new(backend.clone());
-
     let telemetry = telemetry.map(|(worker, telemetry)| {
         task_manager
             .spawn_handle()
             .spawn("telemetry", None, worker.run());
         telemetry
     });
+
+    let select_chain = sc_consensus::LongestChain::new(backend.clone());
 
     let transaction_pool = sc_transaction_pool::BasicPool::new_full(
         config.transaction_pool.clone(),
@@ -99,7 +103,8 @@ pub fn new_partial(
 
     let (grandpa_block_import, grandpa_link) = sc_consensus_grandpa::block_import(
         client.clone(),
-        &(client.clone() as Arc<_>),
+        GRANDPA_JUSTIFICATION_PERIOD,
+        &client,
         select_chain.clone(),
         telemetry.as_ref().map(|x| x.handle()),
     )?;
@@ -107,7 +112,7 @@ pub fn new_partial(
     let slot_duration = sc_consensus_aura::slot_duration(&*client)?;
 
     let import_queue =
-        sc_consensus_aura::import_queue::<AuraPair, _, _, _, _, _, _>(ImportQueueParams {
+        sc_consensus_aura::import_queue::<AuraPair, _, _, _, _, _>(ImportQueueParams {
             block_import: grandpa_block_import.clone(),
             justification_import: Some(Box::new(grandpa_block_import.clone())),
             client: client.clone(),
@@ -120,13 +125,13 @@ pub fn new_partial(
 						slot_duration,
 					);
 
-                Ok((timestamp, slot))
+                Ok((slot, timestamp))
             },
             spawner: &task_manager.spawn_essential_handle(),
-            compatibility_mode:  Default::default(),
             registry: config.prometheus_registry(),
             check_for_equivocation: Default::default(),
             telemetry: telemetry.as_ref().map(|x| x.handle()),
+            compatibility_mode: Default::default(),
         })?;
 
     Ok(sc_service::PartialComponents {
@@ -142,7 +147,7 @@ pub fn new_partial(
 }
 
 /// Builds a new service for a full client.
-pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> {
+pub fn new_full(config: Configuration) -> Result<TaskManager, ServiceError> {
     let sc_service::PartialComponents {
         client,
         backend,
@@ -154,7 +159,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
         other: (block_import, grandpa_link, mut telemetry),
     } = new_partial(&config)?;
 
-    let net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
+    let mut net_config = sc_network::config::FullNetworkConfiguration::new(&config.network);
 
     let grandpa_protocol_name = sc_consensus_grandpa::protocol_standard_name(
         &client
@@ -164,13 +169,9 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
             .expect("Genesis block exists; qed"),
         &config.chain_spec,
     );
-
-    config
-        .network
-        .extra_sets
-        .push(sc_consensus_grandpa::grandpa_peers_set_config(
-            grandpa_protocol_name.clone(),
-        ));
+    net_config.add_notification_protocol(sc_consensus_grandpa::grandpa_peers_set_config(
+        grandpa_protocol_name.clone(),
+    ));
 
     let warp_sync = Arc::new(sc_consensus_grandpa::warp_proof::NetworkProvider::new(
         backend.clone(),
@@ -187,7 +188,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
             spawn_handle: task_manager.spawn_handle(),
             import_queue,
             block_announce_validator_builder: None,
-            warp_sync_params: Some(warp_sync),
+            warp_sync_params: Some(WarpSyncParams::WithProvider(warp_sync)),
         })?;
 
     if config.offchain_worker.enabled {
@@ -231,10 +232,9 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
             crate::rpc::create_full(deps).map_err(Into::into)
         })
     };
-    let prometheus_registry = config.prometheus_registry().cloned();
 
     let _rpc_handlers = sc_service::spawn_tasks(sc_service::SpawnTasksParams {
-        network,
+        network: network.clone(),
         client: client.clone(),
         keystore: keystore_container.keystore(),
         task_manager: &mut task_manager,
@@ -243,7 +243,7 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
         backend,
         system_rpc_tx,
         tx_handler_controller,
-        sync_service,
+        sync_service: sync_service.clone(),
         config,
         telemetry: telemetry.as_mut(),
     })?;
@@ -252,17 +252,17 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
         let proposer_factory = sc_basic_authorship::ProposerFactory::new(
             task_manager.spawn_handle(),
             client.clone(),
-            transaction_pool,
+            transaction_pool.clone(),
             prometheus_registry.as_ref(),
             telemetry.as_ref().map(|x| x.handle()),
         );
 
         let slot_duration = sc_consensus_aura::slot_duration(&*client)?;
 
-        let aura = sc_consensus_aura::start_aura::<AuraPair, _, _, _, _, _, _, _, _, _, _, _>(
+        let aura = sc_consensus_aura::start_aura::<AuraPair, _, _, _, _, _, _, _, _, _, _>(
             StartAuraParams {
                 slot_duration,
-                client: client.clone(),
+                client,
                 select_chain,
                 block_import,
                 proposer_factory,
@@ -275,16 +275,17 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
 							slot_duration,
 						);
 
-                    Ok((timestamp, slot))
+                    Ok((slot, timestamp))
                 },
                 force_authoring,
                 backoff_authoring_blocks,
-                keystore: keystore_container.sync_keystore(),
-                sync_oracle: network.clone(),
-                justification_sync_link: network.clone(),
+                keystore: keystore_container.keystore(),
+                sync_oracle: sync_service.clone(),
+                justification_sync_link: sync_service.clone(),
                 block_proposal_slot_portion: SlotProportion::new(2f32 / 3f32),
                 max_block_proposal_slot_portion: None,
                 telemetry: telemetry.as_ref().map(|x| x.handle()),
+                compatibility_mode: Default::default(),
             },
         )?;
 
@@ -295,27 +296,27 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
             .spawn_blocking("aura", Some("block-authoring"), aura);
     }
 
-    // if the node isn't actively participating in consensus then it doesn't
-    // need a keystore, regardless of which protocol we use below.
-    let keystore = if role.is_authority() {
-        Some(keystore_container.sync_keystore())
-    } else {
-        None
-    };
-
-    let grandpa_config = sc_consensus_grandpa::Config {
-        // FIXME #1578 make this available through chainspec
-        gossip_duration: Duration::from_millis(333),
-        justification_period: 512,
-        name: Some(name),
-        observer_enabled: false,
-        keystore,
-        local_role: role,
-        telemetry: telemetry.as_ref().map(|x| x.handle()),
-        protocol_name: grandpa_protocol_name.clone(),
-    };
-
     if enable_grandpa {
+        // if the node isn't actively participating in consensus then it doesn't
+        // need a keystore, regardless of which protocol we use below.
+        let keystore = if role.is_authority() {
+            Some(keystore_container.keystore())
+        } else {
+            None
+        };
+
+        let grandpa_config = sc_consensus_grandpa::Config {
+            // FIXME #1578 make this available through chainspec
+            gossip_duration: Duration::from_millis(333),
+            justification_generation_period: GRANDPA_JUSTIFICATION_PERIOD,
+            name: Some(name),
+            observer_enabled: false,
+            keystore,
+            local_role: role,
+            telemetry: telemetry.as_ref().map(|x| x.handle()),
+            protocol_name: grandpa_protocol_name,
+        };
+
         // start the full GRANDPA voter
         // NOTE: non-authorities could run the GRANDPA observer protocol, but at
         // this point the full voter should provide better guarantees of block
@@ -326,10 +327,12 @@ pub fn new_full(mut config: Configuration) -> Result<TaskManager, ServiceError> 
             config: grandpa_config,
             link: grandpa_link,
             network,
+            sync: Arc::new(sync_service),
             voting_rule: sc_consensus_grandpa::VotingRulesBuilder::default().build(),
             prometheus_registry,
             shared_voter_state: SharedVoterState::empty(),
             telemetry: telemetry.as_ref().map(|x| x.handle()),
+            offchain_tx_pool_factory: OffchainTransactionPoolFactory::new(transaction_pool),
         };
 
         // the GRANDPA voter task is considered infallible, i.e.
