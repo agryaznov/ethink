@@ -1,8 +1,10 @@
 use super::*;
+use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C> Duck<B, C>
 where
     B: BlockT,
+    C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
 {
     pub fn accounts(&self) -> RpcResult<Vec<H160>> {
         Ok(vec![H160::zero()])
@@ -13,11 +15,11 @@ where
     }
 
     pub async fn balance(&self, _address: H160, _number: Option<BlockNumber>) -> RpcResult<U256> {
-        Ok(U256::zero())
+        Ok(0x15481DACB82DE5D00000u128.into())
     }
 
     pub fn chain_id(&self) -> RpcResult<Option<U64>> {
-        Ok(None)
+        Ok(Some(42.into()))
     }
 
     pub async fn code_at(&self, _address: H160, _number: Option<BlockNumber>) -> RpcResult<Bytes> {
@@ -25,7 +27,9 @@ where
     }
 
     pub fn block_number(&self) -> RpcResult<U256> {
-        Ok(U256::zero())
+		Ok(U256::from(
+			UniqueSaturatedInto::<u128>::unique_saturated_into(self.client.info().best_number),
+		))
     }
 
     pub fn gas_price(&self) -> RpcResult<U256> {
