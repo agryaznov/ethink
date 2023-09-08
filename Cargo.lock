@@ -549,12 +549,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "assert_matches"
-version = "1.5.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "9b34d609dfbaf33d6889b2b7106d3ca345eacad44200913df5ba02bfd31d2ba9"
-
-[[package]]
 name = "async-channel"
 version = "1.9.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -1244,7 +1238,8 @@ dependencies = [
  "sc-cli",
  "sc-client-api",
  "sc-consensus",
- "sc-consensus-manual-seal",
+ "sc-consensus-aura",
+ "sc-consensus-grandpa",
  "sc-executor",
  "sc-keystore",
  "sc-network",
@@ -1258,6 +1253,8 @@ dependencies = [
  "sp-api",
  "sp-block-builder",
  "sp-blockchain",
+ "sp-consensus-aura",
+ "sp-consensus-grandpa",
  "sp-core",
  "sp-runtime",
  "sp-timestamp",
@@ -1274,10 +1271,11 @@ dependencies = [
  "frame-system",
  "frame-system-rpc-runtime-api",
  "pallet-assets",
- "pallet-authorship",
+ "pallet-aura",
  "pallet-balances",
  "pallet-contracts",
  "pallet-contracts-primitives",
+ "pallet-grandpa",
  "pallet-insecure-randomness-collective-flip",
  "pallet-sudo",
  "pallet-timestamp",
@@ -1288,6 +1286,7 @@ dependencies = [
  "scale-info",
  "sp-api",
  "sp-block-builder",
+ "sp-consensus-aura",
  "sp-core",
  "sp-inherents",
  "sp-io",
@@ -4773,7 +4772,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0638a1c9d0a3c0914158145bc76cff373a75a627e6ecbfb71cbe6f453a5a19b0"
 dependencies = [
  "autocfg",
- "num-bigint",
  "num-integer",
  "num-traits",
 ]
@@ -4899,6 +4897,23 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-aura"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-application-crypto",
+ "sp-consensus-aura",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-authorship"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
@@ -4980,6 +4995,29 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-grandpa"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
+dependencies = [
+ "frame-benchmarking",
+ "frame-support",
+ "frame-system",
+ "log",
+ "pallet-authorship",
+ "pallet-session",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-application-crypto",
+ "sp-consensus-grandpa",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-insecure-randomness-collective-flip"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
@@ -4991,6 +5029,28 @@ dependencies = [
  "scale-info",
  "sp-runtime",
  "sp-std",
+]
+
+[[package]]
+name = "pallet-session"
+version = "4.0.0-dev"
+source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
+dependencies = [
+ "frame-support",
+ "frame-system",
+ "impl-trait-for-tuples",
+ "log",
+ "pallet-timestamp",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-session",
+ "sp-staking",
+ "sp-state-machine",
+ "sp-std",
+ "sp-trie",
 ]
 
 [[package]]
@@ -6486,85 +6546,42 @@ dependencies = [
 ]
 
 [[package]]
-name = "sc-consensus-babe"
+name = "sc-consensus-grandpa"
 version = "0.10.0-dev"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
 dependencies = [
+ "ahash 0.8.3",
+ "array-bytes",
  "async-trait",
+ "dyn-clone",
+ "finality-grandpa",
  "fork-tree",
- "futures",
- "log",
- "num-bigint",
- "num-rational",
- "num-traits",
- "parity-scale-codec",
- "parking_lot 0.12.1",
- "sc-client-api",
- "sc-consensus",
- "sc-consensus-epochs",
- "sc-consensus-slots",
- "sc-telemetry",
- "sc-transaction-pool-api",
- "scale-info",
- "sp-api",
- "sp-application-crypto",
- "sp-block-builder",
- "sp-blockchain",
- "sp-consensus",
- "sp-consensus-babe",
- "sp-consensus-slots",
- "sp-core",
- "sp-inherents",
- "sp-keystore",
- "sp-runtime",
- "substrate-prometheus-endpoint",
- "thiserror",
-]
-
-[[package]]
-name = "sc-consensus-epochs"
-version = "0.10.0-dev"
-source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
-dependencies = [
- "fork-tree",
- "parity-scale-codec",
- "sc-client-api",
- "sc-consensus",
- "sp-blockchain",
- "sp-runtime",
-]
-
-[[package]]
-name = "sc-consensus-manual-seal"
-version = "0.10.0-dev"
-source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
-dependencies = [
- "assert_matches",
- "async-trait",
  "futures",
  "futures-timer",
- "jsonrpsee",
  "log",
  "parity-scale-codec",
+ "parking_lot 0.12.1",
+ "rand 0.8.5",
+ "sc-block-builder",
+ "sc-chain-spec",
  "sc-client-api",
  "sc-consensus",
- "sc-consensus-aura",
- "sc-consensus-babe",
- "sc-consensus-epochs",
- "sc-transaction-pool",
+ "sc-network",
+ "sc-network-common",
+ "sc-network-gossip",
+ "sc-telemetry",
  "sc-transaction-pool-api",
- "serde",
+ "sc-utils",
+ "serde_json",
  "sp-api",
+ "sp-application-crypto",
+ "sp-arithmetic",
  "sp-blockchain",
  "sp-consensus",
- "sp-consensus-aura",
- "sp-consensus-babe",
- "sp-consensus-slots",
+ "sp-consensus-grandpa",
  "sp-core",
- "sp-inherents",
  "sp-keystore",
  "sp-runtime",
- "sp-timestamp",
  "substrate-prometheus-endpoint",
  "thiserror",
 ]
@@ -6749,6 +6766,24 @@ dependencies = [
  "sp-consensus",
  "sp-consensus-grandpa",
  "sp-runtime",
+]
+
+[[package]]
+name = "sc-network-gossip"
+version = "0.10.0-dev"
+source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
+dependencies = [
+ "ahash 0.8.3",
+ "futures",
+ "futures-timer",
+ "libp2p",
+ "log",
+ "sc-network",
+ "sc-network-common",
+ "schnellru",
+ "sp-runtime",
+ "substrate-prometheus-endpoint",
+ "tracing",
 ]
 
 [[package]]
@@ -7754,25 +7789,6 @@ dependencies = [
  "sp-api",
  "sp-application-crypto",
  "sp-consensus-slots",
- "sp-inherents",
- "sp-runtime",
- "sp-std",
- "sp-timestamp",
-]
-
-[[package]]
-name = "sp-consensus-babe"
-version = "0.10.0-dev"
-source = "git+https://github.com/paritytech/polkadot-sdk?rev=33691#336916827f78a320fddbf1925984ec0a1f884376"
-dependencies = [
- "async-trait",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-api",
- "sp-application-crypto",
- "sp-consensus-slots",
- "sp-core",
  "sp-inherents",
  "sp-runtime",
  "sp-std",
@@ -9101,7 +9117,7 @@ checksum = "97fee6b57c6a41524a810daee9286c02d7752c4253064d0b05472833a438f675"
 dependencies = [
  "cfg-if",
  "digest 0.10.7",
- "rand 0.7.3",
+ "rand 0.8.5",
  "static_assertions",
 ]
 

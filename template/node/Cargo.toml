@@ -32,7 +32,10 @@ sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", rev 
 sc-transaction-pool-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-offchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-consensus-manual-seal = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-client-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
