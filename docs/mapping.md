@@ -1,10 +1,9 @@
 # RPC methods mapping 
 
-For fast reference:
+For reference,
 
--   see [Definitions](https://github.com/paritytech/frontier/blob/22aaafe089218f6cee625898fff7b953cc793228/client/rpc-core/src/eth.rs#L30)
--   see [Implementations](https://github.com/paritytech/frontier/blob/22aaafe089218f6cee625898fff7b953cc793228/client/rpc/src/eth/mod.rs#L172)
-
+- look into `fc-rpc-core` for [Definitions](https://github.com/paritytech/frontier/blob/22aaafe089218f6cee625898fff7b953cc793228/client/rpc-core/src/eth.rs#L30),
+- look into `fc-rpc` for [Implementations](https://github.com/paritytech/frontier/blob/22aaafe089218f6cee625898fff7b953cc793228/client/rpc/src/eth/mod.rs#L172).
 
 In the table below all the methods required to be exposed are grouped into the 5 categories, with the expected implementation difficulty descending from the top group to the bottom one.
 
@@ -29,7 +28,7 @@ In the table below all the methods required to be exposed are grouped into the 5
 
 <tbody>
 <tr>
-<td class="org-left">Group 1</td>
+<td class="org-left"><b>Group 1</b></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 </tr>
@@ -87,7 +86,7 @@ In the table below all the methods required to be exposed are grouped into the 5
 
 <tbody>
 <tr>
-<td class="org-left">Group 2</td>
+<td class="org-left"><b>Group 2</b></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 </tr>
@@ -124,7 +123,7 @@ In the table below all the methods required to be exposed are grouped into the 5
 
 <tbody>
 <tr>
-<td class="org-left">Group 3</td>
+<td class="org-left"><b>Group 3</b></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 </tr>
@@ -161,7 +160,7 @@ In the table below all the methods required to be exposed are grouped into the 5
 
 <tbody>
 <tr>
-<td class="org-left">Group 4</td>
+<td class="org-left"><b>Group 4</b></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 </tr>
@@ -240,7 +239,7 @@ In the table below all the methods required to be exposed are grouped into the 5
 
 <tbody>
 <tr>
-<td class="org-left">Group 5</td>
+<td class="org-left"><b>Group 5</b></td>
 <td class="org-left">&#xa0;</td>
 <td class="org-left">&#xa0;</td>
 </tr>
