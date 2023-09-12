@@ -1,4 +1,4 @@
-- [Frontier: RPC requests templates in curl](#orgbba2cda)
+- [Frontier: RPC request templates in curl](#orgbba2cda)
     - [eth: block_number](#org4fc0936)
     - [eth: eth_estimateGas](#org51f9da8)
     - [eth: eth_sendRawTransaction](#org16c2aed)
