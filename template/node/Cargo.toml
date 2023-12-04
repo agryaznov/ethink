@@ -1,5 +1,5 @@
 [package]
-name = "duck-node"
+name = "polkamask-node"
 version = "4.0.0-dev"
 description = "A fresh FRAME-based Substrate node, ready for hacking."
 authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
@@ -14,7 +14,7 @@ build = "build.rs"
 targets = ["x86_64-unknown-linux-gnu"]
 
 [[bin]]
-name = "duck-node"
+name = "polkamask-node"
 
 [dependencies]
 clap = { version = "4.4.2", features = ["derive"] }
@@ -59,8 +59,8 @@ frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", rev =
 frame-benchmarking-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 
 # Local Dependencies
-duck-runtime = { path = "../runtime" }
-duck-rpc = { path = "../../client/rpc" }
+polkamask-runtime = { path = "../runtime" }
+polkamask-rpc = { path = "../../client/rpc" }
 
 # CLI-specific dependencies
 try-runtime-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", optional = true }

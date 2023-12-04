@@ -1,5 +1,5 @@
 [package]
-name = "dp-rpc"
+name = "pmp-rpc"
 version = "0.0.1"
 license = "Apache-2.0"
 description = "Runtime primitives for Ethereum RPC (web3) compatibility."

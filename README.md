@@ -1,40 +1,28 @@
 > [!WARNING]
 > this is WIP, everything is quite far from working as expected. 
-# The 🦆 Duck 
+# The 🎭 PolkaMask
 
 ## What's this?
 
-This project is an attempt to make pallet-contracts Ethereum RPC -compatible.
+This project is an **experimental** add-on to pallet_contracts to make it Ethereum RPC -compatible.
 
 ## Quickstart 
 
-Start the duck 🦆 node 
+Start the polkamask development node 
 
 ```bash
 
-cargo run -p duck-node -- --dev
+cargo run -p polkamask-node -- --dev
 ```
 
-Open your MetaMask and add new network:
+Open your MetaMask and add a new network:
 
-+ **Network name**: Duck  🦆 
++ **Network name**: Duck 🦆 
 + **New RPC URL**: http://localhost:9944
 + **Chain ID**: 42
 + **Currency symbol**: 🥚
 
-That's it! You now should be able to communicate with the duck chain using your MetaMask. Or, try to make some requests to the exposed Ethereum RPC using [request templates](docs/rpc_requests.md). 
-
-## Why duck?
-
-This is just a working title.
-
-<details>
-
-<summary>If some reasoning is still required, then here it is</summary>
-
-As we build something that should "look" (same UI: MetaMask), "swim" (same account handling\signing: Metamask) and "quack" (communicates through the same RPC) like an Ethereum ~~Duck~~ DApp, it is supposed then, according to the [Duck Test](https://en.wikipedia.org/wiki/Duck_test), to be fairly enough considered (by its users at least) as an Ethereum DApp. Also, some [rubberducking](https://en.wikipedia.org/wiki/Rubber_duck_debugging) would probably be required along the way of implemting this.  
-
-</details>
+That's it! You now should be able to communicate with the duck chain using your MetaMask right away. You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
 
 ## Project Goals
 

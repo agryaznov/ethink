@@ -4,7 +4,7 @@ use crate::{
     cli::{Cli, Subcommand},
     service,
 };
-use duck_runtime::{Block, EXISTENTIAL_DEPOSIT};
+use polkamask_runtime::{Block, EXISTENTIAL_DEPOSIT};
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;

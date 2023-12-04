@@ -7,8 +7,8 @@
 
 use std::sync::Arc;
 
-use duck_rpc::{Duck, EthApiServer};
-use duck_runtime::{opaque::Block, AccountId, Balance, Nonce};
+use polkamask_rpc::{Duck, EthApiServer};
+use polkamask_runtime::{opaque::Block, AccountId, Balance, Nonce};
 use jsonrpsee::RpcModule;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;

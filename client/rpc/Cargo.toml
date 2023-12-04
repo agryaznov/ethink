@@ -1,5 +1,5 @@
 [package]
-name = "duck-rpc"
+name = "polkamask-rpc"
 version = "0.1.0"
 description = "Ethereum RPC compatibility layer for pallet-contracts"
 edition = "2021"
@@ -10,7 +10,7 @@ jsonrpsee = { workspace = true, features = ["server", "macros"] }
 
 # Frontier
 fc-rpc-core = { version = "1.1.0-dev", git = "https://github.com/paritytech/frontier", rev = "c4ef2fe7" }
-dp-rpc = { workspace = true, features = ["default"] }
+pmp-rpc = { workspace = true, features = ["default"] }
 
 # Substrate
 sp-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false }

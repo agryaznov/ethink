@@ -2065,121 +2065,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "9ea835d29036a4087793836fa931b08837ad5e957da9e23886b29586fb9b6650"
 
 [[package]]
-name = "dp-rpc"
-version = "0.0.1"
-dependencies = [
- "ethereum",
- "ethereum-types",
- "evm",
- "parity-scale-codec",
- "scale-info",
- "sp-api 24.0.0",
- "sp-core 26.0.0",
- "sp-runtime 29.0.0",
- "sp-state-machine 0.33.0",
- "sp-std 12.0.0",
-]
-
-[[package]]
 name = "dtoa"
 version = "1.0.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "dcbb2bf8e87535c23f7a8a321e364ce21462d0ff10cb6407820e8e96dfff6653"
-
-[[package]]
-name = "duck-node"
-version = "4.0.0-dev"
-dependencies = [
- "clap",
- "duck-rpc",
- "duck-runtime",
- "frame-benchmarking",
- "frame-benchmarking-cli",
- "frame-system",
- "futures",
- "jsonrpsee",
- "pallet-transaction-payment",
- "pallet-transaction-payment-rpc",
- "sc-basic-authorship",
- "sc-cli",
- "sc-client-api",
- "sc-consensus",
- "sc-consensus-aura",
- "sc-consensus-grandpa",
- "sc-executor",
- "sc-network",
- "sc-offchain",
- "sc-rpc",
- "sc-rpc-api",
- "sc-service",
- "sc-telemetry",
- "sc-transaction-pool",
- "sc-transaction-pool-api",
- "sp-api 4.0.0-dev",
- "sp-block-builder",
- "sp-blockchain",
- "sp-consensus-aura",
- "sp-consensus-grandpa",
- "sp-core 21.0.0",
- "sp-inherents",
- "sp-io 23.0.0",
- "sp-keyring",
- "sp-runtime 24.0.0",
- "sp-timestamp",
- "substrate-build-script-utils",
- "substrate-frame-rpc-system",
- "try-runtime-cli",
-]
-
-[[package]]
-name = "duck-rpc"
-version = "0.1.0"
-dependencies = [
- "dp-rpc",
- "ethereum-types",
- "fc-rpc-core",
- "jsonrpsee",
- "sp-api 4.0.0-dev",
- "sp-blockchain",
- "sp-runtime 24.0.0",
-]
-
-[[package]]
-name = "duck-runtime"
-version = "0.30.0"
-dependencies = [
- "frame-executive",
- "frame-support",
- "frame-system",
- "frame-system-rpc-runtime-api",
- "pallet-assets",
- "pallet-aura",
- "pallet-balances",
- "pallet-contracts",
- "pallet-contracts-primitives",
- "pallet-grandpa",
- "pallet-insecure-randomness-collective-flip",
- "pallet-sudo",
- "pallet-timestamp",
- "pallet-transaction-payment",
- "pallet-transaction-payment-rpc-runtime-api",
- "pallet-utility",
- "parity-scale-codec",
- "scale-info",
- "sp-api 4.0.0-dev",
- "sp-block-builder",
- "sp-consensus-aura",
- "sp-core 21.0.0",
- "sp-inherents",
- "sp-io 23.0.0",
- "sp-offchain",
- "sp-runtime 24.0.0",
- "sp-session",
- "sp-std 8.0.0",
- "sp-transaction-pool",
- "sp-version 22.0.0",
- "substrate-wasm-builder",
-]
 
 [[package]]
 name = "dyn-clonable"
@@ -5821,6 +5710,117 @@ name = "platforms"
 version = "3.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "14e6ab3f592e6fb464fc9712d8d6e6912de6473954635fd76a589d832cffcbb0"
+
+[[package]]
+name = "pmp-rpc"
+version = "0.0.1"
+dependencies = [
+ "ethereum",
+ "ethereum-types",
+ "evm",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-api 24.0.0",
+ "sp-core 26.0.0",
+ "sp-runtime 29.0.0",
+ "sp-state-machine 0.33.0",
+ "sp-std 12.0.0",
+]
+
+[[package]]
+name = "polkamask-node"
+version = "4.0.0-dev"
+dependencies = [
+ "clap",
+ "frame-benchmarking",
+ "frame-benchmarking-cli",
+ "frame-system",
+ "futures",
+ "jsonrpsee",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc",
+ "polkamask-rpc",
+ "polkamask-runtime",
+ "sc-basic-authorship",
+ "sc-cli",
+ "sc-client-api",
+ "sc-consensus",
+ "sc-consensus-aura",
+ "sc-consensus-grandpa",
+ "sc-executor",
+ "sc-network",
+ "sc-offchain",
+ "sc-rpc",
+ "sc-rpc-api",
+ "sc-service",
+ "sc-telemetry",
+ "sc-transaction-pool",
+ "sc-transaction-pool-api",
+ "sp-api 4.0.0-dev",
+ "sp-block-builder",
+ "sp-blockchain",
+ "sp-consensus-aura",
+ "sp-consensus-grandpa",
+ "sp-core 21.0.0",
+ "sp-inherents",
+ "sp-io 23.0.0",
+ "sp-keyring",
+ "sp-runtime 24.0.0",
+ "sp-timestamp",
+ "substrate-build-script-utils",
+ "substrate-frame-rpc-system",
+ "try-runtime-cli",
+]
+
+[[package]]
+name = "polkamask-rpc"
+version = "0.1.0"
+dependencies = [
+ "ethereum-types",
+ "fc-rpc-core",
+ "jsonrpsee",
+ "pmp-rpc",
+ "sp-api 4.0.0-dev",
+ "sp-blockchain",
+ "sp-runtime 24.0.0",
+]
+
+[[package]]
+name = "polkamask-runtime"
+version = "0.30.0"
+dependencies = [
+ "frame-executive",
+ "frame-support",
+ "frame-system",
+ "frame-system-rpc-runtime-api",
+ "pallet-assets",
+ "pallet-aura",
+ "pallet-balances",
+ "pallet-contracts",
+ "pallet-contracts-primitives",
+ "pallet-grandpa",
+ "pallet-insecure-randomness-collective-flip",
+ "pallet-sudo",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-transaction-payment-rpc-runtime-api",
+ "pallet-utility",
+ "parity-scale-codec",
+ "scale-info",
+ "sp-api 4.0.0-dev",
+ "sp-block-builder",
+ "sp-consensus-aura",
+ "sp-core 21.0.0",
+ "sp-inherents",
+ "sp-io 23.0.0",
+ "sp-offchain",
+ "sp-runtime 24.0.0",
+ "sp-session",
+ "sp-std 8.0.0",
+ "sp-transaction-pool",
+ "sp-version 22.0.0",
+ "substrate-wasm-builder",
+]
 
 [[package]]
 name = "polling"

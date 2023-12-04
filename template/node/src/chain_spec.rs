@@ -1,4 +1,4 @@
-use duck_runtime::{
+use polkamask_runtime::{
     AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
     SudoConfig, SystemConfig, WASM_BINARY,
 };

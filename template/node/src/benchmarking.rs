@@ -4,7 +4,7 @@
 
 use crate::service::FullClient;
 
-use duck_runtime as runtime;
+use polkamask_runtime as runtime;
 use runtime::{AccountId, Balance, BalancesCall, SystemCall};
 use sc_cli::Result;
 use sc_client_api::BlockBackend;

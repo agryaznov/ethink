@@ -26,5 +26,5 @@ sp-state-machine = { version="0.33.0", default-features = false }
 sp-std = { version="12.0.0", default-features = false }
 
 # Local
-duck-rpc = { path = "client/rpc", default-features = false }
-dp-rpc = { path = "primitives/rpc", default-features = false }
+polkamask-rpc = { path = "client/rpc", default-features = false }
+pmp-rpc = { path = "primitives/rpc", default-features = false }
