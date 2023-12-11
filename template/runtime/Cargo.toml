@@ -1,6 +1,6 @@
 [package]
 name = "polkamask-runtime"
-version = "0.30.0"
+version = "0.1.0"
 authors = ["Alexander Gryaznov <hi@agryaznov.com>"]
 edition = "2021"
 license = "Unlicense"
@@ -49,6 +49,9 @@ pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/parityt
 pallet-contracts = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
 pallet-contracts-primitives = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
 
+# Frontier/EVM
+pmp-rpc = { workspace = true }
+
 [build-dependencies]
 substrate-wasm-builder =  { git = "https://github.com/paritytech/polkadot-sdk", optional = true, rev = "33691" }
 
@@ -85,4 +88,5 @@ std = [
 	"pallet-contracts-primitives/std",
 	"pallet-assets/std",
 	"substrate-wasm-builder",
+	"pmp-rpc/std",
 ]

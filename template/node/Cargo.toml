@@ -21,7 +21,7 @@ clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 
 sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-core = { workspace = true, default-features = false }
 sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-network = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-service = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
@@ -35,7 +35,7 @@ sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", rev = "3369
 sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-client-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-runtime = { workspace = true, default-features = false }
 sp-io = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
@@ -45,7 +45,7 @@ pallet-transaction-payment = { git = "https://github.com/paritytech/polkadot-sdk
 
 # These dependencies are used for the node template's RPCs
 jsonrpsee = { version = "0.16.2", features = ["server"] }
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-api = { workspace = true, default-features = false }
 sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
@@ -59,8 +59,10 @@ frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", rev =
 frame-benchmarking-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
 
 # Local Dependencies
+#TODO put to workspace deps
 polkamask-runtime = { path = "../runtime" }
 polkamask-rpc = { path = "../../client/rpc" }
+pmp-rpc = { workspace = true, features = ["default"] }
 
 # CLI-specific dependencies
 try-runtime-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", optional = true }

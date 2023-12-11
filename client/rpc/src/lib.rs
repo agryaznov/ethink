@@ -8,11 +8,31 @@ use ethereum_types::{H160, H256, H64, U256, U64};
 use fc_rpc_core::types::*;
 pub use fc_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
+use pmp_rpc::ETHRuntimeRPC;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::traits::{Block as BlockT, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
+
+// TODO move to utils
+pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee::core::Error {
+    jsonrpsee::core::Error::Call(jsonrpsee::types::error::CallError::Custom(
+        jsonrpsee::types::error::ErrorObject::owned(
+            code,
+            message.to_string(),
+            data.map(|bytes| {
+                jsonrpsee::core::to_json_raw_value(&format!("0x{}", hex::encode(bytes)))
+                    .expect("fail to serialize data")
+            }),
+        ),
+    ))
+}
+
+// TODO move to utils
+pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
+    err(jsonrpsee::types::error::INTERNAL_ERROR_CODE, message, None)
+}
 
 /// Eth RPC implementation.
 pub struct Duck<B: BlockT, C> {
@@ -38,7 +58,7 @@ impl<B, C> EthApiServer for Duck<B, C>
 where
     B: BlockT + 'static,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
-    //C::Api: EthereumRuntimeRPCApi<B>,
+    C::Api: ETHRuntimeRPC<B>,
 {
     // ########################################################################
     // Group 5: Mocked

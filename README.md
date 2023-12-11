@@ -1,6 +1,6 @@
 > [!WARNING]
 > this is WIP, everything is quite far from working as expected. 
-# The 🎭 PolkaMask
+# The Polka🎭Mask
 
 ## What's this?
 

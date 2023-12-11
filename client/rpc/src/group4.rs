@@ -1,10 +1,12 @@
 use super::*;
+use pmp_rpc::ETHRuntimeRPC;
 use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C> Duck<B, C>
 where
     B: BlockT,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
+    C::Api: ETHRuntimeRPC<B>,
 {
     pub fn accounts(&self) -> RpcResult<Vec<H160>> {
         Ok(vec![H160::zero()])
@@ -19,7 +21,16 @@ where
     }
 
     pub fn chain_id(&self) -> RpcResult<Option<U64>> {
-        Ok(Some(42.into()))
+        let hash = self.client.info().best_hash;
+        Ok(Some(
+            self.client
+                .runtime_api()
+                .chain_id(hash)
+                .map_err(|err| {
+                    internal_err(format!("Fetching runtime CHAIN_ID failed: {:?}", err))
+                })?
+                .into(),
+        ))
     }
 
     pub async fn code_at(&self, _address: H160, _number: Option<BlockNumber>) -> RpcResult<Bytes> {
@@ -27,9 +38,9 @@ where
     }
 
     pub fn block_number(&self) -> RpcResult<U256> {
-		Ok(U256::from(
-			UniqueSaturatedInto::<u128>::unique_saturated_into(self.client.info().best_number),
-		))
+        Ok(U256::from(
+            UniqueSaturatedInto::<u128>::unique_saturated_into(self.client.info().best_number),
+        ))
     }
 
     pub fn gas_price(&self) -> RpcResult<U256> {

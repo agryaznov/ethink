@@ -7,9 +7,10 @@
 
 use std::sync::Arc;
 
+use jsonrpsee::RpcModule;
+use pmp_rpc::ETHRuntimeRPC;
 use polkamask_rpc::{Duck, EthApiServer};
 use polkamask_runtime::{opaque::Block, AccountId, Balance, Nonce};
-use jsonrpsee::RpcModule;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
@@ -38,6 +39,7 @@ where
     C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Nonce>,
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
     C::Api: BlockBuilder<Block>,
+    C::Api: ETHRuntimeRPC<Block>,
     P: TransactionPool + 'static,
 {
     use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};

@@ -15,15 +15,17 @@ ethereum = { version = "0.14.0", default-features = false }
 ethereum-types = { version = "0.14.1", default-features = false }
 evm = { git = "https://github.com/rust-blockchain/evm", rev = "b7b82c7e1fc57b7449d6dfa6826600de37cc1e65", default-features = false }
 jsonrpsee = "0.16.2"
+hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
 scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
 scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
 
 # Substrate
-sp-api = { version = "24.0.0", default-features = false }
-sp-core = { version = "26.0.0", default-features = false }
-sp-runtime = { version = "29.0.0", default-features = false }
-sp-state-machine = { version="0.33.0", default-features = false }
-sp-std = { version="12.0.0", default-features = false }
+sp-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
+sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
+sp-state-machine = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
+sp-std = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
 
 # Local
 polkamask-rpc = { path = "client/rpc", default-features = false }

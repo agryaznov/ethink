@@ -118,70 +118,10 @@ pub struct EVMExecInfo<T> {
 }
 
 sp_api::decl_runtime_apis! {
-    /// API necessary for Ethereum-compatibility layer.
-    pub trait EthereumRuntimeRPCApi {
+    /// Runtime-exposed API necessary for ETH-compatibility layer.
+    pub trait ETHRuntimeRPC {
         /// Returns runtime defined pallet_evm::ChainId.
         fn chain_id() -> u64;
-        /// Returns Ethereum Accounts by address.
-        fn account_basic(address: H160) -> EthAccount;
-        /// Returns FixedGasPrice::min_gas_price
-        fn gas_price() -> U256;
-        /// For a given account address, returns pallet_evm::AccountCodes.
-        fn account_code_at(address: H160) -> Vec<u8>;
-        /// Returns the converted FindAuthor::find_author authority id.
-        fn author() -> H160;
-        /// For a given account address and index, returns pallet_evm::AccountStorages.
-        fn storage_at(address: H160, index: U256) -> H256;
-        /// Returns a frame_ethereum::call response. If `estimate` is true,
-        fn call(
-            from: H160,
-            to: H160,
-            data: Vec<u8>,
-            value: U256,
-            gas_limit: U256,
-            max_fee_per_gas: Option<U256>,
-            max_priority_fee_per_gas: Option<U256>,
-            nonce: Option<U256>,
-            estimate: bool,
-            access_list: Option<Vec<(H160, Vec<H256>)>>,
-        ) -> Result<EVMExecInfo::<Vec<u8>>, sp_runtime::DispatchError>;
-        /// Returns a frame_ethereum::create response.
-        fn create(
-            from: H160,
-            data: Vec<u8>,
-            value: U256,
-            gas_limit: U256,
-            max_fee_per_gas: Option<U256>,
-            max_priority_fee_per_gas: Option<U256>,
-            nonce: Option<U256>,
-            estimate: bool,
-            access_list: Option<Vec<(H160, Vec<H256>)>>,
-        ) -> Result<EVMExecInfo::<H160>, sp_runtime::DispatchError>;
-        /// Returns the current block.
-        fn current_block() -> Option<ethereum::BlockV2>;
-        /// Returns the current receipts.
-        fn current_receipts() -> Option<Vec<ethereum::ReceiptV3>>;
-        /// Return the current transaction statuses.
-        fn current_transaction_statuses() -> Option<Vec<TransactionStatus>>;
-        /// Return all the current data for a block in a single runtime call.
-        fn current_all() -> (
-            Option<ethereum::BlockV2>,
-            Option<Vec<ethereum::ReceiptV3>>,
-            Option<Vec<TransactionStatus>>
-        );
-        /// Receives a `Vec<OpaqueExtrinsic>` and filters all the ethereum transactions.
-        fn extrinsic_filter(
-            xts: Vec<<Block as BlockT>::Extrinsic>,
-        ) -> Vec<ethereum::TransactionV2>;
-        /// Return the elasticity multiplier.
-        fn elasticity() -> Option<Permill>;
-        /// Used to determine if gas limit multiplier for non-transactional calls (eth_call/estimateGas)
-        /// is supported.
-        fn gas_limit_multiplier_support();
-        /// Return the pending block.
-        fn pending_block(
-            xts: Vec<<Block as BlockT>::Extrinsic>,
-        ) -> (Option<ethereum::BlockV2>, Option<Vec<TransactionStatus>>);
     }
 
     pub trait ConvertTransactionRuntimeApi {
