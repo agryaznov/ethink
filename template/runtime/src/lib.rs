@@ -13,7 +13,7 @@ use frame_system::{
 };
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
-use sp_core::{crypto::KeyTypeId, OpaqueMetadata};
+use sp_core::{crypto::KeyTypeId, OpaqueMetadata, H160, U256};
 use sp_runtime::{
     create_runtime_str, generic, impl_opaque_keys,
     traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, NumberFor, Verify},
@@ -27,6 +27,8 @@ use sp_version::RuntimeVersion;
 
 // ETH RPC support
 use pmp_rpc;
+
+use hex;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
@@ -734,10 +736,19 @@ impl_runtime_apis! {
         fn chain_id() -> u64 {
             CHAIN_ID
         }
-        // Unlike Frontier, we don't introduce any new balance system.
-        // Instead, we use address H160<->H240 conversion function and query the balance from the
-        // pallet_balances as usual.
-//        fn account_free_balance(address: H160) -> BalanceOf<T> {        }
+        /// Unlike Frontier, we don't introduce any new balance system.
+        /// Instead, we use address H160<->H240 conversion function and query the balance from the
+        /// pallet_balances as usual.
+        fn account_free_balance(address: H160) -> U256 {
+            //            let account = convert_acc(address);
+            // Alice
+            let mut account = [0u8; 32];
+            hex::decode_to_slice("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d", &mut account as &mut [u8]).unwrap_or_default();
+
+  		    Balances::free_balance(
+			    &account.into(),
+		    ).into()
+        }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646

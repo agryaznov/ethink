@@ -5273,6 +5273,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "frame-system-rpc-runtime-api",
+ "hex",
  "pallet-assets",
  "pallet-aura",
  "pallet-balances",

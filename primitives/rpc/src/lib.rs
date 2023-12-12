@@ -122,8 +122,10 @@ sp_api::decl_runtime_apis! {
     pub trait ETHRuntimeRPC {
         /// Returns runtime defined pallet_evm::ChainId.
         fn chain_id() -> u64;
-    }
 
+        /// Returns account balance.
+        fn account_free_balance(address: H160) -> U256;
+    }
     pub trait ConvertTransactionRuntimeApi {
         fn convert_transaction(transaction: ethereum::TransactionV2) -> <Block as BlockT>::Extrinsic;
     }

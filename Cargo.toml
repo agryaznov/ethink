@@ -26,6 +26,8 @@ sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "a
 sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-contracts = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-contracts-primitives = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 
 # Local
 polkamask-rpc = { path = "client/rpc", default-features = false }
