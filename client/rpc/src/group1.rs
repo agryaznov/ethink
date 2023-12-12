@@ -26,6 +26,6 @@ where
         _request: CallRequest,
         _number: Option<BlockNumber>,
     ) -> RpcResult<U256> {
-        Ok(U256::zero())
+        Ok(1000u32.into())
     }
 }

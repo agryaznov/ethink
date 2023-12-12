@@ -68,9 +68,18 @@ where
 
     pub async fn transaction_count(
         &self,
-        _address: H160,
+        address: H160,
         _number: Option<BlockNumber>,
     ) -> RpcResult<U256> {
-        Ok(42u8.into())
+        let hash = self.client.info().best_hash;
+        let nonce = self
+            .client
+            .runtime_api()
+            .nonce(hash, address)
+            .map_err(|err| {
+                internal_err(format!("fetch runtime account nounce failed: {:?}", err))
+            })?;
+
+        Ok(nonce)
     }
 }

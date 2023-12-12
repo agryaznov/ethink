@@ -743,6 +743,10 @@ impl_runtime_apis! {
                 &address.into(),
             ).into()
         }
+        /// Account nonce
+        fn nonce(address: H160) -> U256 {
+            System::account_nonce(AccountId::from(address)).into()
+        }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646
