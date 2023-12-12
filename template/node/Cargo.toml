@@ -20,43 +20,43 @@ name = "polkamask-node"
 clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 
-sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sp-core = { workspace = true, default-features = false }
-sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-network = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-service = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-telemetry = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-transaction-pool-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-offchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-client-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-executor = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-network = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-service = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-telemetry = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-transaction-pool-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-consensus = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-client-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sp-runtime = { workspace = true, default-features = false }
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-keyring = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-pallet-transaction-payment = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-keyring = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+pallet-transaction-payment = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 
 # These dependencies are used for the node template's RPCs
 jsonrpsee = { version = "0.16.2", features = ["server"] }
 sp-api = { workspace = true, default-features = false }
-sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-sc-basic-authorship = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-substrate-frame-rpc-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-pallet-transaction-payment-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+sc-rpc = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-rpc-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-basic-authorship = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+substrate-frame-rpc-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+pallet-transaction-payment-rpc = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 
 # These dependencies are used for runtime benchmarking
-frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
-frame-benchmarking-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+frame-benchmarking = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+frame-benchmarking-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 
 # Local Dependencies
 #TODO put to workspace deps
@@ -65,10 +65,10 @@ polkamask-rpc = { path = "../../client/rpc" }
 pmp-rpc = { workspace = true, features = ["default"] }
 
 # CLI-specific dependencies
-try-runtime-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", optional = true }
+try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", optional = true }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691" }
+substrate-build-script-utils = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 
 [features]
 default = []

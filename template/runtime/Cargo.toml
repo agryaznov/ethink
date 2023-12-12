@@ -16,44 +16,44 @@ targets = ["x86_64-unknown-linux-gnu"]
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
 
-pallet-aura = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-frame-support = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-insecure-randomness-collective-flip = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-sudo = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-frame-system = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-transaction-payment = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-frame-executive = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-offchain = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-io = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-session = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-std = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-sp-version = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-utility = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+pallet-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-assets = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-balances = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-support = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-insecure-randomness-collective-flip = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-sudo = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-transaction-payment = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-executive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-session = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-version = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-utility = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 
 # Used for the node's RPCs
-frame-system-rpc-runtime-api = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+frame-system-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 
 # Contracts specific packages
-pallet-contracts = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
-pallet-contracts-primitives = { git = "https://github.com/paritytech/polkadot-sdk", default-features = false, rev = "33691" }
+pallet-contracts = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-contracts-primitives = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 
 # Frontier/EVM
 pmp-rpc = { workspace = true }
 
 [build-dependencies]
-substrate-wasm-builder =  { git = "https://github.com/paritytech/polkadot-sdk", optional = true, rev = "33691" }
+substrate-wasm-builder =  { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", optional = true }
 
 [features]
 default = [

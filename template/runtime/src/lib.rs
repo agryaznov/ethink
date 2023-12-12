@@ -730,10 +730,14 @@ impl_runtime_apis! {
     }
 
     impl pmp_rpc::ETHRuntimeRPC<Block> for Runtime {
+        /// CHAIN_ID is defined as a constant in your runtime.
         fn chain_id() -> u64 {
             CHAIN_ID
         }
-
+        // Unlike Frontier, we don't introduce any new balance system.
+        // Instead, we use address H160<->H240 conversion function and query the balance from the
+        // pallet_balances as usual.
+//        fn account_free_balance(address: H160) -> BalanceOf<T> {        }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646

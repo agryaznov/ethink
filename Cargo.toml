@@ -20,12 +20,12 @@ scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-featu
 scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
 
 # Substrate
-sp-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
-sp-core = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
-sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
-sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
-sp-state-machine = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
-sp-std = { git = "https://github.com/paritytech/polkadot-sdk", rev = "33691", default-features = false}
+sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 
 # Local
 polkamask-rpc = { path = "client/rpc", default-features = false }
