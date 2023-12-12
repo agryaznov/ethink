@@ -27,7 +27,7 @@ use scale_info::TypeInfo;
 pub use evm::{backend::Basic as EthAccount, ExitReason};
 // Substrate
 use sp_core::{Hasher, H160, H256, U256};
-use sp_runtime::{traits::Block as BlockT, Permill, RuntimeDebug};
+use sp_runtime::{traits::Block as BlockT, RuntimeDebug};
 use sp_state_machine::OverlayedChanges;
 use sp_std::vec::Vec;
 

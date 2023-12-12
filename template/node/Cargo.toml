@@ -63,6 +63,9 @@ frame-benchmarking-cli = { git = "https://github.com/agryaznov/polkadot-sdk", br
 polkamask-runtime = { path = "../runtime" }
 polkamask-rpc = { path = "../../client/rpc" }
 pmp-rpc = { workspace = true, features = ["default"] }
+pmp-account = { workspace = true }
+
+hex-literal = { worspace = true }
 
 # CLI-specific dependencies
 try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", optional = true }

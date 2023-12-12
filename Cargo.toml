@@ -7,6 +7,7 @@ members = [
 	"template/node",
 	"template/runtime",
     "primitives/rpc",
+    "primitives/account",
 ]
 resolver = "2"
 
@@ -16,14 +17,21 @@ ethereum-types = { version = "0.14.1", default-features = false }
 evm = { git = "https://github.com/rust-blockchain/evm", rev = "b7b82c7e1fc57b7449d6dfa6826600de37cc1e65", default-features = false }
 jsonrpsee = "0.16.2"
 hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
+hex-literal = "0.4.1"
 scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
 scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
+impl-serde = { version = "0.4.0", default-features = false }
+libsecp256k1 = { version = "0.7.1", default-features = false }
+log = { version = "0.4.19", default-features = false }
+serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 
 # Substrate
 sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sp-runtime-interface = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 pallet-contracts = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
@@ -32,3 +40,4 @@ pallet-contracts-primitives = { git = "https://github.com/agryaznov/polkadot-sdk
 # Local
 polkamask-rpc = { path = "client/rpc", default-features = false }
 pmp-rpc = { path = "primitives/rpc", default-features = false }
+pmp-account = { path = "primitives/account", default-features = false }

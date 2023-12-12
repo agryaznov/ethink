@@ -18,7 +18,7 @@ use sp_runtime::{
     create_runtime_str, generic, impl_opaque_keys,
     traits::{AccountIdLookup, BlakeTwo256, Block as BlockT, IdentifyAccount, NumberFor, Verify},
     transaction_validity::{TransactionSource, TransactionValidity},
-    ApplyExtrinsicResult, MultiSignature,
+    ApplyExtrinsicResult,
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -26,9 +26,10 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 // ETH RPC support
+use pmp_account::EthereumSignature;
 use pmp_rpc;
 
-use hex;
+use hex_literal::hex;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
@@ -60,10 +61,11 @@ pub use sp_runtime::{Perbill, Permill};
 pub type BlockNumber = u32;
 
 /// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
-pub type Signature = MultiSignature;
+pub type Signature = EthereumSignature;
 
 /// Some way of identifying an account on the chain. We intentionally make it equivalent
 /// to the public key of our transaction signing scheme.
+/// This is derived to pmp_account::AccountId20 because of the used EthereumSignature above.
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 
 /// Balance of an account.
@@ -740,14 +742,10 @@ impl_runtime_apis! {
         /// Instead, we use address H160<->H240 conversion function and query the balance from the
         /// pallet_balances as usual.
         fn account_free_balance(address: H160) -> U256 {
-            //            let account = convert_acc(address);
-            // Alice
-            let mut account = [0u8; 32];
-            hex::decode_to_slice("d43593c715fdd31c61141abd04a99fd6822c8558854ccde39a5684e7a56da27d", &mut account as &mut [u8]).unwrap_or_default();
-
-  		    Balances::free_balance(
-			    &account.into(),
-		    ).into()
+            let mut account = AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")); // Alith
+              Balances::free_balance(
+                &account.into(),
+            ).into()
         }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call

@@ -1,3 +1,4 @@
+use crate::chain_spec::get_account_id_from_seed;
 use crate::{
     benchmarking::{inherent_benchmark_data, RemarkBuilder, TransferKeepAliveBuilder},
     chain_spec,
@@ -8,7 +9,6 @@ use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE
 use polkamask_runtime::{Block, EXISTENTIAL_DEPOSIT};
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
-use sp_keyring::Sr25519Keyring;
 
 impl SubstrateCli for Cli {
     fn impl_name() -> String {
@@ -178,7 +178,7 @@ pub fn run() -> sc_cli::Result<()> {
                             Box::new(RemarkBuilder::new(client.clone())),
                             Box::new(TransferKeepAliveBuilder::new(
                                 client.clone(),
-                                Sr25519Keyring::Alice.to_account_id(),
+                                get_account_id_from_seed::<sp_core::ecdsa::Public>("Alice"),
                                 EXISTENTIAL_DEPOSIT,
                             )),
                         ]);

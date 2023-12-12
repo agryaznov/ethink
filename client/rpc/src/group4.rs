@@ -18,15 +18,12 @@ where
 
     pub async fn balance(&self, address: H160, _number: Option<BlockNumber>) -> RpcResult<U256> {
         let hash = self.client.info().best_hash;
-        Ok(
-            self.client
-                .runtime_api()
-                .account_free_balance(hash, address)
-                .map_err(|err| {
-                    internal_err(format!("Fetching runtime CHAIN_ID failed: {:?}", err))
-                })?
-                .into(),
-        )
+        Ok(self
+            .client
+            .runtime_api()
+            .account_free_balance(hash, address)
+            .map_err(|err| internal_err(format!("Fetching runtime CHAIN_ID failed: {:?}", err)))?
+            .into())
     }
 
     pub fn chain_id(&self) -> RpcResult<Option<U64>> {
