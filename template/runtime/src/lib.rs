@@ -29,8 +29,6 @@ use sp_version::RuntimeVersion;
 use pmp_account::EthereumSignature;
 use pmp_rpc;
 
-use hex_literal::hex;
-
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
     construct_runtime, parameter_types,
@@ -734,17 +732,15 @@ impl_runtime_apis! {
     }
 
     impl pmp_rpc::ETHRuntimeRPC<Block> for Runtime {
-        /// CHAIN_ID is defined as a constant in your runtime.
+        /// CHAIN_ID constant is defined in your runtime.
         fn chain_id() -> u64 {
             CHAIN_ID
         }
         /// Unlike Frontier, we don't introduce any new balance system.
-        /// Instead, we use address H160<->H240 conversion function and query the balance from the
-        /// pallet_balances as usual.
+        /// We use AccountId20 with the standard pallet_balances as usual.
         fn account_free_balance(address: H160) -> U256 {
-            let mut account = AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")); // Alith
               Balances::free_balance(
-                &account.into(),
+                &address.into(),
             ).into()
         }
         // others to be added here, see for reference:

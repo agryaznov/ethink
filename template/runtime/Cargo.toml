@@ -53,9 +53,6 @@ pallet-contracts-primitives = { workspace = true }
 pmp-rpc = { workspace = true }
 pmp-account = { workspace = true }
 
-# TODO remove
-hex-literal = { workspace = true }
-
 [build-dependencies]
 substrate-wasm-builder =  { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", optional = true }
 
