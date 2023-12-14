@@ -6,7 +6,10 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_support::dispatch::DispatchClass;
+use frame_support::{
+    dispatch::DispatchClass,
+    traits::tokens::{fungible, Preservation::Expendable},
+};
 use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
@@ -746,6 +749,23 @@ impl_runtime_apis! {
         /// Account nonce
         fn nonce(address: H160) -> U256 {
             System::account_nonce(AccountId::from(address)).into()
+        }
+        /// Call
+        fn call(
+            from: H160,
+            to: H160,
+            value: U256,
+        ) -> Result<U256, sp_runtime::DispatchError> {
+            // For contracts, this would be bare_call()
+            // But for starters, let's just send some balance
+            // Basically we need to do the same what  dispatchable Balances::transfer_allow_death() does
+            // TODO: ensure_signed?
+            let source = AccountId::from(from);
+            let dest = AccountId::from(to);
+            <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
+            Ok(Balances::free_balance(
+                &source,
+            ).into())
         }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call

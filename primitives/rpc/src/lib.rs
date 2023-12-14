@@ -126,6 +126,12 @@ sp_api::decl_runtime_apis! {
         fn account_free_balance(address: H160) -> U256;
         /// Returns account nonce.
         fn nonce(address: H160) -> U256;
+        /// Call
+        fn call(
+            from: H160,
+            to: H160,
+            value: U256,
+        ) -> Result<U256, sp_runtime::DispatchError>;
     }
     pub trait ConvertTransactionRuntimeApi {
         fn convert_transaction(transaction: ethereum::TransactionV2) -> <Block as BlockT>::Extrinsic;
