@@ -10,7 +10,7 @@ pub use fc_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use pmp_rpc::ETHRuntimeRPC;
 use sp_api::ProvideRuntimeApi;
-use sp_blockchain::HeaderBackend;
+use sp_blockchain::{Backend, HeaderBackend};
 use sp_runtime::traits::{Block as BlockT, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;

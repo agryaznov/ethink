@@ -24,9 +24,8 @@ where
             .client
             .runtime_api()
             .call(hash, from.unwrap(), to.unwrap(), value.unwrap())
-     		.map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
+            .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
-
 
         Ok(Bytes::from(balance_left.as_u128().to_be_bytes().to_vec()))
     }
