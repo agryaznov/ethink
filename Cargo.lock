@@ -4146,6 +4146,16 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "3e2e65a1a2e43cfcb47a895c4c8b10d1f4a61097f9f254f183aee60cad9c651d"
 
 [[package]]
+name = "mappings"
+version = "0.1.0"
+dependencies = [
+ "ethereum-types",
+ "fc-rpc-core",
+ "sp-core",
+ "sp-runtime",
+]
+
+[[package]]
 name = "match_cfg"
 version = "0.1.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -5285,9 +5295,12 @@ dependencies = [
  "fc-rpc-core",
  "hex",
  "jsonrpsee",
+ "mappings",
  "pmp-rpc",
+ "sc-client-api",
  "sp-api",
  "sp-blockchain",
+ "sp-core",
  "sp-runtime",
 ]
 

@@ -9,11 +9,14 @@ use fc_rpc_core::types::*;
 pub use fc_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use pmp_rpc::ETHRuntimeRPC;
+use sc_client_api::BlockBackend;
 use sp_api::ProvideRuntimeApi;
-use sp_blockchain::{Backend, HeaderBackend};
-use sp_runtime::traits::{Block as BlockT, PhantomData};
+use sp_blockchain::HeaderBackend;
+use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
+
+use mappings;
 
 // TODO move to utils
 pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee::core::Error {

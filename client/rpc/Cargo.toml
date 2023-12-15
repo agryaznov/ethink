@@ -9,14 +9,20 @@ ethereum-types = { workspace = true }
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
 hex = { workspace = true }
 
-# Frontier
-fc-rpc-core = { version = "1.1.0-dev", git = "https://github.com/paritytech/frontier", rev = "c4ef2fe7" }
+# Polkamask
 pmp-rpc = { workspace = true, features = ["default"] }
+mappings = { workspace = true, features = ["default"] }
+
+# Frontier
+fc-rpc-core = { workspace = true }
 
 # Substrate
 sp-api = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
 sp-blockchain = { workspace = true, default-features = false }
+sp-core = { workspace = true, default-features = false }
+sc-client-api = { workspace = true, default-features = false }
+
 
 [features]
 default = []

@@ -138,7 +138,7 @@ pub const HOURS: BlockNumber = MINUTES * 60;
 pub const DAYS: BlockNumber = HOURS * 24;
 
 /// ETH specific constants
-pub const CHAIN_ID: u64 = 47;
+pub const CHAIN_ID: u64 = 42;
 
 /// The version information used to identify this runtime when compiled natively.
 #[cfg(feature = "std")]
