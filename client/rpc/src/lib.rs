@@ -45,8 +45,9 @@ pub struct Duck<B: BlockT, C> {
 
 impl<B, C> Duck<B, C>
 where
-    B: BlockT,
-    C: ProvideRuntimeApi<B>,
+    B: BlockT<Hash = ethereum_types::H256>,
+    C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
+    C::Api: ETHRuntimeRPC<B>,
 {
     pub fn new(client: Arc<C>) -> Self {
         Self {
@@ -59,8 +60,8 @@ where
 #[async_trait]
 impl<B, C> EthApiServer for Duck<B, C>
 where
-    B: BlockT + 'static,
-    C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
+    B: BlockT<Hash = ethereum_types::H256>,
+    C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
     // ########################################################################

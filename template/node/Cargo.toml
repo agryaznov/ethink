@@ -30,11 +30,11 @@ sc-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branc
 sc-transaction-pool-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sc-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sc-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
+sc-client-api = { workspace = true, default-features = false }
 sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sc-consensus = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sc-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
-sc-client-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sp-runtime = { workspace = true, default-features = false }
 sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }
 sp-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask" }

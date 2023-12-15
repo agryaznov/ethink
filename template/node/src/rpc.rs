@@ -11,6 +11,7 @@ use jsonrpsee::RpcModule;
 use pmp_rpc::ETHRuntimeRPC;
 use polkamask_rpc::{Duck, EthApiServer};
 use polkamask_runtime::{opaque::Block, AccountId, Balance, Nonce};
+use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
@@ -34,7 +35,10 @@ pub fn create_full<C, P>(
 ) -> Result<RpcModule<()>, Box<dyn std::error::Error + Send + Sync>>
 where
     C: ProvideRuntimeApi<Block>,
-    C: HeaderBackend<Block> + HeaderMetadata<Block, Error = BlockChainError> + 'static,
+    C: HeaderBackend<Block>
+        + HeaderMetadata<Block, Error = BlockChainError>
+        + BlockBackend<Block>
+        + 'static,
     C: Send + Sync + 'static,
     C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Nonce>,
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,

@@ -5295,6 +5295,7 @@ dependencies = [
  "fc-rpc-core",
  "hex",
  "jsonrpsee",
+ "log",
  "mappings",
  "pmp-rpc",
  "sc-client-api",

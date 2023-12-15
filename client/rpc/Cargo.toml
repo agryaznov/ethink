@@ -8,6 +8,7 @@ edition = "2021"
 ethereum-types = { workspace = true }
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
 hex = { workspace = true }
+log = { workspace = true }
 
 # Polkamask
 pmp-rpc = { workspace = true, features = ["default"] }
