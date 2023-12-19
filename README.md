@@ -12,7 +12,7 @@ Start the polkamask development node
 
 ```bash
 
-cargo run -p polkamask-node -- --dev
+cargo run -- --dev
 ```
 
 Open your MetaMask and add a new network:

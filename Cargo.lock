@@ -4812,6 +4812,26 @@ dependencies = [
 ]
 
 [[package]]
+name = "pallet-polkamask"
+version = "0.1.0"
+dependencies = [
+ "ethereum",
+ "ethereum-types",
+ "frame-support",
+ "frame-system",
+ "hex",
+ "libsecp256k1",
+ "pallet-balances",
+ "parity-scale-codec",
+ "rlp",
+ "scale-info",
+ "sp-core",
+ "sp-io",
+ "sp-runtime",
+ "sp-std",
+]
+
+[[package]]
 name = "pallet-session"
 version = "4.0.0-dev"
 source = "git+https://github.com/agryaznov/polkadot-sdk?branch=ag/polkamask#73c2bca9cdb17f1fdc2afd7aed826d0c55b8640a"
@@ -5291,17 +5311,22 @@ dependencies = [
 name = "polkamask-rpc"
 version = "0.1.0"
 dependencies = [
+ "ethereum",
  "ethereum-types",
  "fc-rpc-core",
  "hex",
  "jsonrpsee",
  "log",
  "mappings",
+ "pallet-balances",
+ "pmp-account",
  "pmp-rpc",
  "sc-client-api",
+ "sc-transaction-pool-api",
  "sp-api",
  "sp-blockchain",
  "sp-core",
+ "sp-io",
  "sp-runtime",
 ]
 
@@ -5320,6 +5345,7 @@ dependencies = [
  "pallet-contracts-primitives",
  "pallet-grandpa",
  "pallet-insecure-randomness-collective-flip",
+ "pallet-polkamask",
  "pallet-sudo",
  "pallet-timestamp",
  "pallet-transaction-payment",

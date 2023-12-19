@@ -10,6 +10,7 @@ members = [
 	"template/runtime",
     "primitives/rpc",
     "primitives/account",
+    "frame/polkamask",
 ]
 resolver = "2"
 
@@ -26,6 +27,7 @@ impl-serde = { version = "0.4.0", default-features = false }
 libsecp256k1 = { version = "0.7.1", default-features = false }
 log = { version = "0.4.19", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
+rlp = { version = "0.5.2", default-features = false }
 
 # Substrate
 sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
@@ -37,9 +39,12 @@ sp-runtime-interface = { git = "https://github.com/agryaznov/polkadot-sdk", bran
 sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 sc-client-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+sc-transaction-pool-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 pallet-contracts = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 pallet-contracts-primitives = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-
+pallet-balances = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-support = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
 # Frontier
 fc-rpc-core = { version = "1.1.0-dev", git = "https://github.com/paritytech/frontier", rev = "c4ef2fe7" }
 
@@ -48,3 +53,4 @@ polkamask-rpc = { path = "client/rpc", default-features = false }
 mappings = { path = "client/mappings", default-features = false }
 pmp-rpc = { path = "primitives/rpc", default-features = false }
 pmp-account = { path = "primitives/account", default-features = false }
+pallet-polkamask = { path = "frame/polkamask", default-features = false }

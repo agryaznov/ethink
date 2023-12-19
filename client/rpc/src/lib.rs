@@ -4,12 +4,14 @@ mod group3;
 mod group4;
 mod group5;
 
+use ethereum::TransactionV2 as EthTx;
 use ethereum_types::{H160, H256, H64, U256, U64};
 use fc_rpc_core::types::*;
 pub use fc_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use pmp_rpc::ETHRuntimeRPC;
 use sc_client_api::BlockBackend;
+use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
@@ -38,30 +40,34 @@ pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
 }
 
 /// Eth RPC implementation.
-pub struct Duck<B: BlockT, C> {
+pub struct Duck<B: BlockT, C, P> {
     client: Arc<C>,
+    pool: Arc<P>,
     _phantom: PhantomData<B>,
 }
 
-impl<B, C> Duck<B, C>
+impl<B, C, P> Duck<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
+    P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
-    pub fn new(client: Arc<C>) -> Self {
+    pub fn new(client: Arc<C>, pool: Arc<P>) -> Self {
         Self {
             client,
+            pool,
             _phantom: PhantomData::default(),
         }
     }
 }
 
 #[async_trait]
-impl<B, C> EthApiServer for Duck<B, C>
+impl<B, C, P> EthApiServer for Duck<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
+    P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
     // ########################################################################

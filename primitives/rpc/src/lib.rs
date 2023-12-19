@@ -20,6 +20,7 @@
 #![deny(unused_crate_dependencies)]
 
 use ethereum::Log;
+pub use ethereum::TransactionV2 as EthTx;
 use ethereum_types::Bloom;
 use scale_codec::{Decode, Encode};
 use scale_info::TypeInfo;
@@ -132,8 +133,7 @@ sp_api::decl_runtime_apis! {
             to: H160,
             value: U256,
         ) -> Result<U256, sp_runtime::DispatchError>;
-    }
-    pub trait ConvertTransactionRuntimeApi {
+
         fn convert_transaction(transaction: ethereum::TransactionV2) -> <Block as BlockT>::Extrinsic;
     }
 }

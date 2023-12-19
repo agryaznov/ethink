@@ -1,6 +1,6 @@
 use super::*;
 
-impl<B, C> Duck<B, C>
+impl<B, C, P> Duck<B, C, P>
 where
     B: BlockT,
 {
@@ -24,6 +24,8 @@ where
         Ok(None)
     }
 
+    // NOTE: !!! tx_hash in polkadot is not unique... block_hash ++ tx_hash is unique
+    // so as for now we will just return first (of possible many) found receipt for the provided tx_hash
     pub async fn transaction_receipt(&self, _hash: H256) -> RpcResult<Option<Receipt>> {
         // Ok(Some(Receipt {
         //      transaction_hash: Option<H256>,
@@ -32,15 +34,15 @@ where
         //      from: Option<H160>,
         //      to: Option<H160>,
         //      block_number: Option<U256>,
+        //      state_root: Default::default(),//?
+        //      transaction_type: Default::default(),//?
         //      contract_address: Default::default(),
         //      cumulative_gas_used: Default::default(),
-        //      gas_used: Option<U256>,
-        //      logs: Vec<Log>,
-        //      state_root: Option<H256>,
-        //      logs_bloom: H2048,
-        //      status_code: Option<U64>,
-        //      effective_gas_price: U256,
-        //      transaction_type: U256,
+        //      gas_used: Default::default(),
+        //      logs: Default::default(),
+        //      logs_bloom: Default::default(),
+        //      status_code: Default::default(),
+        //      effective_gas_price: Default::default(),
         // }))
         Ok(None)
     }

@@ -6,23 +6,28 @@ edition = "2021"
 
 [dependencies]
 ethereum-types = { workspace = true }
+ethereum = { workspace = true }
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
 hex = { workspace = true }
 log = { workspace = true }
 
 # Polkamask
 pmp-rpc = { workspace = true, features = ["default"] }
+pmp-account = { workspace = true, features = ["default"] }
 mappings = { workspace = true, features = ["default"] }
 
 # Frontier
 fc-rpc-core = { workspace = true }
 
 # Substrate
+sp-io = { workspace = true, default-features = false }
 sp-api = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
 sp-blockchain = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 sc-client-api = { workspace = true, default-features = false }
+sc-transaction-pool-api = { workspace = true }
+pallet-balances = { workspace = true }
 
 
 [features]

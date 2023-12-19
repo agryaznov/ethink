@@ -4,9 +4,6 @@ use ethereum_types::{H256, U256};
 use fc_rpc_core::types::{BlockTransactions as EthBlockTxs, Header as EthHeader};
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
 
-// TODO merge with runtime const?
-const CHAIN_ID: u64 = 42;
-
 pub struct SubBlock<B>(pub B);
 
 impl<B: BlockT<Hash = H256>> From<SubBlock<B>> for EthBlock {

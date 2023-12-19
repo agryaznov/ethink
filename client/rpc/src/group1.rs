@@ -1,10 +1,11 @@
 use super::*;
 use crate::CallRequest;
 
-impl<B, C> Duck<B, C>
+impl<B, C, P> Duck<B, C, P>
 where
     B: BlockT,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
+    P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
     pub async fn call(
@@ -31,10 +32,57 @@ where
     }
 
     pub async fn send_transaction(&self, _request: TransactionRequest) -> RpcResult<H256> {
+        // ensure_signer(origin)?
+        // let hash = self.client.info().best_hash;
+
+        // let TransactionRequest {
+        //     from, to, value, ..
+        // } = request;
+
+        // need to make sure our runtime uses Eth signatures
+        // let signer_addr = from;
+        // let signature = ;
+
+        // For now we just sending some tokens
+        // In the future, the pallet_contracts call will be constructed here
+        // let extrinsic = UncheckedExtrinsic::new_signed(
+        // 	pallet_balances::Call::<Runtime>::transfer_allow_death { dest: to }.into(),
+        //     signer_addr,
+        //     signature,
+        // 	);
+
+        // submit tx to the TransactionPool, get tx_hash in response
+        // self.pool
+        // 	.submit_one(
+        // 		&BlockId::Hash(block_hash),
+        // 		TransactionSource::Local,
+        // 		extrinsic,
+        // 	)
+        // 	.map_ok(move |_| transaction_hash)
+        // 	.map_err(|err| internal_err(format::Geth::pool_error(err)))
+        // 	.await
+
         Ok(H256::zero())
     }
 
-    pub async fn send_raw_transaction(&self, _bytes: Bytes) -> RpcResult<H256> {
+    pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
+        let hash = self.client.info().best_hash;
+
+        // TODO refactor
+        let slice = &bytes.0[..];
+        if slice.is_empty() {
+            return Err(internal_err("transaction data is empty"));
+        }
+        let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
+            Ok(tx) => tx,
+            Err(_) => return Err(internal_err("decode transaction failed")),
+        };
+        // Compose extrinsic for submission
+        let _extrinsic = match self.client.runtime_api().convert_transaction(hash, tx) {
+            Ok(extrinsic) => extrinsic,
+            Err(_) => return Err(internal_err("cannot access runtime api")),
+        };
+
         Ok(H256::zero())
     }
 

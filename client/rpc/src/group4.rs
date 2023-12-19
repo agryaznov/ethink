@@ -2,7 +2,7 @@ use super::*;
 use pmp_rpc::ETHRuntimeRPC;
 use sp_runtime::traits::UniqueSaturatedInto;
 
-impl<B, C> Duck<B, C>
+impl<B, C, P> Duck<B, C, P>
 where
     B: BlockT,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,

@@ -8,7 +8,10 @@ include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
 use frame_support::{
     dispatch::DispatchClass,
-    traits::tokens::{fungible, Preservation::Expendable},
+    traits::{
+        tokens::{fungible, Preservation::Expendable},
+        Nothing,
+    },
 };
 use frame_system::{
     limits::{BlockLength, BlockWeights},
@@ -29,8 +32,9 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 // ETH RPC support
+use pallet_polkamask;
 use pmp_account::EthereumSignature;
-use pmp_rpc;
+use pmp_rpc::EthTx;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
@@ -391,17 +395,6 @@ impl pallet_utility::Config for Runtime {
     type WeightInfo = pallet_utility::weights::SubstrateWeight<Runtime>;
 }
 
-pub enum AllowBalancesCall {}
-
-impl frame_support::traits::Contains<RuntimeCall> for AllowBalancesCall {
-    fn contains(call: &RuntimeCall) -> bool {
-        matches!(
-            call,
-            RuntimeCall::Balances(BalancesCall::transfer_allow_death { .. })
-        )
-    }
-}
-
 impl pallet_contracts::Config for Runtime {
     type Time = Timestamp;
     type Randomness = RandomnessCollectiveFlip;
@@ -415,7 +408,7 @@ impl pallet_contracts::Config for Runtime {
     /// and make sure they are stable. Dispatchables exposed to contracts are not allowed to
     /// change because that would break already deployed contracts. The `RuntimeCall` structure
     /// itself is not allowed to change the indices of existing pallets, too.
-    type CallFilter = AllowBalancesCall;
+    type CallFilter = Nothing;
     type DepositPerItem = DepositPerItem;
     type DepositPerByte = DepositPerByte;
     type CallStack = [pallet_contracts::Frame<Self>; 23];
@@ -448,6 +441,11 @@ impl pallet_contracts::Config for Runtime {
     type Environment = ();
 }
 
+impl pallet_polkamask::Config for Runtime {
+    type RuntimeEvent = RuntimeEvent;
+    type Currency = Balances;
+}
+
 // Create the runtime by composing the FRAME pallets that were previously configured.
 construct_runtime!(
     pub struct Runtime {
@@ -462,6 +460,7 @@ construct_runtime!(
         Sudo: pallet_sudo,
         Contracts: pallet_contracts,
         Assets: pallet_assets,
+        Polkamask: pallet_polkamask,
     }
 );
 
@@ -767,6 +766,15 @@ impl_runtime_apis! {
                 &source,
             ).into())
         }
+
+         fn convert_transaction(
+             tx: EthTx,
+         ) -> <Block as BlockT>::Extrinsic {
+             UncheckedExtrinsic::new_unsigned(
+                 pallet_polkamask::Call::<Runtime>::transact { tx }.into(),
+             )
+         }
+
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646
