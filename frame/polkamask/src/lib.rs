@@ -24,19 +24,20 @@ mod mock;
 mod tests;
 
 use frame_support::{
-    dispatch::DispatchResultWithPostInfo,
+    dispatch::{DispatchInfo, DispatchResultWithPostInfo, PostDispatchInfo},
     traits::{
         fungible::{Inspect, Mutate, MutateHold},
         tokens::Preservation,
         EnsureOrigin, Get, PalletInfoAccess, Time,
     },
 };
-use frame_system::{pallet_prelude::OriginFor, WeightInfo};
+use frame_system::{pallet_prelude::OriginFor, CheckWeight, WeightInfo};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{H160, H256, U256};
 use sp_runtime::{
-    traits::{Dispatchable, One, Saturating, UniqueSaturatedInto, Zero},
+    traits::{DispatchInfoOf, Dispatchable, One, Saturating, UniqueSaturatedInto, Zero},
+    transaction_validity::{InvalidTransaction, TransactionValidity, TransactionValidityError},
     RuntimeDebug, SaturatedConversion,
 };
 use sp_std::{marker::PhantomData, prelude::*};
@@ -82,72 +83,56 @@ impl<O: Into<Result<RawOrigin, O>> + From<RawOrigin>> EnsureOrigin<O>
     }
 }
 
-// impl<T> Call<T>
-// where
-// 	OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
-// 	T: Send + Sync + Config,
-// 	T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
-// {
-// 	pub fn is_self_contained(&self) -> bool {
-// 		matches!(self, Call::transact { .. })
-// 	}
+// TODO refactor (this is taken from pallet_ethereum as is for now)
+impl<T> Call<T>
+where
+    OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
+    T: Send + Sync + Config,
+    T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
+    T::AccountId: From<sp_core::H160>,
+    BalanceOf<T>: TryFrom<sp_core::U256>,
+{
+    pub fn is_self_contained(&self) -> bool {
+        matches!(self, Call::transact { .. })
+    }
 
-// 	pub fn check_self_contained(&self) -> Option<Result<H160, TransactionValidityError>> {
-// 		if let Call::transact { transaction } = self {
-// 			let check = || {
-// 				let origin = Pallet::<T>::recover_signer(transaction).ok_or(
-// 					InvalidTransaction::Custom(TransactionValidationError::InvalidSignature as u8),
-// 				)?;
+    pub fn check_self_contained(&self) -> Option<Result<H160, TransactionValidityError>> {
+        if let Call::transact { tx } = self {
+            let check = || {
+                // TODO change error to proper one (add to primitives as it was in pallet_ethereum?)
+                let origin = Pallet::<T>::extract_tx_fields(tx)
+                    .0
+                    .ok_or(InvalidTransaction::Custom(42u8))?;
 
-// 				Ok(origin)
-// 			};
+                Ok(origin)
+            };
 
-// 			Some(check())
-// 		} else {
-// 			None
-// 		}
-// 	}
+            Some(check())
+        } else {
+            None
+        }
+    }
 
-// 	pub fn pre_dispatch_self_contained(
-// 		&self,
-// 		origin: &H160,
-// 		dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
-// 		len: usize,
-// 	) -> Option<Result<(), TransactionValidityError>> {
-// 		if let Call::transact { transaction } = self {
-// 			if let Err(e) = CheckWeight::<T>::do_pre_dispatch(dispatch_info, len) {
-// 				return Some(Err(e));
-// 			}
+    pub fn pre_dispatch_self_contained(
+        &self,
+        origin: &H160,
+        dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
+        len: usize,
+    ) -> Option<Result<(), TransactionValidityError>> {
+        // TODO: do we need this fn at all??
+        None
+    }
 
-// 			Some(Pallet::<T>::validate_transaction_in_block(
-// 				*origin,
-// 				transaction,
-// 			))
-// 		} else {
-// 			None
-// 		}
-// 	}
-
-// 	pub fn validate_self_contained(
-// 		&self,
-// 		origin: &H160,
-// 		dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
-// 		len: usize,
-// 	) -> Option<TransactionValidity> {
-// 		if let Call::transact { transaction } = self {
-// 			if let Err(e) = CheckWeight::<T>::do_validate(dispatch_info, len) {
-// 				return Some(Err(e));
-// 			}
-
-// 			Some(Pallet::<T>::validate_transaction_in_pool(
-// 				*origin,
-// 				transaction,
-// 			))
-// 		} else {
-// 			None
-// 		}
-// 	}
-// }
+    pub fn validate_self_contained(
+        &self,
+        origin: &H160,
+        dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
+        len: usize,
+    ) -> Option<TransactionValidity> {
+        // TODO: do we need this fn at all??
+        None
+    }
+}
 
 pub use self::pallet::*;
 

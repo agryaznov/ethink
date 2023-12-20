@@ -49,10 +49,12 @@ pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/agryazn
 pallet-contracts = { workspace = true }
 pallet-contracts-primitives = { workspace = true }
 
+
 # PolkaMask
 pmp-rpc = { workspace = true }
 pmp-account = { workspace = true }
 pallet-polkamask = { workspace = true }
+pmp-self-contained = { workspace = true, features = ["serde"] }
 
 [build-dependencies]
 substrate-wasm-builder =  { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", optional = true }
@@ -92,4 +94,5 @@ std = [
 	"substrate-wasm-builder",
 	"pmp-rpc/std",
 	"pmp-account/std",
+	"pmp-self-contained/std",
 ]
