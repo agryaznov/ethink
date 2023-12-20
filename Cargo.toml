@@ -28,6 +28,7 @@ libsecp256k1 = { version = "0.7.1", default-features = false }
 log = { version = "0.4.19", default-features = false }
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 rlp = { version = "0.5.2", default-features = false }
+futures = "0.3.28"
 
 # Substrate
 sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}

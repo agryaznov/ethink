@@ -191,7 +191,7 @@ pub mod pallet {
         #[pallet::weight(42)]
         // TODO think about weight
         pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
-            //			let source = ensure_ethereum_transaction(origin)?;
+            //let source = ensure_ethereum_transaction(origin)?;
 
             let (from, to, value) = Self::extract_tx_fields(&tx);
 
@@ -205,6 +205,8 @@ pub mod pallet {
 
             T::Currency::transfer(&from, &to, value, preservation)
                 .map_err(|_| Error::<T>::TransferFailed)?;
+
+            log::error!(target: "polkamask", "WHOHOOOOO, SENT {:?}!", &value);
 
             Ok(())
         }

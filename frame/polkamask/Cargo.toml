@@ -17,6 +17,7 @@ sp-io = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
 sp-std = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
+log = { workspace = true }
 
 [dev-dependencies]
 hex = { workspace = true, default-features = false }

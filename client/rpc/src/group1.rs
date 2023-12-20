@@ -1,5 +1,7 @@
 use super::*;
 use crate::CallRequest;
+use futures::future::TryFutureExt;
+use sp_runtime::{generic::BlockId, transaction_validity::TransactionSource};
 
 impl<B, C, P> Duck<B, C, P>
 where
@@ -73,17 +75,23 @@ where
         if slice.is_empty() {
             return Err(internal_err("transaction data is empty"));
         }
+
         let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
             Ok(tx) => tx,
             Err(_) => return Err(internal_err("decode transaction failed")),
         };
+        let tx_hash = tx.hash();
         // Compose extrinsic for submission
-        let _extrinsic = match self.client.runtime_api().convert_transaction(hash, tx) {
+        let extrinsic = match self.client.runtime_api().convert_transaction(hash, tx) {
             Ok(extrinsic) => extrinsic,
             Err(_) => return Err(internal_err("cannot access runtime api")),
         };
 
-        Ok(H256::zero())
+        self.pool
+            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
+            .map_ok(move |_| tx_hash)
+            .map_err(internal_err)
+            .await
     }
 
     pub async fn estimate_gas(

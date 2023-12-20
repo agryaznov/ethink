@@ -10,6 +10,7 @@ ethereum = { workspace = true }
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
 hex = { workspace = true }
 log = { workspace = true }
+futures = { workspace = true }
 
 # Polkamask
 pmp-rpc = { workspace = true, features = ["default"] }
