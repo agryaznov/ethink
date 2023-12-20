@@ -37,7 +37,9 @@ use scale_info::TypeInfo;
 use sp_core::{H160, H256, U256};
 use sp_runtime::{
     traits::{DispatchInfoOf, Dispatchable, One, Saturating, UniqueSaturatedInto, Zero},
-    transaction_validity::{InvalidTransaction, TransactionValidity, TransactionValidityError},
+    transaction_validity::{
+        InvalidTransaction, TransactionValidity, TransactionValidityError, ValidTransactionBuilder,
+    },
     RuntimeDebug, SaturatedConversion,
 };
 use sp_std::{marker::PhantomData, prelude::*};
@@ -120,7 +122,7 @@ where
         len: usize,
     ) -> Option<Result<(), TransactionValidityError>> {
         // TODO: do we need this fn at all??
-        None
+        Some(Ok(()))
     }
 
     pub fn validate_self_contained(
@@ -129,8 +131,23 @@ where
         dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
         len: usize,
     ) -> Option<TransactionValidity> {
-        // TODO: do we need this fn at all??
-        None
+        if let Call::transact { tx } = self {
+            if let Err(e) = CheckWeight::<T>::do_validate(dispatch_info, len) {
+                return Some(Err(e));
+            }
+            // TODO refactor
+            let tx_nonce = match tx {
+                Transaction::Legacy(t) => t.nonce,
+                Transaction::EIP2930(t) => t.nonce,
+                Transaction::EIP1559(t) => t.nonce,
+            };
+            // TODO: add some proper validation here
+            let mut builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
+
+            Some(builder.build())
+        } else {
+            None
+        }
     }
 }
 
