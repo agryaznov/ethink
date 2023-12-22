@@ -35,6 +35,19 @@ pub struct AccountId20(pub [u8; 20]);
 
 impl_serde::impl_fixed_hash_serde!(AccountId20, 20);
 
+impl AsRef<[u8]> for AccountId20 {
+    fn as_ref(&self) -> &[u8] {
+        &self.0[..]
+    }
+}
+
+impl AsRef<[u8; 20]> for AccountId20 {
+    fn as_ref(&self) -> &[u8; 20] {
+        &self.0
+    }
+}
+
+
 #[cfg(feature = "std")]
 impl std::str::FromStr for AccountId20 {
     type Err = &'static str;
