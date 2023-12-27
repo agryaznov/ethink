@@ -1,7 +1,6 @@
 use hex_literal::hex;
 use polkamask_runtime::{
-    Balance,
-    AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
+    AccountId, AuraConfig, Balance, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
     SudoConfig, SystemConfig, WASM_BINARY,
 };
 use sc_service::ChainType;
@@ -141,7 +140,7 @@ fn testnet_genesis(
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1_000_000*UNITS))
+                .map(|k| (k, 1_000_000 * UNITS))
                 .collect(),
         },
         aura: AuraConfig {

@@ -23,16 +23,18 @@ where
             from, to, value, ..
         } = request;
 
-       log::error!(target: "polkamask", "REQUESTED {:?} to {:?}!", &value, &to);
+        log::error!(target: "polkamask", "REQUESTED {:?} to {:?}!", &value, &to);
 
-        let balance_left = self
+        let _balance_left = self
             .client
             .runtime_api()
-            .call_me(hash, from.unwrap(), to.unwrap(), value.unwrap())
+            .print_xt(hash, to.unwrap(), value.unwrap())
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
 
-        Ok(Bytes::from(balance_left.as_u128().to_be_bytes().to_vec()))
+        //        Ok(Bytes::from(balance_left.as_u128().to_be_bytes().to_vec()))
+
+        Ok(vec![0u8].into())
     }
 
     pub async fn send_transaction(&self, _request: TransactionRequest) -> RpcResult<H256> {

@@ -848,6 +848,27 @@ impl_runtime_apis! {
              )
          }
 
+        // TODO remove
+        // debugging xt decoding issues
+        fn print_xt(to: H160, value: U256) -> Result<(), sp_runtime::DispatchError> {
+           use codec::Encode;
+
+           let acc = AccountId::from(to);
+           let xt = UncheckedExtrinsic::new_unsigned(
+            pallet_contracts::Call::<Runtime>::call {
+                dest: acc.into(),
+                value: value.try_into()?,
+                gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
+                storage_deposit_limit: None,
+                data: vec![99u8, 58u8, 165u8, 81u8],
+            }.into()).encode();
+
+            log::error!(target: "polkamask", "ENCODED XT: {:02x?}", &xt);
+
+            Ok(())
+        }
+
+
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646

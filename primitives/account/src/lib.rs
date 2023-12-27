@@ -47,7 +47,6 @@ impl AsRef<[u8; 20]> for AccountId20 {
     }
 }
 
-
 #[cfg(feature = "std")]
 impl std::str::FromStr for AccountId20 {
     type Err = &'static str;
