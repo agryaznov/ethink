@@ -807,16 +807,18 @@ impl_runtime_apis! {
         /// Unlike Frontier, we don't introduce any new balance system.
         /// We use AccountId20 with the standard pallet_balances as usual.
         fn account_free_balance(address: H160) -> U256 {
-              Balances::free_balance(
+            let bal = Balances::free_balance(
                 &address.into(),
-            ).into()
+            );
+            log::error!(target: "polkamask", "BALANCE of {:?} is {:?}!", &address, &bal);
+            bal.into()
         }
         /// Account nonce
         fn nonce(address: H160) -> U256 {
             System::account_nonce(AccountId::from(address)).into()
         }
         /// Call
-        fn call(
+        fn call_me(
             from: H160,
             to: H160,
             value: U256,
@@ -827,7 +829,12 @@ impl_runtime_apis! {
             // TODO: ensure_signed?
             let source = AccountId::from(from);
             let dest = AccountId::from(to);
+            log::error!(target: "polkamask", "SENDING {:?} to {:?}!", &value, &dest);
+            // TODO this WILL NOT change state!
+            // in order to make real transfer, we gotta compose Extrinsic here!!
             <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
+            log::error!(target: "polkamask", "SENTTTTT {:?} to {:?}!", &value, &dest);
+
             Ok(Balances::free_balance(
                 &source,
             ).into())

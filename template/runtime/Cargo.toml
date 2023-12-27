@@ -49,6 +49,9 @@ pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/agryazn
 pallet-contracts = { workspace = true }
 pallet-contracts-primitives = { workspace = true }
 
+# TODO remove
+log = { workspace = true }
+
 
 # PolkaMask
 pmp-rpc = { workspace = true }

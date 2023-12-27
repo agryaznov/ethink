@@ -208,7 +208,7 @@ pub mod pallet {
             T::Currency::transfer(&from, &to, value, preservation)
                 .map_err(|_| Error::<T>::TransferFailed)?;
 
-            log::error!(target: "polkamask", "WHOHOOOOO, SENT {:?}!", &value);
+            log::error!(target: "polkamask", "WHOHOOOOO, SENT {:?} to {:?}!", &value, &to);
 
             Ok(())
         }

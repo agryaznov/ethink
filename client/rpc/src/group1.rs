@@ -23,10 +23,12 @@ where
             from, to, value, ..
         } = request;
 
+       log::error!(target: "polkamask", "REQUESTED {:?} to {:?}!", &value, &to);
+
         let balance_left = self
             .client
             .runtime_api()
-            .call(hash, from.unwrap(), to.unwrap(), value.unwrap())
+            .call_me(hash, from.unwrap(), to.unwrap(), value.unwrap())
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
 

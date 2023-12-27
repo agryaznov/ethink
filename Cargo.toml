@@ -12,6 +12,7 @@ members = [
     "primitives/account",
     "frame/polkamask",
 ]
+exclude = [ "contracts/flipper.ink" ]
 resolver = "2"
 
 [workspace.dependencies]

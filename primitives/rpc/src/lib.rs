@@ -128,7 +128,7 @@ sp_api::decl_runtime_apis! {
         /// Returns account nonce.
         fn nonce(address: H160) -> U256;
         /// Call
-        fn call(
+        fn call_me(
             from: H160,
             to: H160,
             value: U256,

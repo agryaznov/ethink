@@ -1,5 +1,6 @@
 use hex_literal::hex;
 use polkamask_runtime::{
+    Balance,
     AccountId, AuraConfig, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
     SudoConfig, SystemConfig, WASM_BINARY,
 };
@@ -120,6 +121,8 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
     ))
 }
 
+const UNITS: Balance = 1_000_000_000_000_000_000;
+
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
     wasm_binary: &[u8],
@@ -135,11 +138,10 @@ fn testnet_genesis(
             ..Default::default()
         },
         balances: BalancesConfig {
-            // Configure endowed accounts with initial balance of 1 << 60.
             balances: endowed_accounts
                 .iter()
                 .cloned()
-                .map(|k| (k, 1 << 60))
+                .map(|k| (k, 1_000_000*UNITS))
                 .collect(),
         },
         aura: AuraConfig {
