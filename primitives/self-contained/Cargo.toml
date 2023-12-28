@@ -16,6 +16,10 @@ serde = { workspace = true, optional = true }
 frame-support = { workspace = true }
 sp-runtime = { workspace = true }
 
+# TODO remove dbg
+log = { workspace = true }
+
+
 [features]
 default = ["std"]
 std = [
