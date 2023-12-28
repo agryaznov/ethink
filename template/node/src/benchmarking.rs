@@ -123,16 +123,16 @@ pub fn create_benchmark_extrinsic(
         .unwrap_or(2) as u64;
     let extra: runtime::SignedExtra = (
         frame_system::CheckNonZeroSender::<runtime::Runtime>::new(),
-        frame_system::CheckSpecVersion::<runtime::Runtime>::new(),
-        frame_system::CheckTxVersion::<runtime::Runtime>::new(),
-        frame_system::CheckGenesis::<runtime::Runtime>::new(),
-        frame_system::CheckEra::<runtime::Runtime>::from(sp_runtime::generic::Era::mortal(
-            period,
-            best_block.saturated_into(),
-        )),
-        frame_system::CheckNonce::<runtime::Runtime>::from(nonce),
-        frame_system::CheckWeight::<runtime::Runtime>::new(),
-        pallet_transaction_payment::ChargeTransactionPayment::<runtime::Runtime>::from(0),
+        // frame_system::CheckSpecVersion::<runtime::Runtime>::new(),
+        // frame_system::CheckTxVersion::<runtime::Runtime>::new(),
+        // frame_system::CheckGenesis::<runtime::Runtime>::new(),
+        // frame_system::CheckEra::<runtime::Runtime>::from(sp_runtime::generic::Era::mortal(
+        //     period,
+        //     best_block.saturated_into(),
+        // )),
+        // frame_system::CheckNonce::<runtime::Runtime>::from(nonce),
+        // frame_system::CheckWeight::<runtime::Runtime>::new(),
+        // pallet_transaction_payment::ChargeTransactionPayment::<runtime::Runtime>::from(0),
     );
 
     let raw_payload = runtime::SignedPayload::from_raw(
@@ -140,13 +140,13 @@ pub fn create_benchmark_extrinsic(
         extra.clone(),
         (
             (),
-            runtime::VERSION.spec_version,
-            runtime::VERSION.transaction_version,
-            genesis_hash,
-            best_hash,
-            (),
-            (),
-            (),
+            // runtime::VERSION.spec_version,
+            // runtime::VERSION.transaction_version,
+            // genesis_hash,
+            // best_hash,
+            // (),
+            // (),
+            // (),
         ),
     );
     let signature = raw_payload.using_encoded(|e| sender.sign(e));
