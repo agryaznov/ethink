@@ -157,6 +157,20 @@ impl EthereumSignature {
     pub fn new(s: ecdsa::Signature) -> Self {
         EthereumSignature(s)
     }
+
+    pub fn from_raw(d: [u8; 65]) -> Self {
+        Self::new(ecdsa::Signature::from_raw(d))
+    }
+
+    // TODO remove, its dbg helper
+    pub fn dummy() -> Self {
+        let mut bytes = [0u8; 65];
+        hex::decode_to_slice("8e8d7354591bd8010e62ee99027944049d48a62be08cad8c38252ea437310c744a937786126cf471758131b9f48df1e51303b965bbeb3ad28bcffe6eb96635e001",
+             &mut bytes as &mut [u8]
+        ).unwrap();
+        let s = ecdsa::Signature::from_slice(&bytes).unwrap();
+        EthereumSignature(s)
+    }
 }
 
 #[derive(

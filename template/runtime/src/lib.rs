@@ -474,16 +474,8 @@ pub type Header = generic::Header<BlockNumber, BlakeTwo256>;
 /// Block type as expected by this runtime.
 pub type Block = generic::Block<Header, UncheckedExtrinsic>;
 /// The SignedExtension to the basic transaction logic.
-pub type SignedExtra = (
-    frame_system::CheckNonZeroSender<Runtime>,
-    frame_system::CheckSpecVersion<Runtime>,
-    frame_system::CheckTxVersion<Runtime>,
-    frame_system::CheckGenesis<Runtime>,
-    frame_system::CheckEra<Runtime>,
-    frame_system::CheckNonce<Runtime>,
-    frame_system::CheckWeight<Runtime>,
-    pallet_transaction_payment::ChargeTransactionPayment<Runtime>,
-);
+// TODO for now made it the simplest one, need to revert it later
+pub type SignedExtra = (frame_system::CheckNonZeroSender<Runtime>,);
 /// The payload being signed in transactions.
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 
@@ -850,13 +842,15 @@ impl_runtime_apis! {
 
         // TODO remove
         // debugging xt decoding issues
-        fn print_xt(to: H160, value: U256) -> Result<(), sp_runtime::DispatchError> {
+        fn print_xt(from: H160, to: H160, value: U256) -> Result<(), sp_runtime::DispatchError> {
            use codec::Encode;
 
-           let acc = AccountId::from(to);
+           let to = AccountId::from(to);
+            let from = AccountId::from(from);
+
            let xt = UncheckedExtrinsic::new_unsigned(
             pallet_contracts::Call::<Runtime>::call {
-                dest: acc.into(),
+                dest: to.clone().into(),
                 value: value.try_into()?,
                 gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
                 storage_deposit_limit: None,
@@ -865,6 +859,28 @@ impl_runtime_apis! {
 
             log::error!(target: "polkamask", "ENCODED XT: {:02x?}", &xt);
 
+
+            let extra: SignedExtra =
+                (
+                    frame_system::CheckNonZeroSender::<Runtime>::new(),
+                );
+
+           let sig = EthereumSignature::dummy();
+
+           let xt = UncheckedExtrinsic::new_signed(
+            pallet_contracts::Call::<Runtime>::call {
+                dest: to.into(),
+                value: value.try_into()?,
+                gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
+                storage_deposit_limit: None,
+                data: vec![99u8, 58u8, 165u8, 81u8],
+            }.into(),
+               from.into(),
+               sig,
+               extra,
+           ).encode();
+
+            log::error!(target: "polkamask", "ENCODED SIGNED XT: {:02x?}", &xt);
             Ok(())
         }
 
