@@ -127,26 +127,42 @@ impl From<ecdsa::Public> for AccountId20 {
     }
 }
 
-#[derive(Eq, PartialEq, Clone, RuntimeDebug, Encode, Decode, TypeInfo)]
+#[derive(Eq, PartialEq, Clone, Encode, Decode, MaxEncodedLen, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
-pub struct EthereumSignature(ecdsa::Signature);
+pub struct EthereumSignature(pub ecdsa::Signature);
+
+impl sp_std::fmt::Debug for EthereumSignature {
+    fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
+        write!(f, "{:02x?}", &self.0.0)
+    }
+}
+
 
 impl sp_runtime::traits::Verify for EthereumSignature {
     type Signer = EthereumSigner;
     fn verify<L: sp_runtime::traits::Lazy<[u8]>>(&self, mut msg: L, signer: &AccountId20) -> bool {
         let m = keccak_256(msg.get());
+        log::error!(target: "runtime", "<><><><><! VERIFYING SIGNATURE: {:?}", &self);
         match sp_io::crypto::secp256k1_ecdsa_recover(self.0.as_ref(), &m) {
-            Ok(pubkey) => AccountId20(H160::from(H256::from(keccak_256(&pubkey))).0) == *signer,
+            Ok(pubkey) => {
+                let a = AccountId20(H160::from(H256::from(keccak_256(&pubkey))).0);
+                let r = a == *signer;
+                if !r {
+                    log::error!(target: "runtime", "<><><><><! SIGNER ACCOUNT EXPECTED: {:?}", &signer);
+                    log::error!(target: "runtime", "<><><><><! SIGNER ACCOUNT EXTRACTED: {:?}", &a);
+                };
+                r
+            },
             Err(sp_io::EcdsaVerifyError::BadRS) => {
-                log::error!(target: "evm", "Error recovering: Incorrect value of R or S");
+                log::error!(target: "runtime", "Error recovering: Incorrect value of R or S");
                 false
             }
             Err(sp_io::EcdsaVerifyError::BadV) => {
-                log::error!(target: "evm", "Error recovering: Incorrect value of V");
+                log::error!(target: "runtime", "Error recovering: Incorrect value of V");
                 false
             }
             Err(sp_io::EcdsaVerifyError::BadSignature) => {
-                log::error!(target: "evm", "Error recovering: Invalid signature");
+                log::error!(target: "runtime", "Error recovering: Invalid signature");
                 false
             }
         }

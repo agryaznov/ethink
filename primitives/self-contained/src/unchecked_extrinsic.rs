@@ -34,7 +34,7 @@ use crate::{CheckedExtrinsic, CheckedSignature, SelfContainedCall};
 
 /// A extrinsic right from the external world. This is unchecked and so
 /// can contain a signature.
-#[derive(PartialEq, Eq, Clone, Encode, Decode, RuntimeDebug, TypeInfo)]
+#[derive(PartialEq, Eq, Clone, Encode, Decode, Debug, TypeInfo)]
 pub struct UncheckedExtrinsic<Address, Call, Signature, Extra: SignedExtension>(
     pub sp_runtime::generic::UncheckedExtrinsic<Address, Call, Signature, Extra>,
 );
@@ -112,7 +112,13 @@ where
                 function: self.0.function,
             })
         } else {
-            let checked = Checkable::<Lookup>::check(self.0, lookup)?;
+            if let Some(ref s) = self.0.signature {
+                log::error!(target: "pmp_self_contained", "----------> I AM THE SIG inside UXTS: -->{:?}<--", &s.1);
+            }
+            let checked = Checkable::<Lookup>::check(self.0, lookup).map_err(|e| {
+                log::error!(target: "pmp_self_contained", "BAD SIGNATURE!!!!");
+                e
+            })?;
             Ok(CheckedExtrinsic {
                 signed: match checked.signed {
                     Some((id, extra)) => CheckedSignature::Signed(id, extra),
