@@ -17,8 +17,7 @@ pmp-rpc = { workspace = true, features = ["default"] }
 pmp-account = { workspace = true, features = ["default"] }
 mappings = { workspace = true, features = ["default"] }
 
-# Frontier
-fc-rpc-core = { workspace = true }
+polkamask-rpc-core = { workspace = true }
 
 # Substrate
 sp-io = { workspace = true, default-features = false }
@@ -28,6 +27,8 @@ sp-blockchain = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 sc-client-api = { workspace = true, default-features = false }
 sc-transaction-pool-api = { workspace = true }
+sc-network = { workspace = true }
+sc-network-common = { workspace = true }
 pallet-balances = { workspace = true }
 
 

@@ -2067,19 +2067,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "25cbce373ec4653f1a01a31e8a5e5ec0c622dc27ff9c4e6606eefef5cbbed4a5"
 
 [[package]]
-name = "fc-rpc-core"
-version = "1.1.0-dev"
-source = "git+https://github.com/paritytech/frontier?rev=c4ef2fe7#c4ef2fe71a87021be8b9757d597adfc836d0109c"
-dependencies = [
- "ethereum",
- "ethereum-types",
- "jsonrpsee",
- "rustc-hex",
- "serde",
- "serde_json",
-]
-
-[[package]]
 name = "fdlimit"
 version = "0.2.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -4148,7 +4135,7 @@ name = "mappings"
 version = "0.1.0"
 dependencies = [
  "ethereum-types",
- "fc-rpc-core",
+ "polkamask-rpc-core",
  "sp-core",
  "sp-runtime",
 ]
@@ -5315,7 +5302,6 @@ version = "0.1.0"
 dependencies = [
  "ethereum",
  "ethereum-types",
- "fc-rpc-core",
  "futures",
  "hex",
  "jsonrpsee",
@@ -5324,13 +5310,28 @@ dependencies = [
  "pallet-balances",
  "pmp-account",
  "pmp-rpc",
+ "polkamask-rpc-core",
  "sc-client-api",
+ "sc-network",
+ "sc-network-common",
  "sc-transaction-pool-api",
  "sp-api",
  "sp-blockchain",
  "sp-core",
  "sp-io",
  "sp-runtime",
+]
+
+[[package]]
+name = "polkamask-rpc-core"
+version = "1.1.0-dev"
+dependencies = [
+ "ethereum",
+ "ethereum-types",
+ "jsonrpsee",
+ "rustc-hex",
+ "serde",
+ "serde_json",
 ]
 
 [[package]]
