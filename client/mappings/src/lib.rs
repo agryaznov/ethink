@@ -1,7 +1,7 @@
-pub use fc_rpc_core::types::Block as EthBlock;
+pub use polkamask_rpc_core::types::Block as EthBlock;
 
 use ethereum_types::{H256, U256};
-use fc_rpc_core::types::{BlockTransactions as EthBlockTxs, Header as EthHeader};
+use polkamask_rpc_core::types::{BlockTransactions as EthBlockTxs, Header as EthHeader};
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
 
 pub struct SubBlock<B>(pub B);

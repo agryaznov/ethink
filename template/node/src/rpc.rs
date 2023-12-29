@@ -60,7 +60,7 @@ where
     module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
 
     // Eth RPC
-    module.merge(Duck::new(client, pool).into_rpc())?;
+    module.merge(Duck::new(client.clone(), pool).into_rpc())?;
 
     // Extend this RPC with a custom API by using the following syntax.
     // `YourRpcStruct` should have a reference to a client, which is needed

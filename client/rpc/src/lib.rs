@@ -6,8 +6,8 @@ mod group5;
 
 use ethereum::TransactionV2 as EthTx;
 use ethereum_types::{H160, H256, H64, U256, U64};
-use fc_rpc_core::types::*;
-pub use fc_rpc_core::EthApiServer;
+use polkamask_rpc_core::types::*;
+pub use polkamask_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use pmp_rpc::ETHRuntimeRPC;
 use sc_client_api::BlockBackend;
@@ -154,6 +154,10 @@ where
 
     fn chain_id(&self) -> RpcResult<Option<U64>> {
         self.chain_id()
+    }
+
+	fn version(&self) -> RpcResult<String> {
+        Ok(String::from("1703871830822"))
     }
 
     async fn code_at(&self, address: H160, number: Option<BlockNumber>) -> RpcResult<Bytes> {
