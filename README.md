@@ -8,7 +8,7 @@ This project is an **experimental** add-on to pallet_contracts to make it Ethere
 
 ## Quickstart 
 
-Start the polkamask development node 
+Start the Polkamask development node 
 
 ```bash
 
@@ -17,12 +17,26 @@ cargo run -- --dev
 
 Open your MetaMask and add a new network:
 
-+ **Network name**: Duck 🦆 
++ **Network name**: 🦆 
 + **New RPC URL**: http://localhost:9944
 + **Chain ID**: 42
 + **Currency symbol**: 🥚
 
-That's it! You now should be able to communicate with the duck chain using your MetaMask right away. You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
+Also import add the *well-known* development accounts: 
+
+- *Alith*: 
+
+   + AccountId: `0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac`
+   + Private Key: `0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133`
+
+- *Goliath*: 
+
+   + AccountId: `0x7BF369283338E12C90514468aa3868A551AB2929`
+   + Private Key: `0x96b8a38e12e1a31dee1eab2fffdf9d9990045f5b37e44d8cc27766ef294acf18`
+
+**Note**: it is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated [browser profile](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
+
+That's it! You now should be able to communicate with the Duck chain using your MetaMask right away. You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
 
 ## Project Goals
 
