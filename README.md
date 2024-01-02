@@ -1,10 +1,12 @@
 > [!WARNING]
-> this is WIP, everything is quite far from working as expected. 
+> This is a **Proof Of Concept**, not intended to be used in production!!
 # The Polka🎭Mask
 
 ## What's this?
 
 This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](https://github.com/paritytech/polkadot-sdk/tree/master/substrate/frame/contracts) to make it Ethereum RPC -compatible.
+
+In a nutshell, it allows your parachain users to call <a href="https://use.ink/" target="_blank">**ink!**</a> smart contracts via <a href="https://metamask.io/" target="_blank">**MetaMask**</a>. 
 
 ## Quickstart 
 
@@ -37,7 +39,35 @@ Also import add the *well-known* development accounts:
 > [!CAUTION]
 > It is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated [browser profile](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
 
-That's it! You now should be able to communicate with the Duck chain using your MetaMask right away. You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
+That's it! You should right away be able to communicate with the Duck chain using your MetaMask. Let's try it as described in the following section. 
+
+## Demo Case 
+
+Our little demo consists of three basic actions we complete on our Substrate-based 🦆 network using *MetaMask*:
+
+1. **Send tokens around with the MetaMask UI controls solely.**
+
+   This is the simplest one as we already have everything set up to do this. 
+   Once launched the Polkamask node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith** account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
+
+2. **Send tokens via web3js-based dApp used with MetaMask for signing transactions**.
+3. **Call ink! smart contract via web3js-based dApp used with MetaMask for signing transactions**.
+
+For the actions 2,3 we have a simple [dApp](/dapp) which consists of a static web page ([index.html](/dapp/index.html)) and of course our **ink!** [contract](/dapp/contracts/flipper.ink/). This needs a bit of preparatory job to be done to set things up first.
+
+
+### Set Up 
+
+`TBD`
+
+### Run 
+
+`TBD`
+
+
+
+`TODO` put this to links: 
+You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
 
 ## Project Goals
 
@@ -45,6 +75,8 @@ That's it! You now should be able to communicate with the Duck chain using your 
 - Prototype stage target is to provide means for making the same thing possible with any ink! contract (which would still require some work to be done by Dapp developer).
 
 ## Plan & Status
+
+`TODO` update 
 
 1. [x] Basic mocked Eth RPC + boilerplate node which you can connect your MetaMask (MM) to.
 2. [ ] Ethereum block emulation, to make MM satisfied with the `eth_getBlockByNumber()` response.  

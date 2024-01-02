@@ -28,32 +28,29 @@ where
         Ok(None)
     }
 
-    // NOTE: !!! tx_hash in polkadot is not unique... block_hash ++ tx_hash is unique
-    // so as for now we will just return first (of possible many) found receipt for the provided tx_hash
+    // NOTE: tx_hash in Polkadot is not unique... block_hash ++ tx_hash is unique.
+    // Anyway for now we generate a fake receipt just to provide some response to MetaMask queries.
     pub async fn transaction_receipt(&self, hash: H256) -> RpcResult<Option<Receipt>> {
-        // For now we generate fake receipt just to provide some response to MM queries
+        let transaction_hash = Some(hash);
+        // Always answer as if:
+        // the tx was successfully included
+        let status_code = Some(1u64.into());
+        // into the recent block
         let block_hash = Some(self.client.info().best_hash);
         let block_number = Some(
             UniqueSaturatedInto::<u128>::unique_saturated_into(self.client.info().best_number)
                 .into(),
         );
+        // with tx_id = 1
+        let transaction_index = Some(1.into());
 
         Ok(Some(Receipt {
-            transaction_hash: Some(hash),
-            transaction_index: Some(1.into()),
+            transaction_hash,
+            transaction_index,
+            status_code,
             block_hash,
             block_number,
-            from: Default::default(),
-            to: Default::default(),
-            state_root: Default::default(),
-            transaction_type: Default::default(),
-            contract_address: Default::default(),
-            cumulative_gas_used: Default::default(),
-            gas_used: Default::default(),
-            logs: Default::default(),
-            logs_bloom: Default::default(),
-            status_code: Default::default(),
-            effective_gas_price: Default::default(),
+            ..Default::default()
         }))
     }
 }
