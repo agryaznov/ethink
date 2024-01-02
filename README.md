@@ -1,12 +1,16 @@
 > [!WARNING]
-> This is a **Proof Of Concept**, not intended to be used in production!!
-# The Polka🎭Mask
+> This is a **Proof Of Concept**, not (*yet*) intended for production use!!
 
-## What's this?
+<div align="center">
+    <img src=".images/ink+mm.png" alt="ink! + MetaMask logo" />
+</div>
+
+# The Polka🎭Mask
 
 This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](https://github.com/paritytech/polkadot-sdk/tree/master/substrate/frame/contracts) to make it Ethereum RPC -compatible.
 
-In a nutshell, it allows your parachain users to call <a href="https://use.ink/" target="_blank">**ink!**</a> smart contracts via <a href="https://metamask.io/" target="_blank">**MetaMask**</a>. 
+> [!TIP]
+>**In a nutshell**, it allows your parachain users to **call <a href="https://use.ink/" target="_blank">_ink!_</a> smart contracts via <a href="https://metamask.io/" target="_blank">_MetaMask_**</a>. 
 
 ## Quickstart 
 
@@ -19,7 +23,7 @@ cargo run -- --dev
 
 Open your MetaMask and add a new network:
 
-+ **Network name**: 🦆 
++ **Network name**: Duck 🦆 
 + **New RPC URL**: http://localhost:9944
 + **Chain ID**: 42
 + **Currency symbol**: 🥚
@@ -37,37 +41,45 @@ Also import add the *well-known* development accounts:
    + Private Key: `0x96b8a38e12e1a31dee1eab2fffdf9d9990045f5b37e44d8cc27766ef294acf18`
 
 > [!CAUTION]
-> It is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated [browser profile](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
+> It is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated <a href="https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data" target="_blank">browser profile</a>), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
 
-That's it! You should right away be able to communicate with the Duck chain using your MetaMask. Let's try it as described in the following section. 
+**That's it!** You should right away be able to communicate with the Duck 🦆 chain using your MetaMask. Let's try it as described in the following section. 
 
-## Demo Case 
+## Demo 🧐
 
-Our little demo consists of three basic actions we complete on our Substrate-based 🦆 network using *MetaMask*:
+Our little demo consists of the three basic actions we complete on our *Substrate*-based 🦆 network using *MetaMask*:
 
-1. **Send tokens around with the MetaMask UI controls solely.**
+1. **👛 Transfer tokens**  
+   with the MetaMask UI controls solely.
 
-   This is the simplest one as we already have everything set up to do this. 
-   Once launched the Polkamask node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith** account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
+   This is the simplest action as we already have everything set up to do this. 
+   Once launched the Polkamask node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith* account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
 
-2. **Send tokens via web3js-based dApp used with MetaMask for signing transactions**.
-3. **Call ink! smart contract via web3js-based dApp used with MetaMask for signing transactions**.
+2. **⚡ dApp (simple): tokens transfer**  
+   via *web3js*-based dApp used with MetaMask for signing transactions.
+   
+3. **🚀 dApp (advanced): ink! + MetaMask**  
+   call *ink!* smart contract via *web3js*-based dApp using  *MetaMask* for signing transactions.
 
-For the actions 2,3 we have a simple [dApp](/dapp) which consists of a static web page ([index.html](/dapp/index.html)) and of course our **ink!** [contract](/dapp/contracts/flipper.ink/). This needs a bit of preparatory job to be done to set things up first.
+For the actions 2,3 we have a simple [dApp](/dapp) which consists of a static [web page](/dapp/index.html) and of course our [**ink!** contract](/dapp/contracts/flipper.ink/). This needs a bit of preparatory job to be done to set things up first.
 
 
 ### Set Up 
 
 `TBD`
 
+1. Build contract 
+2. Deploy contract
+3. Contract address to dApp code.
+
 ### Run 
 
 `TBD`
 
+1. Check contract state via CC/PJS
+2. Call contract via MM
+2. Check contract state via CC/PJS
 
-
-`TODO` put this to links: 
-You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
 
 ## Project Goals
 
@@ -111,4 +123,4 @@ You can also make requests to the exposed Ethereum RPC using provided [request t
 ## Useful stuff 
 
 - The [table](docs/mapping.md) with all RPC methods needed and their description.
-- [Here](docs/rpc_requests.md) are all RPC requests in curl (for testing). 
+- Collection of *curl* composed [request templates](docs/rpc_requests.md) to Ethereum RPC exposed by Polkamask node. 
