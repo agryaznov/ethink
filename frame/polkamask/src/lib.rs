@@ -191,10 +191,10 @@ pub mod pallet {
         #[pallet::call_index(0)]
         // TODO weight
         #[pallet::weight(42)]
-        // TODO think about weight
         pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
             //let source = ensure_ethereum_transaction(origin)?;
 
+            log::error!(target: "polkamask:pallet", "Received Eth Tx: {:?}", &tx);
             let (from, to, value) = Self::extract_tx_fields(&tx);
 
             let from = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
@@ -205,10 +205,16 @@ pub mod pallet {
             // TODO think which one is appropriate here
             let preservation = Preservation::Protect;
 
-            T::Currency::transfer(&from, &to, value, preservation)
-                .map_err(|_| Error::<T>::TransferFailed)?;
+            log::error!(target: "polkamask:pallet", "From {:?}", &from);
+            log::error!(target: "polkamask:pallet", "To {:?}", &to);
+            log::error!(target: "polkamask:pallet", "Value {:?}", &value);
 
-            log::error!(target: "polkamask", "WHOHOOOOO, SENT {:?} to {:?}!", &value, &to);
+            T::Currency::transfer(&from, &to, value, preservation).map_err(|e| {
+                log::error!(target: "polkamask:pallet", "Trnasfer Failed: {:?}", &e);
+                Error::<T>::TransferFailed
+            })?;
+
+            log::error!(target: "polkamask:pallet", "WHOHOOOOO, SENT {:?} to {:?}!", &value, &to);
 
             Ok(())
         }

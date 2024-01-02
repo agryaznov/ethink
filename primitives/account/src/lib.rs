@@ -133,10 +133,9 @@ pub struct EthereumSignature(pub ecdsa::Signature);
 
 impl sp_std::fmt::Debug for EthereumSignature {
     fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
-        write!(f, "{:02x?}", &self.0.0)
+        write!(f, "{:02x?}", &self.0 .0)
     }
 }
-
 
 impl sp_runtime::traits::Verify for EthereumSignature {
     type Signer = EthereumSigner;
@@ -152,7 +151,7 @@ impl sp_runtime::traits::Verify for EthereumSignature {
                     log::error!(target: "runtime", "<><><><><! SIGNER ACCOUNT EXTRACTED: {:?}", &a);
                 };
                 r
-            },
+            }
             Err(sp_io::EcdsaVerifyError::BadRS) => {
                 log::error!(target: "runtime", "Error recovering: Incorrect value of R or S");
                 false

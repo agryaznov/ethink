@@ -6,12 +6,13 @@ mod group5;
 
 use ethereum::TransactionV2 as EthTx;
 use ethereum_types::{H160, H256, H64, U256, U64};
-use polkamask_rpc_core::types::*;
-pub use polkamask_rpc_core::EthApiServer;
 use jsonrpsee::core::{async_trait, RpcResult};
 use pmp_rpc::ETHRuntimeRPC;
+use polkamask_rpc_core::types::*;
+pub use polkamask_rpc_core::EthApiServer;
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
+use sp_api::HeaderT;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
@@ -49,6 +50,7 @@ pub struct Duck<B: BlockT, C, P> {
 impl<B, C, P> Duck<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
+    B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
@@ -66,6 +68,7 @@ where
 impl<B, C, P> EthApiServer for Duck<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
+    B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
@@ -156,7 +159,7 @@ where
         self.chain_id()
     }
 
-	fn version(&self) -> RpcResult<String> {
+    fn version(&self) -> RpcResult<String> {
         Ok(String::from("1703871830822"))
     }
 

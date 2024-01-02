@@ -23,12 +23,12 @@ where
             from, to, value, ..
         } = request;
 
-        log::error!(target: "polkamask", "REQUESTED {:?} to {:?}!", &value, &to);
+        log::error!(target: "polkamask", "CALL: {:?} to {:?}!", &value, &to);
 
         let _balance_left = self
             .client
             .runtime_api()
-            .print_xt(hash, from.unwrap(), to.unwrap(), value.unwrap())
+            .print_xt(hash, from.unwrap(), to.unwrap(), value.unwrap_or(0.into()))
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
 
@@ -37,20 +37,19 @@ where
         Ok(vec![0u8].into())
     }
 
-    pub async fn send_transaction(&self, _request: TransactionRequest) -> RpcResult<H256> {
-        // ensure_signer(origin)?
+    pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         // let hash = self.client.info().best_hash;
 
         // let TransactionRequest {
         //     from, to, value, ..
         // } = request;
 
-        // need to make sure our runtime uses Eth signatures
+        // // need to make sure our runtime uses Eth signatures
         // let signer_addr = from;
         // let signature = ;
 
-        // For now we just sending some tokens
-        // In the future, the pallet_contracts call will be constructed here
+        // // For now we just sending some tokens
+        // // In the future, the pallet_contracts call will be constructed here
         // let extrinsic = UncheckedExtrinsic::new_signed(
         // 	pallet_balances::Call::<Runtime>::transfer_allow_death { dest: to }.into(),
         //     signer_addr,
@@ -84,6 +83,8 @@ where
             Ok(tx) => tx,
             Err(_) => return Err(internal_err("decode transaction failed")),
         };
+        log::error!(target: "polkamask:rpc", "SendRawTx REQUEST: {:?}", &tx);
+
         let tx_hash = tx.hash();
         // Compose extrinsic for submission
         let extrinsic = match self.client.runtime_api().convert_transaction(hash, tx) {
