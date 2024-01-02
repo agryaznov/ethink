@@ -4,7 +4,7 @@
 
 ## What's this?
 
-This project is an **experimental** add-on to pallet_contracts to make it Ethereum RPC -compatible.
+This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](https://github.com/paritytech/polkadot-sdk/tree/master/substrate/frame/contracts) to make it Ethereum RPC -compatible.
 
 ## Quickstart 
 
@@ -34,7 +34,8 @@ Also import add the *well-known* development accounts:
    + AccountId: `0x7BF369283338E12C90514468aa3868A551AB2929`
    + Private Key: `0x96b8a38e12e1a31dee1eab2fffdf9d9990045f5b37e44d8cc27766ef294acf18`
 
-**Note**: it is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated [browser profile](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
+> [!CAUTION]
+> It is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated [browser profile](https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data)), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
 
 That's it! You now should be able to communicate with the Duck chain using your MetaMask right away. You can also make requests to the exposed Ethereum RPC using provided [request templates](docs/rpc_requests.md). 
 

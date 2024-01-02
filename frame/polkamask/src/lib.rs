@@ -31,7 +31,7 @@ use frame_support::{
         EnsureOrigin, Get, PalletInfoAccess, Time,
     },
 };
-use frame_system::{pallet_prelude::OriginFor, CheckWeight, WeightInfo};
+use frame_system::{pallet_prelude::OriginFor, CheckWeight, WeightInfo, Pallet as System};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{H160, H256, U256};
@@ -209,11 +209,13 @@ pub mod pallet {
             log::error!(target: "polkamask:pallet", "To {:?}", &to);
             log::error!(target: "polkamask:pallet", "Value {:?}", &value);
 
+
             T::Currency::transfer(&from, &to, value, preservation).map_err(|e| {
                 log::error!(target: "polkamask:pallet", "Trnasfer Failed: {:?}", &e);
                 Error::<T>::TransferFailed
             })?;
 
+            System::<T>::inc_account_nonce(from);
             log::error!(target: "polkamask:pallet", "WHOHOOOOO, SENT {:?} to {:?}!", &value, &to);
 
             Ok(())
