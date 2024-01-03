@@ -13,7 +13,7 @@ members = [
     "primitives/account",
     "frame/polkamask",
 ]
-exclude = [ "contracts/flipper.ink" ]
+exclude = [ "dapp/contracts/flipper.ink" ]
 resolver = "2"
 
 [workspace.dependencies]
