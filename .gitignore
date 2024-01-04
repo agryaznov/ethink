@@ -2,6 +2,6 @@
 .idea
 *.log
 tmp/
-
+bin/
 target
 .projectile

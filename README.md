@@ -14,10 +14,9 @@ This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](
 
 ## Quickstart 
 
-Start the Polkamask development node 
+Start the Polkamask development node: 
 
 ```bash
-
 cargo run -- --dev
 ```
 
@@ -43,34 +42,84 @@ Also import add the *well-known* development accounts:
 > [!CAUTION]
 > It is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated <a href="https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data" target="_blank">browser profile</a>), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
 
-**That's it!** You should right away be able to communicate with the Duck 🦆 chain using your MetaMask. Let's try it as described in the following section. 
+**That's it!** You should right away be able to communicate with the Duck 🦆 chain using your MetaMask. Let's see it in action, as described in the following section. 
 
 ## Demo 🧐
 
-Our little demo consists of the three basic actions we complete on our *Substrate*-based 🦆 network using *MetaMask*:
+Our little demo consists of the three basic actions we complete on our *Substrate*-based 🦆-network using *MetaMask*:
 
-1. **👛 Transfer tokens**  
-   with the MetaMask UI controls solely.
+1. **👛 Transfer tokens**.  
+   With the MetaMask UI controls solely.
 
    This is the simplest action as we already have everything set up to do this. 
    Once launched the Polkamask node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith* account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
 
-2. **⚡ dApp (simple): tokens transfer**  
-   via *web3js*-based dApp used with MetaMask for signing transactions.
+2. **⚡ dApp (simple): tokens transfer**.  
+   Via *web3js*-based dApp used with MetaMask for signing transactions.
    
-3. **🚀 dApp (advanced): ink! + MetaMask**  
-   call *ink!* smart contract via *web3js*-based dApp using  *MetaMask* for signing transactions.
+3. **🚀 dApp (advanced): ink! + MetaMask**.  
+   Call *ink!* smart contract via *web3js*-based dApp using  *MetaMask* for signing transactions.
 
 For the actions 2,3 we have a simple [dApp](/dapp) which consists of a static [web page](/dapp/index.html) and of course our [**ink!** contract](/dapp/contracts/flipper.ink/). This needs a bit of preparatory job to be done to set things up first.
 
 
+### Prepare
+
+Our 🦆-chain has _pallet-contracts_ and at the same time works with _Ethereum_ 20-bytes _Account_ format. The latter fact is required so that our node can understand MetaMask-signed transactions. But for the existing _ink!__ contracts tooling this is an unusual setting, as they're expected to work with 32-bytes long _Accounts_.  
+
+For this reason, to work with our *ink!* contracts on this chain, we use a fork of _cargo-contract_ tool which speaks with our node the same language! Run this command to install it: 
+
+``` bash
+cargo install --git https://github.com/agryaznov/cargo-contract --branch polkamask --force
+```
+
 ### Set Up 
 
-`TBD`
+#### Build contract(s)
 
-1. Build contract 
-2. Deploy contract
-3. Contract address to dApp code.
+**ink! contract**
+
+```bash 
+cd dapp/contracts/flipper.ink
+cargo contract build 
+```
+
+**Solidity contract (optional)**
+
+> [!NOTE]
+> In order to get Ethereum _web3js_ library work with our *ink!* contract, we **gotta make it believe it deals with an Ethereum contract**. 
+> For that, we need to generate a metadata for our contract in the proper format. For the purposes of our PoC demo, we uploaded a ready-to use [JSON file](dapp/contracts/flipper.sol/build/contracts/) for that. Though if you'd like you can install <a href="https://trufflesuite.com/" target="_blank">truffle</a> tool and make it yourself as described below.
+>
+> ❗**Keep in mind** that in the future this step is intended to be done by existing ink! tooling (e.g. _cargo-contract_).
+
+
+``` bash
+cd dapp/contracts/flipper.ink
+truffle build
+```
+
+#### Deploy contract
+
+Make sure you've started the _polkamask-node_:
+
+```bash
+cargo run -- --dev
+```
+
+Then deploy the contract: 
+
+```bash 
+cd dapp/contracts/flipper.ink
+cargo contract deploy
+```
+
+#### Configure dApp
+
+For the demo purposes we made our dApp dead simple. You might need to put correct deployed contract address here in its source code: 
+
+https://github.com/agryaznov/polkamask/blob/f4e2624c0cfce0d77fb9eb980cb9ad44671ee1d4/dapp/client/src/index.js#L20-L24
+
+
 
 ### Run 
 
