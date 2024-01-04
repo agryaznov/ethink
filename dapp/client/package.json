@@ -11,7 +11,11 @@
   "license": "ISC",
   "//": "TODO: EIP-1559 support?",
   "dependencies": {
+    "http-server": "^14.1.1",
     "jquery": "^3.7.1",
     "web3": "^1.4.0"
+  },
+  "scripts": {
+    "start": "./node_modules/.bin/http-server .."
   }
 }
