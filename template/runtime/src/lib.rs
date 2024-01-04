@@ -841,7 +841,6 @@ impl_runtime_apis! {
          fn convert_transaction(
              tx: EthTx,
          ) -> <Block as BlockT>::Extrinsic {
-
             UncheckedExtrinsic::new_unsigned(
                pallet_polkamask::Call::<Runtime>::transact { tx }.into(),
             )

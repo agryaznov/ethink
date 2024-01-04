@@ -57,13 +57,20 @@ pub enum RawOrigin {
     EthereumTransaction(H160),
 }
 
-pub fn ensure_ethereum_transaction<OuterOrigin>(o: OuterOrigin) -> Result<H160, &'static str>
+impl<A: From<H160>> Into<frame_system::RawOrigin<A>> for RawOrigin {
+    fn into(self) -> frame_system::RawOrigin<A> {
+        let Self::EthereumTransaction(acc) = self;
+        frame_system::RawOrigin::<A>::Signed(acc.into())
+    }
+}
+
+pub fn ensure_ethereum_transaction<OuterOrigin>(o: OuterOrigin) -> Result<RawOrigin, &'static str>
 where
     OuterOrigin: Into<Result<RawOrigin, OuterOrigin>>,
 {
-    // TODO check this really verifyes the signature
+    // TODO where the signature get veryfied?
     match o.into() {
-        Ok(RawOrigin::EthereumTransaction(n)) => Ok(n),
+        Ok(raw_origin) => Ok(raw_origin),
         _ => Err("Bad origin: not a valid Ethereum transaction"),
     }
 }
@@ -85,7 +92,6 @@ impl<O: Into<Result<RawOrigin, O>> + From<RawOrigin>> EnsureOrigin<O>
     }
 }
 
-// TODO refactor (this is taken from pallet_ethereum as is for now)
 impl<T> Call<T>
 where
     OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
@@ -207,7 +213,7 @@ pub mod pallet {
         #[pallet::weight(42)]
         pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
             // TODO
-            //let source = ensure_ethereum_transaction(origin)?;
+            let origin: frame_system::RawOrigin::<T::AccountId> = ensure_ethereum_transaction(origin)?.into();
 
             // We received Ethereum transaction,
             // need to route it either as a contract call or jsut a balance transfer
@@ -234,7 +240,7 @@ pub mod pallet {
 
             let call = T::Contracts::construct_call(to, value, data);
             log::error!(target: "polkamask:pallet", "Dispatching Call....");
-            let _ = call.dispatch(origin).map_err(|e| {
+            let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "polkamask:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
