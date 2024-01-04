@@ -483,6 +483,8 @@ impl pallet_contracts::Config for Runtime {
 impl pallet_polkamask::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
+    type Contracts = ContractsExecutor;
+    type Call = RuntimeCall;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
@@ -839,9 +841,10 @@ impl_runtime_apis! {
          fn convert_transaction(
              tx: EthTx,
          ) -> <Block as BlockT>::Extrinsic {
-             UncheckedExtrinsic::new_unsigned(
-                 pallet_polkamask::Call::<Runtime>::transact { tx }.into(),
-             )
+
+            UncheckedExtrinsic::new_unsigned(
+               pallet_polkamask::Call::<Runtime>::transact { tx }.into(),
+            )
          }
 
         // TODO remove
@@ -894,11 +897,37 @@ impl_runtime_apis! {
             log::error!(target: "polkamask", "ENCODED SIGNED XT: {:02x?}", &xt);
             Ok(())
         }
-
-
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646
     }
+}
 
+pub struct ContractsExecutor;
+// TODO better naming
+impl pallet_polkamask::Executor<RuntimeCall> for ContractsExecutor {
+    fn is_contract(who: H160) -> bool {
+        // This could possibly be optimized later with another method which uses
+        // StorageMap::contains_key() instead of StorageMap::get() under the hood.
+        Contracts::code_hash(&who.into()).is_some()
+    }
+
+    fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
+        let dest = sp_runtime::MultiAddress::Id(to.into());
+        // TODO make fn fallible
+        let value = value.try_into().unwrap_or_default();
+
+        if Self::is_contract(to) {
+            pallet_contracts::Call::<Runtime>::call {
+                dest,
+                value,
+                data,
+                gas_limit: Weight::from_all(u64::MAX), // TODO
+                storage_deposit_limit: None,
+            }
+            .into()
+        } else {
+            pallet_balances::Call::<Runtime>::transfer_allow_death { dest, value }.into()
+        }
+    }
 }

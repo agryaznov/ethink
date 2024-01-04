@@ -151,6 +151,15 @@ where
     }
 }
 
+/// Provider of the contracts functionality
+/// This is pallet_contracts in our case
+pub trait Executor<RuntimeCall> {
+    /// Check if AccountId is owned by a contract
+    fn is_contract(who: H160) -> bool;
+    /// Construct proper runtime call for the input provided
+    fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+}
+
 pub use self::pallet::*;
 
 #[frame_support::pallet]
@@ -169,9 +178,13 @@ pub mod pallet {
     pub trait Config: frame_system::Config {
         /// The overarching event type.
         type RuntimeEvent: From<Event> + IsType<<Self as frame_system::Config>::RuntimeEvent>;
+        /// The overarching call type.
+        type Call: Dispatchable<RuntimeOrigin = Self::RuntimeOrigin, PostInfo = PostDispatchInfo>;
         /// The fungible in which fees are paid and contract balances are held.
         //TODO mb we fdont need all of these
         type Currency: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
+        /// Contracts engine
+        type Contracts: Executor<<Self as Config>::Call>;
     }
 
     // #[pallet::hooks]
@@ -185,6 +198,7 @@ pub mod pallet {
     where
         OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
         T::AccountId: From<sp_core::H160>,
+        T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
         /// Transact an Ethereum transaction.
@@ -192,30 +206,38 @@ pub mod pallet {
         // TODO weight
         #[pallet::weight(42)]
         pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
+            // TODO
             //let source = ensure_ethereum_transaction(origin)?;
 
-            log::error!(target: "polkamask:pallet", "Received Eth Tx: {:?}", &tx);
-            let (from, to, value) = Self::extract_tx_fields(&tx);
+            // We received Ethereum transaction,
+            // need to route it either as a contract call or jsut a balance transfer
+            // determinant for this is pallet_contracts' ContractInfo storage:
+            // if it has the destination AccountId among its keys,
+            // then it's a contract call. For now we going to do this via
+            // pallet_contracts::code_hash()
+            // This could possibly be optimized later with another method which uses
+            // StorageMap::contains_key() instead of StorageMap::get() under the hood.
 
-            let from = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
-            let to = to.ok_or(Error::<T>::TxConvertionFailed)?.into();
-            let value: BalanceOf<T> = value
-                .try_into()
-                .map_err(|_| Error::<T>::TxConvertionFailed)?;
-            // TODO think which one is appropriate here
-            let preservation = Preservation::Protect;
+            log::error!(target: "polkamask:pallet", "Received Eth Tx: {:?}", &tx);
+
+            let (from, to, value, data) = Self::extract_tx_fields(&tx);
 
             log::error!(target: "polkamask:pallet", "From {:?}", &from);
             log::error!(target: "polkamask:pallet", "To {:?}", &to);
             log::error!(target: "polkamask:pallet", "Value {:?}", &value);
 
-            T::Currency::transfer(&from, &to, value, preservation).map_err(|e| {
-                log::error!(target: "polkamask:pallet", "Trnasfer Failed: {:?}", &e);
-                Error::<T>::TransferFailed
-            })?;
+            let from: T::AccountId = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
+            let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
 
+            // TODO probably with dispatchables we don't need this anymore?
             System::<T>::inc_account_nonce(from);
-            log::error!(target: "polkamask:pallet", "WHOHOOOOO, SENT {:?} to {:?}!", &value, &to);
+
+            let call = T::Contracts::construct_call(to, value, data);
+            log::error!(target: "polkamask:pallet", "Dispatching Call....");
+            let _ = call.dispatch(origin).map_err(|e| {
+                log::error!(target: "polkamask:pallet", "Failed: {:?}", &e);
+                Error::<T>::TxExecutionFailed
+            })?;
 
             Ok(())
         }
@@ -239,9 +261,9 @@ pub mod pallet {
         /// Signature is invalid.
         InvalidSignature,
         // TODO
-        TransferFailed,
-        // TODO
         TxConvertionFailed,
+        // TODO
+        TxExecutionFailed,
     }
 
     /// The current Ethereum receipts.
@@ -265,10 +287,10 @@ pub mod pallet {
 }
 
 impl<T: Config> Pallet<T> {
-    fn extract_tx_fields(tx: &Transaction) -> (Option<H160>, Option<H160>, U256) {
+    fn extract_tx_fields(tx: &Transaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {
         let mut sig = [0u8; 65];
         let mut msg = [0u8; 32];
-        let (to, value) = match tx {
+        let (to, value, data) = match tx {
             Transaction::Legacy(t) => {
                 sig[0..32].copy_from_slice(&t.signature.r()[..]);
                 sig[32..64].copy_from_slice(&t.signature.s()[..]);
@@ -283,6 +305,7 @@ impl<T: Config> Pallet<T> {
                         TransactionAction::Create => None,
                     },
                     t.value,
+                    t.input.clone(),
                 )
             }
             Transaction::EIP2930(t) => {
@@ -299,6 +322,7 @@ impl<T: Config> Pallet<T> {
                         TransactionAction::Create => None,
                     },
                     t.value,
+                    t.input.clone(),
                 )
             }
             Transaction::EIP1559(t) => {
@@ -315,6 +339,7 @@ impl<T: Config> Pallet<T> {
                         TransactionAction::Create => None,
                     },
                     t.value,
+                    t.input.clone(),
                 )
             }
         };
@@ -323,7 +348,7 @@ impl<T: Config> Pallet<T> {
             .ok()
             .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))));
 
-        (from, to, value)
+        (from, to, value, data)
     }
 }
 
