@@ -806,13 +806,13 @@ impl_runtime_apis! {
             let bal = Balances::free_balance(
                 &address.into(),
             );
-            log::error!(target: "polkamask", "BALANCE of {:?} is {:?}!", &address, &bal);
+            log::debug!(target: "polkamask", "BALANCE of {:?} is {:?}!", &address, &bal);
             bal.into()
         }
         /// Account nonce
         fn nonce(address: H160) -> U256 {
             let nonce = System::account_nonce(AccountId::from(address.clone())).into();
-            log::error!(target: "polkamask:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
+            log::debug!(target: "polkamask:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
             nonce
         }
         /// Call
@@ -826,11 +826,11 @@ impl_runtime_apis! {
             // Basically we need to do the same what  dispatchable Balances::transfer_allow_death() does
             let source = AccountId::from(from);
             let dest = AccountId::from(to);
-            log::error!(target: "polkamask", "SENDING {:?} to {:?}!", &value, &dest);
+            log::debug!(target: "polkamask", "SENDING {:?} to {:?}!", &value, &dest);
             // this WILL NOT change state!
             // in order to make real transfer, we gotta compose Extrinsic here!!
             <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
-            log::error!(target: "polkamask", "SENTTTTT {:?} to {:?}!", &value, &dest);
+            log::debug!(target: "polkamask", "SENTTTTT {:?} to {:?}!", &value, &dest);
 
             Ok(Balances::free_balance(
                 &source,
@@ -862,7 +862,7 @@ impl_runtime_apis! {
                 data: vec![99u8, 58u8, 165u8, 81u8],
             }.into()).encode();
 
-            log::error!(target: "polkamask", "ENCODED XT: {:02x?}", &xt);
+            log::debug!(target: "polkamask", "ENCODED XT: {:02x?}", &xt);
 
 
             let extra: SignedExtra =
@@ -892,7 +892,7 @@ impl_runtime_apis! {
                extra,
            ).encode();
 
-            log::error!(target: "polkamask", "ENCODED SIGNED XT: {:02x?}", &xt);
+            log::debug!(target: "polkamask", "ENCODED SIGNED XT: {:02x?}", &xt);
             Ok(())
         }
         // others to be added here, see for reference:

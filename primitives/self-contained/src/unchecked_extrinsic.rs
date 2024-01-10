@@ -110,10 +110,10 @@ where
             })
         } else {
             if let Some(ref s) = self.0.signature {
-                log::error!(target: "pmp_self_contained", "----------> I AM THE SIG inside UXTS: -->{:?}<--", &s.1);
+                log::debug!(target: "pmp_self_contained", "----------> I AM THE SIG inside UXTS: -->{:?}<--", &s.1);
             }
             let checked = Checkable::<Lookup>::check(self.0, lookup).map_err(|e| {
-                log::error!(target: "pmp_self_contained", "BAD SIGNATURE!!!!");
+                log::debug!(target: "pmp_self_contained", "BAD SIGNATURE!!!!");
                 e
             })?;
             Ok(CheckedExtrinsic {

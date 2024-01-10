@@ -10,6 +10,35 @@ where
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
+    pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
+        let hash = self.client.info().best_hash;
+
+        // TODO refactor
+        let slice = &bytes.0[..];
+        if slice.is_empty() {
+            return Err(internal_err("transaction data is empty"));
+        }
+
+        let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
+            Ok(tx) => tx,
+            Err(_) => return Err(internal_err("decode transaction failed")),
+        };
+        log::debug!(target: "polkamask:rpc", "SendRawTx REQUEST: {:?}", &tx);
+
+        let tx_hash = tx.hash();
+        // Compose extrinsic for submission
+        let extrinsic = match self.client.runtime_api().convert_transaction(hash, tx) {
+            Ok(extrinsic) => extrinsic,
+            Err(_) => return Err(internal_err("cannot access runtime api")),
+        };
+
+        self.pool
+            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
+            .map_ok(move |_| tx_hash)
+            .map_err(internal_err)
+            .await
+    }
+
     pub async fn call(
         &self,
         request: CallRequest,
@@ -23,7 +52,7 @@ where
             from, to, value, ..
         } = request;
 
-        log::error!(target: "polkamask", "CALL: {:?} to {:?}!", &value, &to);
+        log::debug!(target: "polkamask", "CALL: {:?} to {:?}!", &value, &to);
 
         // TODO this is currently mocked with dbg output
         let _balance_left = self
@@ -38,6 +67,7 @@ where
         Ok(vec![0u8].into())
     }
 
+    // TODO: dry-run implementation
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         // let hash = self.client.info().best_hash;
 
@@ -69,35 +99,6 @@ where
         // 	.await
 
         Ok(H256::zero())
-    }
-
-    pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
-        let hash = self.client.info().best_hash;
-
-        // TODO refactor
-        let slice = &bytes.0[..];
-        if slice.is_empty() {
-            return Err(internal_err("transaction data is empty"));
-        }
-
-        let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
-            Ok(tx) => tx,
-            Err(_) => return Err(internal_err("decode transaction failed")),
-        };
-        log::error!(target: "polkamask:rpc", "SendRawTx REQUEST: {:?}", &tx);
-
-        let tx_hash = tx.hash();
-        // Compose extrinsic for submission
-        let extrinsic = match self.client.runtime_api().convert_transaction(hash, tx) {
-            Ok(extrinsic) => extrinsic,
-            Err(_) => return Err(internal_err("cannot access runtime api")),
-        };
-
-        self.pool
-            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
-            .map_ok(move |_| tx_hash)
-            .map_err(internal_err)
-            .await
     }
 
     pub async fn estimate_gas(

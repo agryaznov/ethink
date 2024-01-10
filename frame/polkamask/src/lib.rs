@@ -211,13 +211,13 @@ pub mod pallet {
             // This could possibly be optimized later with another method which uses
             // StorageMap::contains_key() instead of StorageMap::get() under the hood.
 
-            log::error!(target: "polkamask:pallet", "Received Eth Tx: {:?}", &tx);
+            log::debug!(target: "polkamask:pallet", "Received Eth Tx: {:?}", &tx);
 
             let (from, to, value, data) = Self::extract_tx_fields(&tx);
 
-            log::error!(target: "polkamask:pallet", "From {:?}", &from);
-            log::error!(target: "polkamask:pallet", "To {:?}", &to);
-            log::error!(target: "polkamask:pallet", "Value {:?}", &value);
+            log::debug!(target: "polkamask:pallet", "From {:?}", &from);
+            log::debug!(target: "polkamask:pallet", "To {:?}", &to);
+            log::debug!(target: "polkamask:pallet", "Value {:?}", &value);
 
             let from: T::AccountId = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
             let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
@@ -226,9 +226,9 @@ pub mod pallet {
             System::<T>::inc_account_nonce(from);
 
             let call = T::Contracts::construct_call(to, value, data);
-            log::error!(target: "polkamask:pallet", "Dispatching Call....");
+            log::debug!(target: "polkamask:pallet", "Dispatching Call....");
             let _ = call.dispatch(origin.into()).map_err(|e| {
-                log::error!(target: "polkamask:pallet", "Failed: {:?}", &e);
+                log::debug!(target: "polkamask:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
 
