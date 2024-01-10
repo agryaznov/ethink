@@ -164,7 +164,7 @@ Confirm the transaction... and, in a moment later you should see one egg has bee
 ![MetaMask 1](.images/dapp-4.png)
 
 Cool, we have just used an web3js dApp to send some eggs between accounts on our Duck network!  
-Keep going, in few momenta we'll call our ink! contract with it!
+Keep going, in a few moments we'll call our ink! contract with it!
 
 #### Making 3. **🚀 dApp (advanced): ink! + MetaMask**.  
 
