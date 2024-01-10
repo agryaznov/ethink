@@ -68,7 +68,6 @@ pub fn ensure_ethereum_transaction<OuterOrigin>(o: OuterOrigin) -> Result<RawOri
 where
     OuterOrigin: Into<Result<RawOrigin, OuterOrigin>>,
 {
-    // TODO where the signature get veryfied?
     match o.into() {
         Ok(raw_origin) => Ok(raw_origin),
         _ => Err("Bad origin: not a valid Ethereum transaction"),
@@ -107,7 +106,6 @@ where
     pub fn check_self_contained(&self) -> Option<Result<H160, TransactionValidityError>> {
         if let Call::transact { tx } = self {
             let check = || {
-                // TODO change error to proper one (add to primitives as it was in pallet_ethereum?)
                 let origin = Pallet::<T>::extract_tx_fields(tx)
                     .0
                     .ok_or(InvalidTransaction::Custom(42u8))?;
@@ -127,7 +125,6 @@ where
         dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
         len: usize,
     ) -> Option<Result<(), TransactionValidityError>> {
-        // TODO: do we need this fn at all??
         Some(Ok(()))
     }
 
@@ -141,13 +138,11 @@ where
             if let Err(e) = CheckWeight::<T>::do_validate(dispatch_info, len) {
                 return Some(Err(e));
             }
-            // TODO refactor
             let tx_nonce = match tx {
                 Transaction::Legacy(t) => t.nonce,
                 Transaction::EIP2930(t) => t.nonce,
                 Transaction::EIP1559(t) => t.nonce,
             };
-            // TODO: add some proper validation here
             let mut builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
 
             Some(builder.build())
@@ -187,17 +182,10 @@ pub mod pallet {
         /// The overarching call type.
         type Call: Dispatchable<RuntimeOrigin = Self::RuntimeOrigin, PostInfo = PostDispatchInfo>;
         /// The fungible in which fees are paid and contract balances are held.
-        //TODO mb we fdont need all of these
         type Currency: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
         /// Contracts engine
         type Contracts: Executor<<Self as Config>::Call>;
     }
-
-    // #[pallet::hooks]
-    // impl<T: Config> Hooks<BlockNumberFor<T>> for Pallet<T> {
-    // 	// TODO probably we'd need to make something in this hook in order to genereate tx_receipt:
-    // 	// fn on_finalize(n: T::BlockNumber) {
-    // }
 
     #[pallet::call]
     impl<T: Config> Pallet<T>
@@ -212,7 +200,6 @@ pub mod pallet {
         // TODO weight
         #[pallet::weight(42)]
         pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
-            // TODO
             let origin: frame_system::RawOrigin::<T::AccountId> = ensure_ethereum_transaction(origin)?.into();
 
             // We received Ethereum transaction,
@@ -266,9 +253,9 @@ pub mod pallet {
     pub enum Error<T> {
         /// Signature is invalid.
         InvalidSignature,
-        // TODO
+        /// Eth transaction convertion into extrinsic failed
         TxConvertionFailed,
-        // TODO
+        /// Transaction execution failed
         TxExecutionFailed,
     }
 
@@ -307,7 +294,6 @@ impl<T: Config> Pallet<T> {
                 (
                     match t.action {
                         TransactionAction::Call(h) => Some(h),
-                        // TODO
                         TransactionAction::Create => None,
                     },
                     t.value,
@@ -324,7 +310,6 @@ impl<T: Config> Pallet<T> {
                 (
                     match t.action {
                         TransactionAction::Call(h) => Some(h),
-                        // TODO
                         TransactionAction::Create => None,
                     },
                     t.value,
@@ -341,7 +326,6 @@ impl<T: Config> Pallet<T> {
                 (
                     match t.action {
                         TransactionAction::Call(h) => Some(h),
-                        // TODO
                         TransactionAction::Create => None,
                     },
                     t.value,

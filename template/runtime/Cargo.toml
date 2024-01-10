@@ -4,8 +4,7 @@ version = "0.1.0"
 authors = ["Alexander Gryaznov <hi@agryaznov.com>"]
 edition = "2021"
 license = "Unlicense"
-homepage = "https://github.com/paritytech/substrate-contracts-node"
-repository = "https://github.com/paritytech/substrate-contracts-node"
+repository = "https://github.com/agryaznov/polkamask"
 build = "build.rs"
 publish = false
 

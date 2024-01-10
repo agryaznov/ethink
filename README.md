@@ -216,7 +216,7 @@ Now check the state again with *cargo-contract*, and...
 > 
 > 🧠 Under the hood though, that was an amusing journey your transaction had made through your node's exposed custom Ethereum RPC, then it got transformed through your network's Runtime RPC, got into the transaction pool as a pallet-polkamask extrinsic, then got into the block and processes by that pallet which understood it's a transaction for pallet-contracts, transformed it again to the corresponding dispatchable which finally made it to your contract!
 >
-> Whoa, what a long way, right? But let's put the details off for now and just enjoy the moment!  
+> Whoa, what a long way isn't it? But let's put the details off for now and just enjoy the moment!  
 > The design technicalities are to be explained in the polkamask docs, stay tuned!
 
 ## Project Goals `TBD: move`

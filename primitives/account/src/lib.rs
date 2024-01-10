@@ -1,7 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-// This file is part of Frontier.
-//
-// Copyright (c) 2020-2023 Parity Technologies (UK) Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -177,7 +174,7 @@ impl EthereumSignature {
         Self::new(ecdsa::Signature::from_raw(d))
     }
 
-    // TODO remove, its dbg helper
+    // TODO remove, this is a dbg helper
     pub fn dummy() -> Self {
         let mut bytes = [0u8; 65];
         hex::decode_to_slice("8e8d7354591bd8010e62ee99027944049d48a62be08cad8c38252ea437310c744a937786126cf471758131b9f48df1e51303b965bbeb3ad28bcffe6eb96635e001",

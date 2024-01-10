@@ -824,11 +824,10 @@ impl_runtime_apis! {
             // For contracts, this would be bare_call()
             // But for starters, let's just send some balance
             // Basically we need to do the same what  dispatchable Balances::transfer_allow_death() does
-            // TODO: ensure_signed?
             let source = AccountId::from(from);
             let dest = AccountId::from(to);
             log::error!(target: "polkamask", "SENDING {:?} to {:?}!", &value, &dest);
-            // TODO this WILL NOT change state!
+            // this WILL NOT change state!
             // in order to make real transfer, we gotta compose Extrinsic here!!
             <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
             log::error!(target: "polkamask", "SENTTTTT {:?} to {:?}!", &value, &dest);

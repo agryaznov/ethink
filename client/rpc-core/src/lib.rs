@@ -16,6 +16,8 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
+// TODO this whole crate is a slihglty modified fc-rpc-core.
+// perhaps it's better to make a fork of it.
 #![deny(unused_crate_dependencies)]
 
 pub mod types;

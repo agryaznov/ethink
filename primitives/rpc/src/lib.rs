@@ -1,7 +1,4 @@
 // SPDX-License-Identifier: Apache-2.0
-// This file is part of Frontier.
-//
-// Copyright (c) 2020-2022 Parity Technologies (UK) Ltd.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.
@@ -86,7 +83,6 @@ impl<B: BlockT, C, H: Hasher> RuntimeStorageOverride<B, C, H> for () {
     }
 }
 
-// TODO move to evm submodule, as well as EthAccount
 #[derive(Clone, Copy, Eq, PartialEq, Debug, Encode, Decode, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct WeightInfo {
@@ -96,7 +92,6 @@ pub struct WeightInfo {
     pub proof_size_usage: Option<u64>,
 }
 
-// TODO move to evm submodule, as well as EthAccount
 #[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct UsedGas {
@@ -107,7 +102,6 @@ pub struct UsedGas {
     pub effective: U256,
 }
 
-// TODO move to evm submodule, as well as EthAccount
 #[derive(Clone, Eq, PartialEq, Debug, Encode, Decode, TypeInfo)]
 #[cfg_attr(feature = "serde", derive(Serialize, Deserialize))]
 pub struct EVMExecInfo<T> {
