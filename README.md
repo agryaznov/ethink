@@ -137,7 +137,7 @@ https://github.com/agryaznov/polkamask/blob/f4e2624c0cfce0d77fb9eb980cb9ad44671e
 </details>
 
 
-### ⭐ Run! 
+### ⭐ Run It! 
 
 Once you have your polkamask-node and dApp started, open your browser at http://localhost:8080/client/ to load our dApp: 
 
