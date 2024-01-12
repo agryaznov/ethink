@@ -1,11 +1,14 @@
 > [!WARNING]
 > This is a **Proof Of Concept**. It works, but not (*yet*) intended for production use!!
 
+> [!NOTE]
+> The project was renamed from its working title Polkamask for the reasons explained in the [comment on Polkassembly](https://polkadot.polkassembly.io/referenda/408#FDeIFMmzOtrbHjWyHpUF). Crates still have `polkamask` suffix in names, those are to be renamed in the future updates.
+
 <div align="center">
     <img src=".images/ink+mm.png" alt="ink! + MetaMask logo" />
 </div>
 
-# The Polka🎭Mask
+# The ethink!
 
 This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](https://github.com/paritytech/polkadot-sdk/tree/master/substrate/frame/contracts) to make it Ethereum RPC -compatible.
 
@@ -14,7 +17,7 @@ This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](
 
 ## Quickstart 
 
-Start the Polkamask development node: 
+Start the ethink! development node: 
 
 ```bash
 cargo run -- --dev
@@ -52,7 +55,7 @@ Our little demo consists of the three basic actions we complete on our *Substrat
    With the MetaMask UI controls solely.
 
    This is the simplest action as we already have everything set up to do this. 
-   Once launched the Polkamask node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith* account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
+   Once launched the ethink! node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith* account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
 
 2. **⚡ dApp (simple): tokens transfer**.  
    Via *web3js*-based dApp used with MetaMask for signing transactions.
@@ -100,7 +103,7 @@ truffle build
 
 #### Deploy contract
 
-Make sure you've started the _polkamask-node_:
+Make sure you've started our template node:
 
 ```bash
 cargo run -- --dev
@@ -133,13 +136,13 @@ npm start
 For the demo purposes we made our dApp dead simple. You might need to put actual deployed contract address here to its source code (needed only of you changed the contract source): 
 
 <details>
-https://github.com/agryaznov/polkamask/blob/f4e2624c0cfce0d77fb9eb980cb9ad44671ee1d4/dapp/client/src/index.js#L20-L24
+https://github.com/agryaznov/ethink/blob/f4e2624c0cfce0d77fb9eb980cb9ad44671ee1d4/dapp/client/src/index.js#L20-L24
 </details>
 
 
 ### ⭐ Run It! 
 
-Once you have your polkamask-node and dApp started, open your browser at http://localhost:8080/client/ to load our dApp: 
+Once you have your chain node and dApp started, open your browser at http://localhost:8080/client/ to load our dApp: 
 
 ![dApp home page](.images/dapp-0.png)
 
@@ -217,9 +220,9 @@ Now check the state again with *cargo-contract*, and...
 > 🧠 Under the hood though, that was an amusing journey your transaction had made through your node's exposed custom Ethereum RPC, then it got transformed through your network's Runtime RPC, got into the transaction pool as a pallet-polkamask extrinsic, then got into the block and processes by that pallet which understood it's a transaction for pallet-contracts, transformed it again to the corresponding dispatchable which finally made it to your contract!
 >
 > Whoa, what a long way isn't it? But let's put the details off for now and just enjoy the moment!  
-> The design technicalities are to be explained in the polkamask docs, stay tuned!
+> The design technicalities are to be explained in the ethink! docs, stay tuned!
 
 ## Useful Stuff 
 
 - The [table](docs/mapping.md) with all RPC methods needed and their description.
-- Collection of *curl* composed [request templates](docs/rpc_requests.md) to Ethereum RPC exposed by Polkamask node. 
+- Collection of *curl* composed [request templates](docs/rpc_requests.md) to Ethereum RPC exposed by ethink! node. 
