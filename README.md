@@ -118,11 +118,11 @@ cargo contract instantiate -s 0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d4
 
 (Notice we use *Alith's* private key here for transaction signing).
 
-You should get the contract's code hash and address on the successful competion of the transaction: 
+You should get the contract's code hash and address on the successful completion of the transaction: 
 
 ``` bash
- Code hash 0xae41a6b1cfafb8c2170ee6b9810e35c8ca442fcc54a773a8ac34607dbc3b35a0
- Contract 0xcCF89DAfeF6634fd058F356F8f2650eae2c93Bef
+ Code hash 0x417370a73c71e0787a6da2c8b34ee035517175ed28beb1328461b642670975b7
+ Contract 0xAc7dA28B0A6e94dEc4c9D2bFA6917Ff476e6a944
 ```
 
 #### Prepare dApp
@@ -175,7 +175,7 @@ Keep going, in a few moments we'll call our ink! contract with it!
 First, check the current state of our contract with this command:
 
 ``` bash
-cargo contract call -s 0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133 --contract 0xcCF89DAfeF6634fd058F356F8f2650eae2c93Bef --message get
+cargo contract call -s 0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133 --contract 0xAc7dA28B0A6e94dEc4c9D2bFA6917Ff476e6a944 --message get
 ```
 
 We see that current Flipper's state is `false`:

@@ -19,7 +19,7 @@ const getWeb3 = () => {
 
 const getContract = async (web3) => {
 	const data = await $.getJSON('/contracts/flipper.sol/build/contracts/Flipper.json');
-	const contract = new web3.eth.Contract(data.abi, "0xcCF89DAfeF6634fd058F356F8f2650eae2c93Bef");
+	const contract = new web3.eth.Contract(data.abi, "0xAc7dA28B0A6e94dEc4c9D2bFA6917Ff476e6a944");
 	return contract;
 };
 
