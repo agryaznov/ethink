@@ -35,9 +35,9 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 // ETH RPC support
-use pallet_polkamask;
-use pmp_account::EthereumSignature;
-use pmp_rpc::EthTx;
+use ep_account::EthereumSignature;
+use ep_rpc::EthTx;
+use pallet_ethink;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
@@ -71,7 +71,7 @@ pub type BlockNumber = u32;
 pub type Signature = EthereumSignature;
 /// Some way of identifying an account on the chain. We intentionally make it equivalent
 /// to the public key of our transaction signing scheme.
-/// This is derived to pmp_account::AccountId20 because of the used EthereumSignature above.
+/// This is derived to ep_account::AccountId20 because of the used EthereumSignature above.
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 /// Balance of an account.
 pub type Balance = u128;
@@ -100,10 +100,10 @@ pub type SignedExtra = (
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic =
-    pmp_self_contained::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
+    ep_self_contained::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 /// Extrinsic type that has already been checked.
 pub type CheckedExtrinsic =
-    pmp_self_contained::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra, H160>;
+    ep_self_contained::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra, H160>;
 
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<
@@ -480,7 +480,7 @@ impl pallet_contracts::Config for Runtime {
     type Environment = ();
 }
 
-impl pallet_polkamask::Config for Runtime {
+impl pallet_ethink::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
     type Contracts = ContractsExecutor;
@@ -501,23 +501,23 @@ construct_runtime!(
         Sudo: pallet_sudo,
         Contracts: pallet_contracts,
         Assets: pallet_assets,
-        Polkamask: pallet_polkamask,
+        Ethink: pallet_ethink,
     }
 );
 
-impl pmp_self_contained::SelfContainedCall for RuntimeCall {
+impl ep_self_contained::SelfContainedCall for RuntimeCall {
     type SignedInfo = H160;
 
     fn is_self_contained(&self) -> bool {
         match self {
-            RuntimeCall::Polkamask(call) => call.is_self_contained(),
+            RuntimeCall::Ethink(call) => call.is_self_contained(),
             _ => false,
         }
     }
 
     fn check_self_contained(&self) -> Option<Result<Self::SignedInfo, TransactionValidityError>> {
         match self {
-            RuntimeCall::Polkamask(call) => call.check_self_contained(),
+            RuntimeCall::Ethink(call) => call.check_self_contained(),
             _ => None,
         }
     }
@@ -529,7 +529,7 @@ impl pmp_self_contained::SelfContainedCall for RuntimeCall {
         len: usize,
     ) -> Option<TransactionValidity> {
         match self {
-            RuntimeCall::Polkamask(call) => call.validate_self_contained(info, dispatch_info, len),
+            RuntimeCall::Ethink(call) => call.validate_self_contained(info, dispatch_info, len),
             _ => None,
         }
     }
@@ -541,9 +541,7 @@ impl pmp_self_contained::SelfContainedCall for RuntimeCall {
         len: usize,
     ) -> Option<Result<(), TransactionValidityError>> {
         match self {
-            RuntimeCall::Polkamask(call) => {
-                call.pre_dispatch_self_contained(info, dispatch_info, len)
-            }
+            RuntimeCall::Ethink(call) => call.pre_dispatch_self_contained(info, dispatch_info, len),
             _ => None,
         }
     }
@@ -553,9 +551,9 @@ impl pmp_self_contained::SelfContainedCall for RuntimeCall {
         info: Self::SignedInfo,
     ) -> Option<sp_runtime::DispatchResultWithInfo<PostDispatchInfoOf<Self>>> {
         match self {
-            call @ RuntimeCall::Polkamask(pallet_polkamask::Call::transact { .. }) => {
+            call @ RuntimeCall::Ethink(pallet_ethink::Call::transact { .. }) => {
                 Some(call.dispatch(RuntimeOrigin::from(
-                    pallet_polkamask::RawOrigin::EthereumTransaction(info),
+                    pallet_ethink::RawOrigin::EthereumTransaction(info),
                 )))
             }
             _ => None,
@@ -795,7 +793,7 @@ impl_runtime_apis! {
         }
     }
 
-    impl pmp_rpc::ETHRuntimeRPC<Block> for Runtime {
+    impl ep_rpc::ETHRuntimeRPC<Block> for Runtime {
         /// CHAIN_ID constant is defined in your runtime.
         fn chain_id() -> u64 {
             CHAIN_ID
@@ -806,13 +804,13 @@ impl_runtime_apis! {
             let bal = Balances::free_balance(
                 &address.into(),
             );
-            log::debug!(target: "polkamask", "BALANCE of {:?} is {:?}!", &address, &bal);
+            log::debug!(target: "ethink", "BALANCE of {:?} is {:?}!", &address, &bal);
             bal.into()
         }
         /// Account nonce
         fn nonce(address: H160) -> U256 {
             let nonce = System::account_nonce(AccountId::from(address.clone())).into();
-            log::debug!(target: "polkamask:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
+            log::debug!(target: "ethink:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
             nonce
         }
         /// Call
@@ -826,11 +824,11 @@ impl_runtime_apis! {
             // Basically we need to do the same what  dispatchable Balances::transfer_allow_death() does
             let source = AccountId::from(from);
             let dest = AccountId::from(to);
-            log::debug!(target: "polkamask", "SENDING {:?} to {:?}!", &value, &dest);
+            log::debug!(target: "ethink", "SENDING {:?} to {:?}!", &value, &dest);
             // this WILL NOT change state!
             // in order to make real transfer, we gotta compose Extrinsic here!!
             <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
-            log::debug!(target: "polkamask", "SENTTTTT {:?} to {:?}!", &value, &dest);
+            log::debug!(target: "ethink", "SENTTTTT {:?} to {:?}!", &value, &dest);
 
             Ok(Balances::free_balance(
                 &source,
@@ -841,7 +839,7 @@ impl_runtime_apis! {
              tx: EthTx,
          ) -> <Block as BlockT>::Extrinsic {
             UncheckedExtrinsic::new_unsigned(
-               pallet_polkamask::Call::<Runtime>::transact { tx }.into(),
+               pallet_ethink::Call::<Runtime>::transact { tx }.into(),
             )
          }
 
@@ -862,7 +860,7 @@ impl_runtime_apis! {
                 data: vec![99u8, 58u8, 165u8, 81u8],
             }.into()).encode();
 
-            log::debug!(target: "polkamask", "ENCODED XT: {:02x?}", &xt);
+            log::debug!(target: "ethink", "ENCODED XT: {:02x?}", &xt);
 
 
             let extra: SignedExtra =
@@ -892,7 +890,7 @@ impl_runtime_apis! {
                extra,
            ).encode();
 
-            log::debug!(target: "polkamask", "ENCODED SIGNED XT: {:02x?}", &xt);
+            log::debug!(target: "ethink", "ENCODED SIGNED XT: {:02x?}", &xt);
             Ok(())
         }
         // others to be added here, see for reference:
@@ -903,7 +901,7 @@ impl_runtime_apis! {
 
 pub struct ContractsExecutor;
 // TODO better naming
-impl pallet_polkamask::Executor<RuntimeCall> for ContractsExecutor {
+impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
     fn is_contract(who: H160) -> bool {
         // This could possibly be optimized later with another method which uses
         // StorageMap::contains_key() instead of StorageMap::get() under the hood.

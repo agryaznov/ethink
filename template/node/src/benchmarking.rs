@@ -4,7 +4,7 @@
 
 use crate::service::FullClient;
 
-use polkamask_runtime as runtime;
+use ethink_runtime as runtime;
 use runtime::{AccountId, Balance, BalancesCall, SystemCall};
 use sc_cli::Result;
 use sc_client_api::BlockBackend;
@@ -12,7 +12,7 @@ use sp_core::{ecdsa, Encode, Pair};
 use sp_inherents::{InherentData, InherentDataProvider};
 use sp_runtime::{OpaqueExtrinsic, SaturatedConversion};
 // ETH RPC
-use pmp_account::AccountId20;
+use ep_account::AccountId20;
 
 use std::{sync::Arc, time::Duration};
 

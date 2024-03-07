@@ -73,7 +73,7 @@ Our 🦆-chain has _pallet-contracts_ on board and at the same time works with _
 For this reason, to work with our *ink!* contracts on this chain, we use a fork of _cargo-contract_ tool which speaks with our node the same language! Run this command to install it: 
 
 ``` bash
-cargo install --git https://github.com/agryaznov/cargo-contract --branch polkamask --force
+cargo install --git https://github.com/agryaznov/cargo-contract --branch ethink --force
 ```
 
 ### Set Up 
@@ -217,7 +217,7 @@ Now check the state again with *cargo-contract*, and...
 > [!TIP]
 > 💡 Looks simple, right? 
 > 
-> 🧠 Under the hood though, that was an amusing journey your transaction had made through your node's exposed custom Ethereum RPC, then it got transformed through your network's Runtime RPC, got into the transaction pool as a pallet-polkamask extrinsic, then got into the block and processes by that pallet which understood it's a transaction for pallet-contracts, transformed it again to the corresponding dispatchable which finally made it to your contract!
+> 🧠 Under the hood though, that was an amusing journey your transaction had made through your node's exposed custom Ethereum RPC, then it got transformed through your network's Runtime RPC, got into the transaction pool as a pallet-ethink extrinsic, then got into the block and processes by that pallet which understood it's a transaction for pallet-contracts, transformed it again to the corresponding dispatchable which finally made it to your contract!
 >
 > Whoa, what a long way isn't it? But let's put the details off for now and just enjoy the moment!  
 > The design technicalities are to be explained in the ethink! docs, stay tuned!

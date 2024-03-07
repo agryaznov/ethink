@@ -1,5 +1,5 @@
 [package]
-name = "polkamask-rpc"
+name = "ethink-rpc"
 version = "0.1.0"
 description = "Ethereum RPC compatibility layer for pallet-contracts"
 edition = "2021"
@@ -12,12 +12,12 @@ hex = { workspace = true }
 log = { workspace = true }
 futures = { workspace = true }
 
-# Polkamask
-pmp-rpc = { workspace = true, features = ["default"] }
-pmp-account = { workspace = true, features = ["default"] }
+# ethink
+ep-rpc = { workspace = true, features = ["default"] }
+ep-account = { workspace = true, features = ["default"] }
 mappings = { workspace = true, features = ["default"] }
 
-polkamask-rpc-core = { workspace = true }
+ethink-rpc-core = { workspace = true }
 
 # Substrate
 sp-io = { workspace = true, default-features = false }

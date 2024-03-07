@@ -5,8 +5,8 @@ use crate::{
     cli::{Cli, Subcommand},
     service,
 };
+use ethink_runtime::{Block, EXISTENTIAL_DEPOSIT};
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
-use polkamask_runtime::{Block, EXISTENTIAL_DEPOSIT};
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
 

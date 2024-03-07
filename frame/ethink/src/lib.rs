@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: Apache-2.0
-// This file is part of Polkamask.
+// This file is part of ethink!.
 //
 // 	http://www.apache.org/licenses/LICENSE-2.0
 //
@@ -9,9 +9,9 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! # Polkamask pallet
+//! # ethink pallet
 //!
-//! The Polkamask pallet works as a proxy in front of `pallet-contracts` for the transactions
+//! The ethink pallet works as a proxy in front of `pallet-contracts` for the transactions
 //! coming from the Ethereum RPC.
 
 // `no_std` when compiling to WebAssembly
@@ -200,7 +200,8 @@ pub mod pallet {
         // TODO weight
         #[pallet::weight(42)]
         pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
-            let origin: frame_system::RawOrigin::<T::AccountId> = ensure_ethereum_transaction(origin)?.into();
+            let origin: frame_system::RawOrigin<T::AccountId> =
+                ensure_ethereum_transaction(origin)?.into();
 
             // We received Ethereum transaction,
             // need to route it either as a contract call or jsut a balance transfer
@@ -211,13 +212,13 @@ pub mod pallet {
             // This could possibly be optimized later with another method which uses
             // StorageMap::contains_key() instead of StorageMap::get() under the hood.
 
-            log::debug!(target: "polkamask:pallet", "Received Eth Tx: {:?}", &tx);
+            log::debug!(target: "ethink:pallet", "Received Eth Tx: {:?}", &tx);
 
             let (from, to, value, data) = Self::extract_tx_fields(&tx);
 
-            log::debug!(target: "polkamask:pallet", "From {:?}", &from);
-            log::debug!(target: "polkamask:pallet", "To {:?}", &to);
-            log::debug!(target: "polkamask:pallet", "Value {:?}", &value);
+            log::debug!(target: "ethink:pallet", "From {:?}", &from);
+            log::debug!(target: "ethink:pallet", "To {:?}", &to);
+            log::debug!(target: "ethink:pallet", "Value {:?}", &value);
 
             let from: T::AccountId = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
             let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
@@ -226,9 +227,9 @@ pub mod pallet {
             System::<T>::inc_account_nonce(from);
 
             let call = T::Contracts::construct_call(to, value, data);
-            log::debug!(target: "polkamask:pallet", "Dispatching Call....");
+            log::debug!(target: "ethink:pallet", "Dispatching Call....");
             let _ = call.dispatch(origin.into()).map_err(|e| {
-                log::debug!(target: "polkamask:pallet", "Failed: {:?}", &e);
+                log::debug!(target: "ethink:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
 

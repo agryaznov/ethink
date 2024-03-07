@@ -1,10 +1,10 @@
 [package]
-name = "polkamask-runtime"
+name = "ethink-runtime"
 version = "0.1.0"
 authors = ["Alexander Gryaznov <hi@agryaznov.com>"]
 edition = "2021"
 license = "Unlicense"
-repository = "https://github.com/agryaznov/polkamask"
+repository = "https://github.com/agryaznov/ethink"
 build = "build.rs"
 publish = false
 
@@ -15,34 +15,34 @@ targets = ["x86_64-unknown-linux-gnu"]
 codec = { package = "parity-scale-codec", version = "3.6.1", default-features = false, features = ["derive"] }
 scale-info = { version = "2.5.0", default-features = false, features = ["derive"] }
 
-pallet-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-assets = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+pallet-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-assets = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 pallet-balances = { workspace = true }
-frame-support = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-insecure-randomness-collective-flip = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-sudo = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-transaction-payment = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-frame-executive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-session = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-sp-version = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-utility = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-support = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-insecure-randomness-collective-flip = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-sudo = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-transaction-payment = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+frame-executive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-session = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-version = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-utility = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 
 # Used for the node's RPCs
-frame-system-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
-pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", default-features = false}
+frame-system-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 
 # Contracts specific packages
 pallet-contracts = { workspace = true }
@@ -50,17 +50,17 @@ pallet-contracts-primitives = { workspace = true }
 
 # TODO remove (for debbuging only)
 log = { workspace = true }
-sp-debug-derive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", features = ["force-debug"]}
+sp-debug-derive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", features = ["force-debug"]}
 
 
-# PolkaMask
-pmp-rpc = { workspace = true }
-pmp-account = { workspace = true }
-pallet-polkamask = { workspace = true }
-pmp-self-contained = { workspace = true, features = ["serde"] }
+# ethink
+ep-rpc = { workspace = true }
+ep-account = { workspace = true }
+pallet-ethink = { workspace = true }
+ep-self-contained = { workspace = true, features = ["serde"] }
 
 [build-dependencies]
-substrate-wasm-builder =  { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ag/polkamask", optional = true }
+substrate-wasm-builder =  { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", optional = true }
 
 [features]
 default = [
@@ -95,7 +95,7 @@ std = [
 	"pallet-contracts-primitives/std",
 	"pallet-assets/std",
 	"substrate-wasm-builder",
-	"pmp-rpc/std",
-	"pmp-account/std",
-	"pmp-self-contained/std",
+	"ep-rpc/std",
+	"ep-account/std",
+	"ep-self-contained/std",
 ]

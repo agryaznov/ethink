@@ -1,5 +1,5 @@
 [package]
-name = "pmp-self-contained"
+name = "ep-self-contained"
 version = "1.0.0-dev"
 license = "Apache-2.0"
 description = "Primitive Ethereum abstractions for Substrate."

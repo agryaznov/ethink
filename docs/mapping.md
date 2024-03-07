@@ -2,8 +2,8 @@
 
 For reference,
 
-- look into `polkamask-rpc-core` for [Definitions](https://github.com/agryaznov/polkamask/blob/master/client/rpc-core/src/eth.rs#L30),
-- look into `polkamas-rpc` for [Implementations](https://github.com/agryaznov/polkamask/blob/master/client/rpc/src/lib.rs#L69).
+- look into `ethink-rpc-core` for [Definitions](https://github.com/agryaznov/ethink/blob/master/client/rpc-core/src/eth.rs#L30),
+- look into `polkamas-rpc` for [Implementations](https://github.com/agryaznov/ethink/blob/master/client/rpc/src/lib.rs#L69).
 
 In the table below all the methods required to be exposed are grouped into the 5 categories, with the expected implementation difficulty descending from the top group to the bottom one.
 

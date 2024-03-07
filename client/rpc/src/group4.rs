@@ -1,5 +1,5 @@
 use super::*;
-use pmp_rpc::ETHRuntimeRPC;
+use ep_rpc::ETHRuntimeRPC;
 use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> Duck<B, C, P>

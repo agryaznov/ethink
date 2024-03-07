@@ -1,7 +1,7 @@
 //! Service and ServiceFactory implementation. Specialized wrapper over substrate service.
 
+use ethink_runtime::{self, opaque::Block, RuntimeApi};
 use futures::FutureExt;
-use polkamask_runtime::{self, opaque::Block, RuntimeApi};
 use sc_client_api::{Backend, BlockBackend};
 use sc_consensus_aura::{ImportQueueParams, SlotProportion, StartAuraParams};
 use sc_consensus_grandpa::SharedVoterState;
@@ -24,11 +24,11 @@ impl sc_executor::NativeExecutionDispatch for ExecutorDispatch {
     type ExtendHostFunctions = ();
 
     fn dispatch(method: &str, data: &[u8]) -> Option<Vec<u8>> {
-        polkamask_runtime::api::dispatch(method, data)
+        ethink_runtime::api::dispatch(method, data)
     }
 
     fn native_version() -> sc_executor::NativeVersion {
-        polkamask_runtime::native_version()
+        ethink_runtime::native_version()
     }
 }
 

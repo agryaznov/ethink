@@ -23,7 +23,7 @@ where
             Ok(tx) => tx,
             Err(_) => return Err(internal_err("decode transaction failed")),
         };
-        log::debug!(target: "polkamask:rpc", "SendRawTx REQUEST: {:?}", &tx);
+        log::debug!(target: "ethink:rpc", "SendRawTx REQUEST: {:?}", &tx);
 
         let tx_hash = tx.hash();
         // Compose extrinsic for submission
@@ -52,7 +52,7 @@ where
             from, to, value, ..
         } = request;
 
-        log::debug!(target: "polkamask", "CALL: {:?} to {:?}!", &value, &to);
+        log::debug!(target: "ethink", "CALL: {:?} to {:?}!", &value, &to);
 
         // TODO this is currently mocked with dbg output
         let _balance_left = self

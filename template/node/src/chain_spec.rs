@@ -1,8 +1,8 @@
-use hex_literal::hex;
-use polkamask_runtime::{
+use ethink_runtime::{
     AccountId, AuraConfig, Balance, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
     SudoConfig, SystemConfig, WASM_BINARY,
 };
+use hex_literal::hex;
 use sc_service::ChainType;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_consensus_grandpa::AuthorityId as GrandpaId;

@@ -10,7 +10,7 @@ ethereum-types = { workspace = true }
 sp-runtime = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 
-polkamask-rpc-core = { workspace = true }
+ethink-rpc-core = { workspace = true }
 
 [features]
 default = []

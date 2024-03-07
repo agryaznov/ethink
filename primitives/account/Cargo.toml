@@ -1,5 +1,5 @@
 [package]
-name = "pmp-account"
+name = "ep-account"
 version = "0.1.0"
 license = "Apache-2.0"
 description = "Primitives for AccountId20."
