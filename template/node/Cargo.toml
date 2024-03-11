@@ -19,6 +19,7 @@ name = "ethink-node"
 [dependencies]
 clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
+hex-literal = { worspace = true }
 
 sc-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-core = { workspace = true, default-features = false }
@@ -59,13 +60,10 @@ frame-benchmarking = { git = "https://github.com/agryaznov/polkadot-sdk", branch
 frame-benchmarking-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 
 # Local Dependencies
-#TODO put to workspace deps
-ethink-runtime = { path = "../runtime" }
-ethink-rpc = { path = "../../client/rpc" }
+ethink-runtime.workspace = true
+ethink-rpc.workspace = true
 ep-rpc = { workspace = true, features = ["default"] }
-ep-account = { workspace = true }
-
-hex-literal = { worspace = true }
+ep-account.workspace = true
 
 # CLI-specific dependencies
 try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", optional = true }

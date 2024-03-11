@@ -3,25 +3,23 @@ name = "ep-account"
 version = "0.1.0"
 license = "Apache-2.0"
 description = "Primitives for AccountId20."
-edition = { workspace = true }
+edition.workspace = true
 
 [dependencies]
-hex = { workspace = true }
-impl-serde = { workspace = true }
-libsecp256k1 = { workspace = true }
-log = { workspace = true }
+hex.workspace = true
+impl-serde.workspace = true
+libsecp256k1.workspace = true
+log.workspace = true
 scale-codec = { package = "parity-scale-codec", workspace = true }
-scale-info = { workspace = true }
+scale-info.workspace = true
 serde = { workspace = true, optional = true }
 
 # Substrate
-sp-core = { workspace = true }
-sp-io = { workspace = true }
-sp-runtime = { workspace = true }
-sp-runtime-interface = { workspace = true }
-sp-std = { workspace = true }
-
-[dev-dependencies]
+sp-core.workspace = true
+sp-io.workspace = true
+sp-runtime.workspace = true
+sp-runtime-interface.workspace = true
+sp-std.workspace = true
 
 [features]
 default = ["std"]

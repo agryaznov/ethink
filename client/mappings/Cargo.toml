@@ -6,11 +6,10 @@ edition.workspace = true
 
 [dependencies]
 
-ethereum-types = { workspace = true }
+ethereum-types.workspace = true
 sp-runtime = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
-
-ethink-rpc-core = { workspace = true }
+ethink-rpc-core.workspace = true
 
 [features]
 default = []

@@ -55,6 +55,7 @@ frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "et
 # Local
 ethink-rpc = { path = "client/rpc", default-features = false }
 ethink-rpc-core = { path = "client/rpc-core", default-features = false }
+ethink-runtime = { path = "template/runtime", default-features = false }
 mappings = { path = "client/mappings", default-features = false }
 ep-rpc = { path = "primitives/rpc", default-features = false }
 ep-account = { path = "primitives/account", default-features = false }
