@@ -42,13 +42,13 @@ pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
 }
 
 /// Eth RPC implementation.
-pub struct Duck<B: BlockT, C, P> {
+pub struct EthRPC<B: BlockT, C, P> {
     client: Arc<C>,
     pool: Arc<P>,
     _phantom: PhantomData<B>,
 }
 
-impl<B, C, P> Duck<B, C, P>
+impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     B::Header: HeaderT<Number = u32>,
@@ -66,7 +66,7 @@ where
 }
 
 #[async_trait]
-impl<B, C, P> EthApiServer for Duck<B, C, P>
+impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     B::Header: HeaderT<Number = u32>,

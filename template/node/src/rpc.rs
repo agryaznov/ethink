@@ -8,7 +8,7 @@
 use std::sync::Arc;
 
 use ep_rpc::ETHRuntimeRPC;
-use ethink_rpc::{Duck, EthApiServer};
+use ethink_rpc::{EthApiServer, EthRPC};
 use ethink_runtime::{opaque::Block, AccountId, Balance, Nonce};
 use jsonrpsee::RpcModule;
 use sc_client_api::BlockBackend;
@@ -60,7 +60,7 @@ where
     module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
 
     // Eth RPC
-    module.merge(Duck::new(client.clone(), pool).into_rpc())?;
+    module.merge(EthRPC::new(client.clone(), pool).into_rpc())?;
 
     // Extend this RPC with a custom API by using the following syntax.
     // `YourRpcStruct` should have a reference to a client, which is needed

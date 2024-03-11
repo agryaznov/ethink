@@ -3,7 +3,7 @@ use crate::CallRequest;
 use futures::future::TryFutureExt;
 use sp_runtime::{generic::BlockId, transaction_validity::TransactionSource};
 
-impl<B, C, P> Duck<B, C, P>
+impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,

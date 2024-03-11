@@ -1,6 +1,6 @@
 use super::*;
 
-impl<B: BlockT, C, P> Duck<B, C, P> {
+impl<B: BlockT, C, P> EthRPC<B, C, P> {
     pub async fn fee_history(
         &self,
         _block_count: U256,
