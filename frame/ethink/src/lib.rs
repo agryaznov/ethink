@@ -223,7 +223,7 @@ pub mod pallet {
             let from: T::AccountId = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
             let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
 
-            // TODO probably with dispatchables we don't need this anymore?
+            // Increase nonce of the sender account
             System::<T>::inc_account_nonce(from);
 
             let call = T::Contracts::construct_call(to, value, data);
