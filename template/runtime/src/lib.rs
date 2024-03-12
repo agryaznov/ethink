@@ -822,12 +822,12 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, sp_runtime::DispatchError> {
-            use codec::Encode; // TODO
+            use codec::Encode;
             // TODO: do we need to validate tx first here?
             // TODO: put this logic into runner?
             let res = Contracts::bare_call(
-                AccountId::from(to),
                 AccountId::from(from),
+                AccountId::from(to),
                 value.try_into().unwrap_or_default(), // TODO
                 Weight::from_all(u64::MAX),           // TODO
                 None,

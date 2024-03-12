@@ -37,14 +37,12 @@ where
             .await
     }
 
-    // TODO: dry-run implementation
     pub async fn call(
         &self,
         request: CallRequest,
         _number: Option<BlockNumber>,
         _state_overrides: Option<BTreeMap<H160, CallStateOverride>>,
     ) -> RpcResult<Bytes> {
-        // ensure_signer(origin)?
         let hash = self.client.info().best_hash;
 
         let CallRequest {
@@ -55,9 +53,8 @@ where
             ..
         } = request;
 
-        log::debug!(target: "ethink", "CALL: {:?} to {:?}! data: {:?}", &value, &to, &data);
+        log::debug!(target: "ethink:rpc", "call(): from: {:?} to: {:?} value: {:02x?} data: {:02x?}", &from, &to, &value, &data);
 
-        // TODO this is currently mocked with dbg output
         let result = self
             .client
             .runtime_api()
