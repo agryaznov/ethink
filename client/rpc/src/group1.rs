@@ -12,13 +12,11 @@ where
 {
     pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
-
         // TODO refactor
         let slice = &bytes.0[..];
         if slice.is_empty() {
             return Err(internal_err("transaction data is empty"));
         }
-
         let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
             Ok(tx) => tx,
             Err(_) => return Err(internal_err("decode transaction failed")),
@@ -31,7 +29,7 @@ where
             Ok(extrinsic) => extrinsic,
             Err(_) => return Err(internal_err("cannot access runtime api")),
         };
-
+        // Submit extrinsic to pool
         self.pool
             .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
             .map_ok(move |_| tx_hash)
@@ -39,6 +37,7 @@ where
             .await
     }
 
+    // TODO: dry-run implementation
     pub async fn call(
         &self,
         request: CallRequest,
@@ -49,25 +48,34 @@ where
         let hash = self.client.info().best_hash;
 
         let CallRequest {
-            from, to, value, ..
+            from,
+            to,
+            value,
+            data,
+            ..
         } = request;
 
-        log::debug!(target: "ethink", "CALL: {:?} to {:?}!", &value, &to);
+        log::debug!(target: "ethink", "CALL: {:?} to {:?}! data: {:?}", &value, &to, &data);
 
         // TODO this is currently mocked with dbg output
-        let _balance_left = self
+        let result = self
             .client
             .runtime_api()
-            .print_xt(hash, from.unwrap(), to.unwrap(), value.unwrap_or(0.into()))
+            .call(
+                hash,
+                from.unwrap(),
+                to.unwrap(),
+                data.unwrap_or_default().0,
+                value.unwrap_or(0.into()),
+                U256::MAX,
+            )
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
 
-        //        Ok(Bytes::from(balance_left.as_u128().to_be_bytes().to_vec()))
-
-        Ok(vec![0u8].into())
+        Ok(result.into())
     }
 
-    // TODO: dry-run implementation
+    // TODO
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         // let hash = self.client.info().best_hash;
 

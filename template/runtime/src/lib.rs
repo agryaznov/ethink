@@ -813,26 +813,32 @@ impl_runtime_apis! {
             log::debug!(target: "ethink:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
             nonce
         }
-        /// Call
-        fn call_me(
+
+        /// Call contract without submitting extrinsic
+        fn call(
             from: H160,
             to: H160,
+            data: Vec<u8>,
             value: U256,
-        ) -> Result<U256, sp_runtime::DispatchError> {
-            // For contracts, this would be bare_call()
-            // But for starters, let's just send some balance
-            // Basically we need to do the same what  dispatchable Balances::transfer_allow_death() does
-            let source = AccountId::from(from);
-            let dest = AccountId::from(to);
-            log::debug!(target: "ethink", "SENDING {:?} to {:?}!", &value, &dest);
-            // this WILL NOT change state!
-            // in order to make real transfer, we gotta compose Extrinsic here!!
-            <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
-            log::debug!(target: "ethink", "SENTTTTT {:?} to {:?}!", &value, &dest);
+            gas_limit: U256,
+        ) -> Result<Vec<u8>, sp_runtime::DispatchError> {
+            use codec::Encode; // TODO
+            // TODO: do we need to validate tx first here?
+            // TODO: put this logic into runner?
+            let res = Contracts::bare_call(
+                AccountId::from(to),
+                AccountId::from(from),
+                value.try_into().unwrap_or_default(), // TODO
+                Weight::from_all(u64::MAX),           // TODO
+                None,
+                data,
+                CONTRACTS_DEBUG_OUTPUT,
+                CONTRACTS_EVENTS,
+                pallet_contracts::Determinism::Enforced,
+            )
+            .result?;
 
-            Ok(Balances::free_balance(
-                &source,
-            ).into())
+            Ok(res.encode())
         }
 
          fn convert_transaction(
@@ -849,7 +855,7 @@ impl_runtime_apis! {
            use codec::Encode;
 
            let to = AccountId::from(to);
-            let from = AccountId::from(from);
+           let from = AccountId::from(from);
 
            let xt = UncheckedExtrinsic::new_unsigned(
             pallet_contracts::Call::<Runtime>::call {
