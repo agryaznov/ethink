@@ -9,6 +9,7 @@ where
     C::Api: ETHRuntimeRPC<B>,
 {
     pub fn accounts(&self) -> RpcResult<Vec<H160>> {
+        // TODO: extract accounts list from the "ethi" keystore
         Ok(vec![H160::zero()])
     }
 

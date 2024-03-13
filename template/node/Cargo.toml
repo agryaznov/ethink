@@ -36,6 +36,7 @@ sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch 
 sc-consensus = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sp-keystore = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
 sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }

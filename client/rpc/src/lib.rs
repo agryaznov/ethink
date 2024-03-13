@@ -16,6 +16,7 @@ use sc_transaction_pool_api::TransactionPool;
 use sp_api::HeaderT;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
+use sp_keystore::Keystore;
 use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -45,6 +46,7 @@ pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
 pub struct EthRPC<B: BlockT, C, P> {
     client: Arc<C>,
     pool: Arc<P>,
+    keystore: Arc<dyn Keystore>,
     _phantom: PhantomData<B>,
 }
 
@@ -56,10 +58,11 @@ where
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
-    pub fn new(client: Arc<C>, pool: Arc<P>) -> Self {
+    pub fn new(client: Arc<C>, pool: Arc<P>, keystore: Arc<dyn Keystore>) -> Self {
         Self {
             client,
             pool,
+            keystore,
             _phantom: PhantomData::default(),
         }
     }

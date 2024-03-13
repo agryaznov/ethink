@@ -29,8 +29,6 @@ use crate::{
 };
 use fp_self_contained::CheckedExtrinsic;
 
-mod eip1559;
-mod eip2930;
 mod legacy;
 
 // This ERC-20 contract mints the maximum amount of tokens to the contract creator.

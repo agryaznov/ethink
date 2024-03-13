@@ -38,6 +38,7 @@ sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink",
 sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-keystore = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-runtime-interface = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}

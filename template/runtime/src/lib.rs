@@ -424,7 +424,7 @@ parameter_types! {
     pub const DepositPerByte: Balance = deposit(0, 1);
     pub Schedule: pallet_contracts::Schedule<Runtime> = schedule::<Runtime>();
     pub const DefaultDepositLimit: Balance = deposit(1024, 1024 * 1024);
-     pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
+    pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
 }
 
 impl pallet_utility::Config for Runtime {
@@ -813,7 +813,6 @@ impl_runtime_apis! {
             log::debug!(target: "ethink:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
             nonce
         }
-
         /// Call contract without submitting extrinsic
         fn call(
             from: H160,
