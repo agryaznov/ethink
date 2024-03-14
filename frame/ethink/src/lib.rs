@@ -24,23 +24,22 @@ mod mock;
 mod tests;
 
 use frame_support::{
-    dispatch::{DispatchInfo, DispatchResultWithPostInfo, PostDispatchInfo},
+    dispatch::{DispatchInfo, PostDispatchInfo},
     traits::{
-        fungible::{Inspect, Mutate, MutateHold},
-        tokens::Preservation,
-        EnsureOrigin, Get, PalletInfoAccess, Time,
+        fungible::{Inspect, Mutate},
+        EnsureOrigin,
     },
 };
-use frame_system::{pallet_prelude::OriginFor, CheckWeight, Pallet as System, WeightInfo};
+use frame_system::{pallet_prelude::OriginFor, CheckWeight, Pallet as System};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{H160, H256, U256};
 use sp_runtime::{
-    traits::{DispatchInfoOf, Dispatchable, One, Saturating, UniqueSaturatedInto, Zero},
+    traits::{DispatchInfoOf, Dispatchable},
     transaction_validity::{
         InvalidTransaction, TransactionValidity, TransactionValidityError, ValidTransactionBuilder,
     },
-    RuntimeDebug, SaturatedConversion,
+    RuntimeDebug,
 };
 use sp_std::{marker::PhantomData, prelude::*};
 
@@ -121,9 +120,9 @@ where
 
     pub fn pre_dispatch_self_contained(
         &self,
-        origin: &H160,
-        dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
-        len: usize,
+        _origin: &H160,
+        _dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
+        _len: usize,
     ) -> Option<Result<(), TransactionValidityError>> {
         Some(Ok(()))
     }
@@ -143,7 +142,7 @@ where
                 Transaction::EIP2930(t) => t.nonce,
                 Transaction::EIP1559(t) => t.nonce,
             };
-            let mut builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
+            let builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
 
             Some(builder.build())
         } else {
@@ -216,9 +215,7 @@ pub mod pallet {
 
             let (from, to, value, data) = Self::extract_tx_fields(&tx);
 
-            log::debug!(target: "ethink:pallet", "From {:?}", &from);
-            log::debug!(target: "ethink:pallet", "To {:?}", &to);
-            log::debug!(target: "ethink:pallet", "Value {:?}", &value);
+            log::debug!(target: "ethink:pallet", "From: {:?}\nTo: {:?}\nValue: {:?}", &from, &to, &value);
 
             let from: T::AccountId = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
             let to = to.ok_or(Error::<T>::TxConvertionFailed)?;

@@ -6,13 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_support::{
-    dispatch::DispatchClass,
-    traits::{
-        tokens::{fungible, Preservation::Expendable},
-        Nothing,
-    },
-};
+use frame_support::{dispatch::DispatchClass, traits::Nothing};
 use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
@@ -817,7 +811,7 @@ impl_runtime_apis! {
             to: H160,
             data: Vec<u8>,
             value: U256,
-            gas_limit: U256,
+            _gas_limit: U256,
         ) -> Result<Vec<u8>, sp_runtime::DispatchError> {
             use codec::Encode;
             // TODO: do we need to validate tx first here?

@@ -24,7 +24,7 @@ use sp_runtime::{
         SignedExtension,
     },
     transaction_validity::{InvalidTransaction, TransactionValidityError},
-    OpaqueExtrinsic, RuntimeDebug,
+    OpaqueExtrinsic,
 };
 
 use crate::{CheckedExtrinsic, CheckedSignature, SelfContainedCall};

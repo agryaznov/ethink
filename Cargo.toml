@@ -1,6 +1,5 @@
 [workspace.package]
 edition = "2021"
-default-run = "ethink-node"
 
 [workspace]
 members = [

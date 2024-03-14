@@ -8,7 +8,7 @@ edition.workspace = true
 [dependencies]
 ethereum.workspace = true
 ethereum-types = { workspace = true, default-features = false }
-scale-codec = { package = "parity-scale-codec", workspace = true, default-features = false }
+scale-codec = { workspace = true, default-features = false }
 scale-info = { workspace = true, default-features = false }
 # Substrate
 frame-support = { workspace = true, default-features = false }

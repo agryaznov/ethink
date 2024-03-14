@@ -4,7 +4,6 @@ use ep_account::AccountId20;
 use ethereum::{LegacyTransaction, LegacyTransactionMessage};
 use futures::future::TryFutureExt;
 use sp_core::crypto::KeyTypeId;
-use sp_runtime::Serialize;
 use sp_runtime::{generic::BlockId, transaction_validity::TransactionSource};
 
 impl<B, C, P> EthRPC<B, C, P>
@@ -17,11 +16,13 @@ where
     pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
         // TODO refactor
-        log::debug!(target: "ethink:rpc", "eth_sendRawTx encoded: {:02x?}", &bytes);
         let slice = &bytes.0[..];
         if slice.is_empty() {
             return Err(internal_err("transaction data is empty"));
         }
+
+        log::debug!(target: "ethink:rpc", "eth_sendRawTx encoded: 0x{}", hex::encode(&slice));
+
         let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
             Ok(tx) => tx,
             Err(_) => return Err(internal_err("decode transaction failed")),
@@ -90,8 +91,6 @@ where
             input,
             ..
         } = msg.0;
-
-        log::debug!(target: "ethink:rpc", "input bytes: {:02x?}", &input);
 
         let tx: EthTx = LegacyTransaction {
             // TODO put to sg calc step above
