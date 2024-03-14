@@ -804,13 +804,11 @@ impl_runtime_apis! {
             let bal = Balances::free_balance(
                 &address.into(),
             );
-            log::debug!(target: "ethink", "BALANCE of {:?} is {:?}!", &address, &bal);
             bal.into()
         }
         /// Account nonce
         fn nonce(address: H160) -> U256 {
             let nonce = System::account_nonce(AccountId::from(address.clone())).into();
-            log::debug!(target: "ethink:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
             nonce
         }
         /// Call contract without submitting extrinsic
@@ -865,7 +863,7 @@ impl_runtime_apis! {
                 data: vec![99u8, 58u8, 165u8, 81u8],
             }.into()).encode();
 
-            log::debug!(target: "ethink", "ENCODED XT: {:02x?}", &xt);
+            log::debug!(target: "ethink:runtime", "ENCODED XT: {:02x?}", &xt);
 
 
             let extra: SignedExtra =

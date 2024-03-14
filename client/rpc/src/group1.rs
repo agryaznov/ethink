@@ -17,6 +17,7 @@ where
     pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
         // TODO refactor
+        log::debug!(target: "ethink:rpc", "eth_sendRawTx encoded: {:02x?}", &bytes);
         let slice = &bytes.0[..];
         if slice.is_empty() {
             return Err(internal_err("transaction data is empty"));
@@ -25,7 +26,8 @@ where
             Ok(tx) => tx,
             Err(_) => return Err(internal_err("decode transaction failed")),
         };
-        log::debug!(target: "ethink:rpc", "SendRawTx REQUEST: {:?}", &tx);
+
+        log::debug!(target: "ethink:rpc", "eth_sendRawTx decoded: {:#?}", &tx);
 
         // TODO: DRY (this is used in several places)
         let tx_hash = tx.hash();
@@ -49,10 +51,7 @@ where
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
 
-        let TransactionRequest {
-            from,
-            ..
-        } = request.clone();
+        let TransactionRequest { from, .. } = request.clone();
 
         // TODO impl self.accounts() and take the first one from there
         let from = from.ok_or(internal_err("no origin account provided for tx"))?;
@@ -92,6 +91,8 @@ where
             ..
         } = msg.0;
 
+        log::debug!(target: "ethink:rpc", "input bytes: {:02x?}", &input);
+
         let tx: EthTx = LegacyTransaction {
             // TODO put to sg calc step above
             signature: ethereum::TransactionSignature::new(v, r, s)
@@ -104,6 +105,8 @@ where
             input,
         }
         .into();
+
+        log::debug!(target: "ethink:rpc", "eth_sendTx: {:#?}", &tx);
 
         // TODO: DRY
         let tx_hash = tx.hash();
