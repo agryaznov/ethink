@@ -1,0 +1,15 @@
+[package]
+name = "e2e-tests"
+version = "0.1.0"
+edition.workspace = true
+description = "Integration tests for ethink!"
+
+[dependencies]
+ureq = { version = "2.9.6", features = ["json"] }
+subxt = "0.28.0"
+log.workspace = true
+
+# Substrate
+sp-keyring.workspace = true
+sp-core.workspace = true
+sp-runtime.workspace = true

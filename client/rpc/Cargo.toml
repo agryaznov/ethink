@@ -2,7 +2,7 @@
 name = "ethink-rpc"
 version = "0.1.0"
 description = "Ethereum RPC compatibility layer for pallet-contracts"
-edition = "2021"
+edition.workspace = true
 
 [dependencies]
 ethereum-types.workspace = true

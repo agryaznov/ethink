@@ -19,8 +19,6 @@
 #![allow(clippy::comparison_chain, clippy::large_enum_variant)]
 
 #[cfg(all(feature = "std", test))]
-mod mock;
-#[cfg(all(feature = "std", test))]
 mod tests;
 
 use frame_support::{

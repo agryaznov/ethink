@@ -11,6 +11,7 @@ members = [
     "primitives/rpc",
     "primitives/account",
     "frame/ethink",
+    "e2e-tests",
 ]
 exclude = [ "dapp/contracts/flipper.ink" ]
 resolver = "2"
@@ -38,6 +39,7 @@ sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink"
 sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-keystore = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-keyring = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-runtime-interface = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}

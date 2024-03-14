@@ -68,6 +68,7 @@ where
     }
 }
 
+// TODO re-write as macros, as every impl just calls the same-named method of the struct
 #[async_trait]
 impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
