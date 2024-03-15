@@ -24,7 +24,12 @@ use subxt::{Config, OnlineClient};
 pub struct TestNodeProcess<R: Config> {
     proc: process::Child,
     client: OnlineClient<R>,
-    url: String,
+    port: u16,
+}
+
+pub enum Protocol {
+    WS,
+    HTTP,
 }
 
 impl<R> Drop for TestNodeProcess<R>
@@ -65,8 +70,12 @@ where
     }
 
     /// Returns the URL of the running node.
-    pub fn url(&self) -> &str {
-        &self.url
+    pub fn url(&self, proto: Protocol) -> String {
+        let (scheme, port) = match proto {
+            Protocol::WS => ("ws", &self.port),
+            Protocol::HTTP => ("http", &self.port),
+        };
+        format!("{scheme}://127.0.0.1:{port}")
     }
 }
 
@@ -106,8 +115,7 @@ where
             .stdout(process::Stdio::piped())
             .stderr(process::Stdio::piped())
             .arg("--port=0")
-            .arg("--rpc-port=0")
-            .arg("--ws-port=0");
+            .arg("--rpc-port=0");
 
         if let Some(authority) = self.authority {
             let authority = format!("{authority:?}");
@@ -125,17 +133,13 @@ where
 
         // Wait for RPC port to be logged (it's logged to stderr):
         let stderr = proc.stderr.take().unwrap();
-        let ws_port = find_substrate_port_from_output(stderr);
-        let ws_url = format!("ws://127.0.0.1:{ws_port}");
+        let port = find_substrate_ports_from_output(stderr);
+        let ws_url = format!("ws://127.0.0.1:{port}");
 
         // Connect to the node with a `subxt` client:
         let client = OnlineClient::from_url(ws_url.clone()).await;
         match client {
-            Ok(client) => Ok(TestNodeProcess {
-                proc,
-                client,
-                url: ws_url.clone(),
-            }),
+            Ok(client) => Ok(TestNodeProcess { proc, client, port }),
             Err(err) => {
                 let err = format!("Failed to connect to node rpc at {ws_url}: {err}");
                 log::error!("{}", err);
@@ -149,18 +153,18 @@ where
 }
 
 // Consume a stderr reader from a spawned substrate command and
-// locate the port number that is logged out to it.
-fn find_substrate_port_from_output(r: impl Read + Send + 'static) -> u16 {
+// locate the port numbers that are logged out to it.
+fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
     BufReader::new(r)
         .lines()
         .find_map(|line| {
             let line = line.expect("failed to obtain next line from stdout for port discovery");
 
+            println!("line: {line}");
             // does the line contain our port (we expect this specific output from
             // substrate).
             let line_end = line
-                .rsplit_once("Listening for new connections on 127.0.0.1:")
-                .or_else(|| line.rsplit_once("Running JSON-RPC WS server: addr=127.0.0.1:"))
+                .rsplit_once("Running JSON-RPC server: addr=127.0.0.1:")
                 .map(|(_, port_str)| port_str)?;
 
             // trim non-numeric chars from the end of the port part of the line.

@@ -6,8 +6,9 @@ description = "Integration tests for ethink!"
 
 [dependencies]
 ureq = { version = "2.9.6", features = ["json"] }
-subxt = "0.28.0"
 log.workspace = true
+tokio = { version = "1.36", features = ["rt", "macros"] }
+subxt = "0.29.0"
 
 # Substrate
 sp-keyring.workspace = true
