@@ -1841,19 +1841,6 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "0d6ef0072f8a535281e4876be788938b528e9a1d43900b82c2569af7da799125"
 
 [[package]]
-name = "e2e-tests"
-version = "0.1.0"
-dependencies = [
- "log",
- "sp-core 21.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
- "sp-keyring",
- "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
- "subxt",
- "tokio",
- "ureq",
-]
-
-[[package]]
 name = "ecdsa"
 version = "0.16.9"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2115,6 +2102,7 @@ dependencies = [
  "futures",
  "hex-literal",
  "jsonrpsee",
+ "log",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc",
  "sc-basic-authorship",
@@ -2146,7 +2134,10 @@ dependencies = [
  "sp-timestamp",
  "substrate-build-script-utils",
  "substrate-frame-rpc-system",
+ "subxt",
+ "tokio",
  "try-runtime-cli",
+ "ureq",
 ]
 
 [[package]]

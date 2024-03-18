@@ -72,6 +72,12 @@ try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 
+[dev-dependencies]
+ureq = { version = "2.9.6", features = ["json"] }
+tokio = { version = "1.36", features = ["rt", "macros"] }
+subxt = "0.29.0"
+log.workspace = true
+
 [features]
 default = []
 # Dependencies that are only required if runtime benchmarking should be build.

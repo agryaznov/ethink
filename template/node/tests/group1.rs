@@ -1,9 +1,11 @@
 //! Intergraion tests for ethink!
-
-use e2e_tests::{node_proc::*, PolkadotConfig};
+mod common;
 
 #[tokio::test]
 async fn call_works() {
+    use common::*;
+    use node_proc::*;
+
     // spawn node
     let node_proc = TestNodeProcess::<PolkadotConfig>::build(
         "/home/me/dev/polka/ethink/target/debug/ethink-node",

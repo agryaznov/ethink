@@ -1,5 +1,3 @@
-//! Stub, see tests/
-
 pub mod node_proc;
 
 // Default set of commonly used types by Substrate runtimes.
