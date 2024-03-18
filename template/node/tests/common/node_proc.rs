@@ -159,17 +159,13 @@ fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
         .lines()
         .find_map(|line| {
             let line = line.expect("failed to obtain next line from stdout for port discovery");
-
-            println!("line: {line}");
             // does the line contain our port (we expect this specific output from
             // substrate).
             let line_end = line
                 .rsplit_once("Running JSON-RPC server: addr=127.0.0.1:")
                 .map(|(_, port_str)| port_str)?;
-
             // trim non-numeric chars from the end of the port part of the line.
             let port_str = line_end.trim_end_matches(|b: char| !b.is_ascii_digit());
-
             // expect to have a number here (the chars after '127.0.0.1:') and parse them
             // into a u16.
             let port_num = port_str
