@@ -174,7 +174,19 @@ fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
 
             Some(port_num)
         })
-        .expect("We should find a port before the reader ends")
+        .expect("we should find a port before the reader ends")
+}
+
+// same as above but looks for contract address in the output
+// TODO re-write with json
+pub fn find_contract_address_from_output(o: Vec<u8>) -> String {
+    String::from_utf8(o)
+        .expect("failed to decode output")
+        .rsplit_once("Contract")
+        .map(|(_, address)| address)
+        .expect("no contract address found in the output")
+        .trim()
+        .to_string()
 }
 
 // #[cfg(test)]
