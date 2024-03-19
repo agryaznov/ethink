@@ -816,9 +816,11 @@ impl_runtime_apis! {
             use codec::Encode;
             // TODO: do we need to validate tx first here?
             // TODO: put this logic into runner?
+            let from = AccountId::from(from);
+            let to = AccountId::from(to);
             let res = Contracts::bare_call(
-                AccountId::from(from),
-                AccountId::from(to),
+                from,
+                to,
                 value.try_into().unwrap_or_default(), // TODO
                 Weight::from_all(u64::MAX),           // TODO
                 None,

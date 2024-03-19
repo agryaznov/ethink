@@ -48,7 +48,7 @@ async fn eth_call() {
                            "from": ALITH_ADDRESS,
                            "to": contract_address,
                            "value": "0x00",
-                           "data": "0x102f865bd9"
+                           "data": "0x2f865bd9"
                        },
                        "latest"],
             "id": 1}));
@@ -61,10 +61,10 @@ async fn eth_call() {
         .expect("blank json output")
         .expect("can't decode json output");
 
-    // TODO sane return value to expect
+    // TODO construct these magic return values explicitly here
+    assert_eq!(obj["result"].as_str().unwrap(), "0x00000000080000");
+
     // TODO change state and re-test
-    assert_eq!(obj["result"].as_str().unwrap(), "0x01000000080101");
-    todo!()
 }
 
 #[tokio::test]
