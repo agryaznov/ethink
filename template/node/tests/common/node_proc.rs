@@ -178,20 +178,34 @@ fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
         .expect("we should find a port before the reader ends")
 }
 
-// same as above but looks for contract address in the output
-pub fn find_contract_address_from_json(o: &[u8]) -> String {
+// Look for contract address in the json output of cargo-contract instantiate
+pub fn find_address_from_instantiate(o: &[u8]) -> String {
     Deserializer::from_slice(o)
         .into_iter::<Value>()
         .next()
         .expect("blank json output")
-        .expect("cant decode json output")
+        .expect("can't decode json output")
         .get("contract")
         .expect("no contract address found in the output")
         .as_str()
-        .expect("cant decode contract address from the output")
+        .expect("can't decode contract address from the output")
         .to_string()
 }
 
+// Look for single boolean flag from the data returned from cargo-contract call
+pub fn find_bool_value_from_call(o: &[u8]) -> bool {
+    let obj = Deserializer::from_slice(o)
+        .into_iter::<Value>()
+        .next()
+        .expect("blank json output")
+        .expect("can't decode json output");
+
+    println!("object: {:#?}", &obj);
+
+    obj["data"]["Tuple"]["values"][0]["Bool"]
+        .as_bool()
+        .expect("can't find bool in output data")
+}
 // #[cfg(test)]
 // mod tests {
 //     use super::*;

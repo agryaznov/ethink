@@ -215,18 +215,22 @@ pub mod pallet {
 
             log::debug!(target: "ethink:pallet", "From: {:?}\nTo: {:?}\nValue: {:?}", &from, &to, &value);
 
-            let from: T::AccountId = from.ok_or(Error::<T>::TxConvertionFailed)?.into();
+            let from = from.ok_or(Error::<T>::TxConvertionFailed)?;
             let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
 
             // Increase nonce of the sender account
-            System::<T>::inc_account_nonce(from);
+            let from_acc: T::AccountId = from.clone().into();
+            System::<T>::inc_account_nonce(from_acc);
 
             let call = T::Contracts::construct_call(to, value, data);
-            log::debug!(target: "ethink:pallet", "Dispatching Call....");
+            log::debug!(target: "ethink:pallet", "Dispatching Call...");
             let _ = call.dispatch(origin.into()).map_err(|e| {
-                log::debug!(target: "ethink:pallet", "Failed: {:?}", &e);
+                log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
+
+            let tx_hash = tx.hash();
+            Self::deposit_event(Event::EthTxExecuted { from, to, tx_hash });
 
             Ok(())
         }
@@ -236,12 +240,12 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event {
         /// An Ethereum transaction was successfully executed.
-        Executed {
+        EthTxExecuted {
             from: H160,
             to: H160,
-            transaction_hash: H256,
+            tx_hash: H256,
             //            exit_reason: ExitReason,
-            extra_data: Vec<u8>,
+            //            extra_data: Vec<u8>,
         },
     }
 
