@@ -29,6 +29,7 @@ async fn call_works() {
         .arg("--args=false")
         .arg("-x")
         .arg("--skip-confirm")
+        .arg("--output-json")
         .arg(&manifest_arg)
         .arg(&url_arg)
         .output()
@@ -36,9 +37,7 @@ async fn call_works() {
 
     assert!(output.status.success());
 
-    let contract_address = find_contract_address_from_output(output.stdout);
-
-    panic!("contract_address: {contract_address}");
+    let contract_address = find_contract_address_from_json(&output.stdout);
 
     // make ETH RPC request
     let res = ureq::post(node_proc.url(Protocol::HTTP).as_str()).send_json(ureq::json!({

@@ -12,6 +12,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use serde_json::{Deserializer, Value};
 use sp_keyring::AccountKeyring;
 use std::{
     ffi::{OsStr, OsString},
@@ -178,14 +179,16 @@ fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
 }
 
 // same as above but looks for contract address in the output
-// TODO re-write with json
-pub fn find_contract_address_from_output(o: Vec<u8>) -> String {
-    String::from_utf8(o)
-        .expect("failed to decode output")
-        .rsplit_once("Contract")
-        .map(|(_, address)| address)
+pub fn find_contract_address_from_json(o: &[u8]) -> String {
+    Deserializer::from_slice(o)
+        .into_iter::<Value>()
+        .next()
+        .expect("blank json output")
+        .expect("cant decode json output")
+        .get("contract")
         .expect("no contract address found in the output")
-        .trim()
+        .as_str()
+        .expect("cant decode contract address from the output")
         .to_string()
 }
 
