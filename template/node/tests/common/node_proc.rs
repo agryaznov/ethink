@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use serde_json::{Deserializer, Value};
 use sp_keyring::AccountKeyring;
 use std::{
     ffi::{OsStr, OsString},
@@ -176,33 +175,6 @@ fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
             Some(port_num)
         })
         .expect("we should find a port before the reader ends")
-}
-
-// Look for contract address in the json output of cargo-contract instantiate
-pub fn find_address_from_instantiate(o: &[u8]) -> String {
-    let obj = Deserializer::from_slice(o)
-        .into_iter::<Value>()
-        .next()
-        .expect("blank json output")
-        .expect("can't decode json output");
-
-    obj["contract"]
-        .as_str()
-        .expect("can't decode contract address from the output")
-        .to_string()
-}
-
-// Look for single boolean flag from the data returned from cargo-contract call
-pub fn find_bool_value_from_call(o: &[u8]) -> bool {
-    let obj = Deserializer::from_slice(o)
-        .into_iter::<Value>()
-        .next()
-        .expect("blank json output")
-        .expect("can't decode json output");
-
-    obj["data"]["Tuple"]["values"][0]["Bool"]
-        .as_bool()
-        .expect("can't find bool in output data")
 }
 // #[cfg(test)]
 // mod tests {
