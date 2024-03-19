@@ -2,7 +2,7 @@ use super::*;
 use sp_api::HeaderT;
 use sp_runtime::traits::UniqueSaturatedInto;
 
-impl<B, C, P> Duck<B, C, P>
+impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     B::Header: HeaderT<Number = u32>,

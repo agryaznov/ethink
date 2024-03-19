@@ -175,7 +175,7 @@ pub trait EthApi {
     // Execute
     // ########################################################################
 
-    /// Call contract, returning the output data.
+    /// Call contract, returning the output data. This does not submit a transaction on chain.
     #[method(name = "eth_call")]
     async fn call(
         &self,
@@ -242,12 +242,12 @@ pub trait EthApi {
     // Submit
     // ########################################################################
 
-    /// Sends transaction; will block waiting for signer to return the
+    /// Sign and submit transaction; will block waiting for signer to return the
     /// transaction hash.
     #[method(name = "eth_sendTransaction")]
     async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256>;
 
-    /// Sends signed transaction, returning its hash.
+    /// Submit signed transaction, returning its hash.
     #[method(name = "eth_sendRawTransaction")]
     async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256>;
 }

@@ -6,13 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use frame_support::{
-    dispatch::DispatchClass,
-    traits::{
-        tokens::{fungible, Preservation::Expendable},
-        Nothing,
-    },
-};
+use frame_support::{dispatch::DispatchClass, traits::Nothing};
 use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
@@ -424,7 +418,7 @@ parameter_types! {
     pub const DepositPerByte: Balance = deposit(0, 1);
     pub Schedule: pallet_contracts::Schedule<Runtime> = schedule::<Runtime>();
     pub const DefaultDepositLimit: Balance = deposit(1024, 1024 * 1024);
-     pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
+    pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
 }
 
 impl pallet_utility::Config for Runtime {
@@ -804,35 +798,40 @@ impl_runtime_apis! {
             let bal = Balances::free_balance(
                 &address.into(),
             );
-            log::debug!(target: "ethink", "BALANCE of {:?} is {:?}!", &address, &bal);
             bal.into()
         }
         /// Account nonce
         fn nonce(address: H160) -> U256 {
             let nonce = System::account_nonce(AccountId::from(address.clone())).into();
-            log::debug!(target: "ethink:runtime", "NONCE of {:?} is {:?}", &address, &nonce);
             nonce
         }
-        /// Call
-        fn call_me(
+        /// Call contract without submitting extrinsic
+        fn call(
             from: H160,
             to: H160,
+            data: Vec<u8>,
             value: U256,
-        ) -> Result<U256, sp_runtime::DispatchError> {
-            // For contracts, this would be bare_call()
-            // But for starters, let's just send some balance
-            // Basically we need to do the same what  dispatchable Balances::transfer_allow_death() does
-            let source = AccountId::from(from);
-            let dest = AccountId::from(to);
-            log::debug!(target: "ethink", "SENDING {:?} to {:?}!", &value, &dest);
-            // this WILL NOT change state!
-            // in order to make real transfer, we gotta compose Extrinsic here!!
-            <Balances as fungible::Mutate<_>>::transfer(&source, &dest, value.try_into()?, Expendable)?;
-            log::debug!(target: "ethink", "SENTTTTT {:?} to {:?}!", &value, &dest);
+            _gas_limit: U256,
+        ) -> Result<Vec<u8>, sp_runtime::DispatchError> {
+            use codec::Encode;
+            // TODO: do we need to validate tx first here?
+            // TODO: put this logic into runner?
+            let from = AccountId::from(from);
+            let to = AccountId::from(to);
+            let res = Contracts::bare_call(
+                from,
+                to,
+                value.try_into().unwrap_or_default(), // TODO
+                Weight::from_all(u64::MAX),           // TODO
+                None,
+                data,
+                CONTRACTS_DEBUG_OUTPUT,
+                CONTRACTS_EVENTS,
+                pallet_contracts::Determinism::Enforced,
+            )
+            .result?;
 
-            Ok(Balances::free_balance(
-                &source,
-            ).into())
+            Ok(res.encode())
         }
 
          fn convert_transaction(
@@ -849,7 +848,7 @@ impl_runtime_apis! {
            use codec::Encode;
 
            let to = AccountId::from(to);
-            let from = AccountId::from(from);
+           let from = AccountId::from(from);
 
            let xt = UncheckedExtrinsic::new_unsigned(
             pallet_contracts::Call::<Runtime>::call {
@@ -860,7 +859,7 @@ impl_runtime_apis! {
                 data: vec![99u8, 58u8, 165u8, 81u8],
             }.into()).encode();
 
-            log::debug!(target: "ethink", "ENCODED XT: {:02x?}", &xt);
+            log::debug!(target: "ethink:runtime", "ENCODED XT: {:02x?}", &xt);
 
 
             let extra: SignedExtra =

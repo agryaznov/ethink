@@ -60,7 +60,7 @@ pub use self::{
         Peers, PipProtocolInfo, SyncInfo, SyncStatus, TransactionStats,
     },
     transaction::{LocalTransactionStatus, RichRawTransaction, Transaction},
-    transaction_request::{TransactionMessage, TransactionRequest},
+    transaction_request::{TransactionRequest, TxMessage},
     work::Work,
 };
 

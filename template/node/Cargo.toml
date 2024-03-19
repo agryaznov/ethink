@@ -19,6 +19,7 @@ name = "ethink-node"
 [dependencies]
 clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
+hex-literal.workspace = true
 
 sc-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-core = { workspace = true, default-features = false }
@@ -35,6 +36,7 @@ sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch 
 sc-consensus = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sp-keystore = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
 sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
@@ -59,19 +61,23 @@ frame-benchmarking = { git = "https://github.com/agryaznov/polkadot-sdk", branch
 frame-benchmarking-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 
 # Local Dependencies
-#TODO put to workspace deps
-ethink-runtime = { path = "../runtime" }
-ethink-rpc = { path = "../../client/rpc" }
+ethink-runtime.workspace = true
+ethink-rpc.workspace = true
 ep-rpc = { workspace = true, features = ["default"] }
-ep-account = { workspace = true }
-
-hex-literal = { worspace = true }
+ep-account.workspace = true
 
 # CLI-specific dependencies
 try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", optional = true }
 
 [build-dependencies]
 substrate-build-script-utils = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+
+[dev-dependencies]
+ureq = { version = "2.9.6", features = ["json"] }
+tokio = { version = "1.36", features = ["rt", "macros"] }
+serde_json = "1.0"
+subxt = "0.29.0"
+log.workspace = true
 
 [features]
 default = []

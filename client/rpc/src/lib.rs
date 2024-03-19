@@ -16,6 +16,7 @@ use sc_transaction_pool_api::TransactionPool;
 use sp_api::HeaderT;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
+use sp_keystore::Keystore;
 use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
@@ -42,13 +43,14 @@ pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
 }
 
 /// Eth RPC implementation.
-pub struct Duck<B: BlockT, C, P> {
+pub struct EthRPC<B: BlockT, C, P> {
     client: Arc<C>,
     pool: Arc<P>,
+    keystore: Arc<dyn Keystore>,
     _phantom: PhantomData<B>,
 }
 
-impl<B, C, P> Duck<B, C, P>
+impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     B::Header: HeaderT<Number = u32>,
@@ -56,17 +58,19 @@ where
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
-    pub fn new(client: Arc<C>, pool: Arc<P>) -> Self {
+    pub fn new(client: Arc<C>, pool: Arc<P>, keystore: Arc<dyn Keystore>) -> Self {
         Self {
             client,
             pool,
+            keystore,
             _phantom: PhantomData::default(),
         }
     }
 }
 
+// TODO re-write as macros, as every impl just calls the same-named method of the struct
 #[async_trait]
-impl<B, C, P> EthApiServer for Duck<B, C, P>
+impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     B::Header: HeaderT<Number = u32>,

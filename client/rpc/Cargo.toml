@@ -2,35 +2,34 @@
 name = "ethink-rpc"
 version = "0.1.0"
 description = "Ethereum RPC compatibility layer for pallet-contracts"
-edition = "2021"
+edition.workspace = true
 
 [dependencies]
-ethereum-types = { workspace = true }
-ethereum = { workspace = true }
+ethereum-types.workspace = true
+ethereum.workspace = true
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
-hex = { workspace = true }
-log = { workspace = true }
-futures = { workspace = true }
+hex.workspace = true
+log.workspace = true
+futures.workspace = true
 
 # ethink
 ep-rpc = { workspace = true, features = ["default"] }
 ep-account = { workspace = true, features = ["default"] }
 mappings = { workspace = true, features = ["default"] }
-
-ethink-rpc-core = { workspace = true }
+ethink-rpc-core.workspace = true
 
 # Substrate
 sp-io = { workspace = true, default-features = false }
 sp-api = { workspace = true, default-features = false }
 sp-runtime = { workspace = true, default-features = false }
+sp-keystore = { workspace = true, default-features = false }
 sp-blockchain = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 sc-client-api = { workspace = true, default-features = false }
-sc-transaction-pool-api = { workspace = true }
-sc-network = { workspace = true }
-sc-network-common = { workspace = true }
-pallet-balances = { workspace = true }
-
+sc-transaction-pool-api.workspace = true
+sc-network.workspace = true
+sc-network-common.workspace = true
+pallet-balances.workspace = true
 
 [features]
 default = []

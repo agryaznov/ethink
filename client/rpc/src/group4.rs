@@ -2,13 +2,14 @@ use super::*;
 use ep_rpc::ETHRuntimeRPC;
 use sp_runtime::traits::UniqueSaturatedInto;
 
-impl<B, C, P> Duck<B, C, P>
+impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
     pub fn accounts(&self) -> RpcResult<Vec<H160>> {
+        // TODO: extract accounts list from the "ethi" keystore
         Ok(vec![H160::zero()])
     }
 

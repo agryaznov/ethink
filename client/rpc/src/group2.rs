@@ -1,7 +1,7 @@
 use super::*;
 use mappings::{EthBlock, SubBlock};
 
-impl<B, C, P> Duck<B, C, P>
+impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
@@ -89,7 +89,7 @@ where
                 // block num in substrate db is u32
                 // https://github.com/paritytech/polkadot-sdk/blob/73c2bca9cdb17f1fdc2afd7aed826d0c55b8640a/substrate/client/rpc/src/chain/mod.rs#L75
                 let number = <NumberFor<B>>::try_from(num)
-                    .map_err(|err| internal_err(format!("Error converting block: {:?}", num)))?;
+                    .map_err(|_| internal_err(format!("Error converting block: {:?}", num)))?;
                 self.client
                     .hash(number)
                     .map_err(|err| internal_err(format!("Failed fetching block: {:?}", err)))?

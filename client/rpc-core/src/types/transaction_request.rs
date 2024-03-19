@@ -18,19 +18,15 @@
 
 //! `TransactionRequest` type
 
-use ethereum::{
-    AccessListItem, EIP1559TransactionMessage, EIP2930TransactionMessage, LegacyTransactionMessage,
-};
+use ethereum::{AccessListItem, LegacyTransactionMessage};
 use ethereum_types::{H160, U256};
 use serde::{Deserialize, Serialize};
 
 use crate::types::{deserialize_data_or_input, Bytes};
 
-pub enum TransactionMessage {
-    Legacy(LegacyTransactionMessage),
-    EIP2930(EIP2930TransactionMessage),
-    EIP1559(EIP1559TransactionMessage),
-}
+// TODO we don't really need to support all of these,
+// because it's not a real eth tx in our use case, just something that looks like one
+pub struct TxMessage(pub LegacyTransactionMessage);
 
 /// Transaction request coming from RPC
 #[derive(Clone, Debug, Default, Eq, PartialEq, Serialize, Deserialize)]
@@ -67,56 +63,20 @@ pub struct TransactionRequest {
     pub transaction_type: Option<U256>,
 }
 
-impl From<TransactionRequest> for Option<TransactionMessage> {
+impl From<TransactionRequest> for TxMessage {
     fn from(req: TransactionRequest) -> Self {
-        match (req.gas_price, req.max_fee_per_gas, req.access_list.clone()) {
-            // Legacy
-            (Some(_), None, None) => Some(TransactionMessage::Legacy(LegacyTransactionMessage {
-                nonce: U256::zero(),
-                gas_price: req.gas_price.unwrap_or_default(),
-                gas_limit: req.gas.unwrap_or_default(),
-                value: req.value.unwrap_or_default(),
-                input: req.data.map(|s| s.into_vec()).unwrap_or_default(),
-                action: match req.to {
-                    Some(to) => ethereum::TransactionAction::Call(to),
-                    None => ethereum::TransactionAction::Create,
-                },
-                chain_id: None,
-            })),
-            // EIP2930
-            (_, None, Some(_)) => Some(TransactionMessage::EIP2930(EIP2930TransactionMessage {
-                nonce: U256::zero(),
-                gas_price: req.gas_price.unwrap_or_default(),
-                gas_limit: req.gas.unwrap_or_default(),
-                value: req.value.unwrap_or_default(),
-                input: req.data.map(|s| s.into_vec()).unwrap_or_default(),
-                action: match req.to {
-                    Some(to) => ethereum::TransactionAction::Call(to),
-                    None => ethereum::TransactionAction::Create,
-                },
-                chain_id: 0,
-                access_list: req.access_list.unwrap_or_default(),
-            })),
-            // EIP1559
-            (None, Some(_), _) | (None, None, None) => {
-                // Empty fields fall back to the canonical transaction schema.
-                Some(TransactionMessage::EIP1559(EIP1559TransactionMessage {
-                    nonce: U256::zero(),
-                    max_fee_per_gas: req.max_fee_per_gas.unwrap_or_default(),
-                    max_priority_fee_per_gas: req.max_priority_fee_per_gas.unwrap_or_default(),
-                    gas_limit: req.gas.unwrap_or_default(),
-                    value: req.value.unwrap_or_default(),
-                    input: req.data.map(|s| s.into_vec()).unwrap_or_default(),
-                    action: match req.to {
-                        Some(to) => ethereum::TransactionAction::Call(to),
-                        None => ethereum::TransactionAction::Create,
-                    },
-                    chain_id: 0,
-                    access_list: req.access_list.unwrap_or_default(),
-                }))
-            }
-            _ => None,
-        }
+        TxMessage(LegacyTransactionMessage {
+            nonce: U256::zero(),
+            gas_price: req.gas_price.unwrap_or_default(),
+            gas_limit: req.gas.unwrap_or_default(),
+            value: req.value.unwrap_or_default(),
+            input: req.data.map(|s| s.into_vec()).unwrap_or_default(),
+            action: match req.to {
+                Some(to) => ethereum::TransactionAction::Call(to),
+                None => ethereum::TransactionAction::Create,
+            },
+            chain_id: None,
+        })
     }
 }
 

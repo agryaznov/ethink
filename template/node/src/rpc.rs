@@ -8,7 +8,7 @@
 use std::sync::Arc;
 
 use ep_rpc::ETHRuntimeRPC;
-use ethink_rpc::{Duck, EthApiServer};
+use ethink_rpc::{EthApiServer, EthRPC};
 use ethink_runtime::{opaque::Block, AccountId, Balance, Nonce};
 use jsonrpsee::RpcModule;
 use sc_client_api::BlockBackend;
@@ -16,6 +16,7 @@ use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
+use sp_keystore::Keystore;
 
 pub use sc_rpc_api::DenyUnsafe;
 
@@ -27,6 +28,8 @@ pub struct FullDeps<C, P> {
     pub pool: Arc<P>,
     /// Whether to deny unsafe calls
     pub deny_unsafe: DenyUnsafe,
+    /// ECDSA keypair for Eth tx signing
+    pub keystore: Arc<dyn Keystore>,
 }
 
 /// Instantiate all full RPC extensions.
@@ -54,13 +57,14 @@ where
         client,
         pool,
         deny_unsafe,
+        keystore,
     } = deps;
 
     module.merge(System::new(client.clone(), pool.clone(), deny_unsafe).into_rpc())?;
     module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
 
     // Eth RPC
-    module.merge(Duck::new(client.clone(), pool).into_rpc())?;
+    module.merge(EthRPC::new(client.clone(), pool, keystore).into_rpc())?;
 
     // Extend this RPC with a custom API by using the following syntax.
     // `YourRpcStruct` should have a reference to a client, which is needed
