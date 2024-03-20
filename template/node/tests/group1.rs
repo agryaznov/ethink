@@ -5,13 +5,12 @@ mod common;
 
 use common::*;
 use serde_json::Deserializer;
-#[macro_use]
 use ureq::json;
 
 #[tokio::test]
 async fn eth_call() {
     // Spawn node and deploy contract
-    let env: Env<PolkadotConfig> = prepare::node_and_contract(FLIPPER_PATH).await;
+    let mut env: Env<PolkadotConfig> = prepare::node_and_contract(FLIPPER_PATH).await;
     // (Flipper is deployed with `false` state)
     // Make eth_call rpc request
     let rq = json!({
@@ -29,7 +28,14 @@ async fn eth_call() {
     let rs = rpc_rq!(env, rq);
     // Should return `false` as flipper state
     assert_eq!(json_get!(rs["result"].as_str()), "0x00000000080000");
-    // TODO change state and re-test
+    // Flip it via contract call
+    let _ = contract_call!(env, "flip", true);
+    // Wait until tx gets executed
+    let _ = &env.wait_for_event("contracts.Called", 2).await;
+    // Make eth_call rpc request again
+    let rs = rpc_rq!(env, rq);
+    // Should now return `true` as flipper state
+    assert_eq!(json_get!(rs["result"].as_str()), "0x00000000080001");
 }
 
 #[tokio::test]
@@ -52,10 +58,8 @@ async fn eth_sendRawTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
     // Check state
-    let output = contract_call!(env, "get");
-    assert!(output.status.success());
+    let output = contract_call!(env, "get", false);
     let rs = Deserializer::from_slice(&output.stdout);
-
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"].as_bool()));
 }

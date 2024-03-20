@@ -54,7 +54,7 @@ impl<R: subxt::Config> Env<R> {
         use futures::StreamExt;
 
         if let Some((pallet, variant)) = fullname.rsplit_once(".") {
-            let mut blocks_sub = &mut self
+            let blocks_sub = &mut self
                 .node
                 .client()
                 .blocks()

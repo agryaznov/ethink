@@ -20,7 +20,7 @@ macro_rules! rpc_rq {
         // make ETH RPC request
         Deserializer::from_reader(
             ureq::post($env.http_url().as_str())
-                .send_json($rq)
+                .send_json($rq.clone())
                 .expect("ETH RPC request failed")
                 .into_reader(),
         )
@@ -41,12 +41,13 @@ macro_rules! rpc_rq {
 /// and decode its output.
 #[macro_export]
 macro_rules! contract_call {
-    ( $env:ident, $msg:literal ) => {
+    ( $env:ident, $msg:literal, $exec:literal ) => {
         contracts::call(
             $env.ws_url().as_str(),
             &$env.contract_manifest(),
             &$env.contract_address(),
             $msg,
+            $exec,
         )
     };
 }
