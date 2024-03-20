@@ -19,7 +19,7 @@ async fn eth_call() {
     "method": "eth_call",
     "params": [{
                    "from": ALITH_ADDRESS,
-                   "to": env.contract_address,
+                   "to": &env.contract_address(),
                    "value": "0x00",
                    "data": "0x2f865bd9"
                },
@@ -52,14 +52,10 @@ async fn eth_sendRawTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
     // Check state
-    let output = contracts::call(
-        FLIPPER_PATH,
-        env.ws_url().as_str(),
-        &env.contract_address,
-        "get",
-    );
+    let output = contract_call!(env, "get");
     assert!(output.status.success());
     let rs = Deserializer::from_slice(&output.stdout);
+
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"].as_bool()));
 }

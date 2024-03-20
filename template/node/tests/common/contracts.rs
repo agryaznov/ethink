@@ -22,10 +22,10 @@ pub fn deploy(manifest_path: &str, url: &str) -> process::Output {
 }
 
 /// Call contract on the node exposed via `url`, and return the output
-pub fn call(manifest_path: &str, url: &str, address: &str, msg: &str) -> process::Output {
+pub fn call(url: &str, manifest_path: &str, address: &str, msg: &str) -> process::Output {
     let surl_arg = format!("-s={ALITH_KEY}");
     let manifest_arg = format!("--manifest-path={manifest_path}");
-    let url_arg = format!("--url={}", url);
+    let url_arg = format!("--url={url}");
     let contract_arg = format!("--contract={address}");
     let msg_arg = format!("--message={msg}");
 

@@ -11,13 +11,35 @@ pub const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
 
 use node::{Protocol, TestNodeProcess};
 
+struct Contract {
+    pub manifest_path: String,
+    pub address: String,
+}
+
 // Testing environment, consisting of a node with a deployed contract
 pub struct Env<R: subxt::Config> {
     pub node: TestNodeProcess<R>,
-    pub contract_address: String,
+    contract: Contract,
 }
 
 impl<R: subxt::Config> Env<R> {
+    pub fn new(node: TestNodeProcess<R>, manifest_path: String, address: String) -> Self {
+        let contract = Contract {
+            manifest_path,
+            address,
+        };
+
+        Env { node, contract }
+    }
+
+    pub fn contract_manifest(&self) -> &str {
+        &self.contract.manifest_path.as_str()
+    }
+
+    pub fn contract_address(&self) -> &str {
+        &self.contract.address.as_str()
+    }
+
     pub fn ws_url(&self) -> String {
         self.node.url(Protocol::WS)
     }
