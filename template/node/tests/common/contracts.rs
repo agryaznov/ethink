@@ -1,20 +1,6 @@
 use crate::common::*;
 use std::process;
 
-/// Lookup for a specific field in the provided json output,
-/// and try to convert it with $as() to a type required.
-#[macro_export]
-macro_rules! json_get {
-    ( $o:ident$([$k:literal])+.$as:ident() ) => {
-           $o.into_iter::<serde_json::Value>()
-           .next()
-           .expect("blank json output")
-           .expect("can't decode json output")$([$k])+
-           .$as()
-           .expect("can't parse needed value from json output")
-    };
-}
-
 /// Deploy contract to the node exposed via `url`, and return the output
 pub fn deploy(manifest_path: &str, url: &str) -> process::Output {
     let surl_arg = format!("-s={ALITH_KEY}");
