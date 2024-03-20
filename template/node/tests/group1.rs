@@ -50,7 +50,7 @@ async fn eth_sendRawTransaction() {
      });
     let _tx_hash = json_get!(rs["result"].as_str());
     // Wait until tx gets executed
-    let _ = &env.wait_for_event("EthTxExecuted", 3).await;
+    let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
     // Check state
     let output = contracts::call(
         FLIPPER_PATH,
@@ -61,7 +61,5 @@ async fn eth_sendRawTransaction() {
     assert!(output.status.success());
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
-    assert!(json_get!(
-        rs["data"]["Tuple"]["values"][0]["Bool"].as_bool()
-    ));
+    assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"].as_bool()));
 }

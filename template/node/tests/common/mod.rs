@@ -28,29 +28,30 @@ impl<R: subxt::Config> Env<R> {
 
     /// Wait until a specified event is emitted in a finalized block,
     /// but no longer than `timeout` number of blocks.
-    pub async fn wait_for_event(&mut self, name: &str, timeout: usize) {
+    pub async fn wait_for_event(&mut self, fullname: &str, timeout: usize) {
         use futures::StreamExt;
 
-        let mut blocks_sub = &mut self
-            .node
-            .client()
-            .blocks()
-            .subscribe_finalized()
-            .await
-            .expect("can't subscribe to finalized blocks")
-            .take(timeout);
+        if let Some((pallet, variant)) = fullname.rsplit_once(".") {
+            let mut blocks_sub = &mut self
+                .node
+                .client()
+                .blocks()
+                .subscribe_finalized()
+                .await
+                .expect("can't subscribe to finalized blocks")
+                .take(timeout);
 
-        while let Some(block) = blocks_sub.next().await {
-            let block = block.expect("can't get next finalized block");
-            let events = block.events().await.expect("can't get events from block");
+            while let Some(block) = blocks_sub.next().await {
+                let block = block.expect("can't get next finalized block");
+                let events = block.events().await.expect("can't get events from block");
 
-            if let Some(_) = events.iter().find(|e| {
-                e.as_ref()
-                    .expect("failed to read event")
-                    .variant_name()
-                    .eq(name)
-            }) {
-                break;
+                if let Some(_) = events.iter().find(|e| {
+                    let event = e.as_ref().expect("failed to read event");
+
+                    event.pallet_name().eq(pallet) && event.variant_name().eq(variant)
+                }) {
+                    break;
+                }
             }
         }
     }
