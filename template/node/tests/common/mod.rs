@@ -1,4 +1,4 @@
-pub mod node_proc;
+pub mod node;
 #[macro_use]
 pub mod contracts;
 pub mod prepare;
@@ -8,19 +8,21 @@ pub const NODE_BIN: &'static str = env!("CARGO_BIN_EXE_ethink-node");
 pub const ALITH_ADDRESS: &'static str = env!("ALITH_ADDRESS");
 pub const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
 
+use node::{Protocol, TestNodeProcess};
+
 // Testing environment, consisting of a node with a deployed contract
 pub struct Env<R: subxt::Config> {
-    pub node_proc: node_proc::TestNodeProcess<R>,
+    pub node: TestNodeProcess<R>,
     pub contract_address: String,
 }
 
 impl<R: subxt::Config> Env<R> {
     pub fn ws_url(&self) -> String {
-        self.node_proc.url(node_proc::Protocol::WS)
+        self.node.url(Protocol::WS)
     }
 
     pub fn http_url(&self) -> String {
-        self.node_proc.url(node_proc::Protocol::HTTP)
+        self.node.url(Protocol::HTTP)
     }
 }
 // Default set of commonly used types by Substrate runtimes.

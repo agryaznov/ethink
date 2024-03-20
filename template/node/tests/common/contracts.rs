@@ -1,15 +1,17 @@
 use crate::common::*;
 use std::process;
 
-/// lookup for a specific field in the provided json output
+/// Lookup for a specific field in the provided json output,
+/// and try to convert it with $as() to a type required.
 #[macro_export]
-macro_rules! get {
-    ( $output:expr, $([$k:literal])+ ) => {
-        serde_json::Deserializer::from_slice($output)
-           .into_iter::<serde_json::Value>()
+macro_rules! json_get {
+    ( $o:ident$([$k:literal])+.$as:ident() ) => {
+           $o.into_iter::<serde_json::Value>()
            .next()
            .expect("blank json output")
            .expect("can't decode json output")$([$k])+
+           .$as()
+           .expect("can't parse needed value from json output")
     };
 }
 

@@ -188,20 +188,20 @@ fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
 //         let mut client2: Option<OnlineClient<SubxtConfig>> = None;
 
 //         {
-//             let node_proc1 = TestNodeProcess::<SubxtConfig>::build("substrate-contracts-node")
+//             let node1 = TestNodeProcess::<SubxtConfig>::build("substrate-contracts-node")
 //                 .spawn()
 //                 .await
 //                 .unwrap();
-//             client1 = Some(node_proc1.client());
+//             client1 = Some(node1.client());
 
-//             let node_proc2 = TestNodeProcess::<SubxtConfig>::build("substrate-contracts-node")
+//             let node2 = TestNodeProcess::<SubxtConfig>::build("substrate-contracts-node")
 //                 .spawn()
 //                 .await
 //                 .unwrap();
-//             client2 = Some(node_proc2.client());
+//             client2 = Some(node2.client());
 
-//             let res1 = node_proc1.client().rpc().block_hash(None).await;
-//             let res2 = node_proc1.client().rpc().block_hash(None).await;
+//             let res1 = node1.client().rpc().block_hash(None).await;
+//             let res2 = node1.client().rpc().block_hash(None).await;
 
 //             assert!(res1.is_ok());
 //             assert!(res2.is_ok());

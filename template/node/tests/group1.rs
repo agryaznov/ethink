@@ -3,6 +3,8 @@
 
 mod common;
 
+use serde_json::Deserializer;
+
 #[tokio::test]
 async fn eth_call() {
     use common::*;
@@ -10,7 +12,9 @@ async fn eth_call() {
     let env: Env<PolkadotConfig> = prepare::node_and_contract(FLIPPER_PATH).await;
     // make ETH RPC request
     // (flip to true)
-    let res = ureq::post(env.http_url().as_str()).send_json(ureq::json!({
+    let res = Deserializer::from_reader(
+        ureq::post(env.http_url().as_str())
+            .send_json(ureq::json!({
             "jsonrpc": "2.0",
             "method": "eth_call",
             "params": [{
@@ -20,19 +24,12 @@ async fn eth_call() {
                            "data": "0x2f865bd9"
                        },
                        "latest"],
-            "id": 1}));
-
-    use serde_json::{Deserializer, Value};
-    // TODO put to macro
-    let obj = Deserializer::from_reader(res.expect("ETH RPC request failed").into_reader())
-        .into_iter::<Value>()
-        .next()
-        .expect("blank json output")
-        .expect("can't decode json output");
-
+            "id": 1}))
+            .expect("ETH RPC request failed")
+            .into_reader(),
+    );
     // TODO construct these magic return values explicitly here
-    assert_eq!(obj["result"].as_str().unwrap(), "0x00000000080000");
-
+    assert_eq!(json_get!(res["result"].as_str()), "0x00000000080000");
     // TODO change state and re-test
 }
 
@@ -44,32 +41,23 @@ async fn eth_sendRawTransaction() {
     // make ETH RPC request
     // (flip to true)
     // TODO explicitly build this magic binary value
-    let res = ureq::post(env.http_url().as_str()).send_json(ureq::json!({
+    let res = Deserializer::from_reader(
+     ureq::post(env.http_url().as_str()).send_json(ureq::json!({
             "jsonrpc": "2.0",
             "method": "eth_sendRawTransaction",
             "params": ["0xf86508808405f5e10094ac7da28b0a6e94dec4c9d2bfa6917ff476e6a9448084cde4efa978a09fda452d7a17d1a7cc98cf88343394f02627d079ef881fc36fc1361769c15a07a0112514d3a2e44ed85fc8c632e044239a17e83db41a99f253d63b3281aa3dd5ab"],
-            "id": 1}));
+         "id": 1}))
+            .expect("ETH RPC request failed").into_reader()
+    );
 
-    assert!(res.is_ok());
-
-    use serde_json::{Deserializer, Value};
-    // TODO put to macro
-    let obj = Deserializer::from_reader(res.expect("ETH RPC request failed").into_reader())
-        .into_iter::<Value>()
-        .next()
-        .expect("blank json output")
-        .expect("can't decode json output");
-
-    let _tx_hash = obj["result"]
-        .as_str()
-        .expect("tx_hash should have been returned");
+    let _tx_hash = json_get!(res["result"].as_str());
 
     use futures::StreamExt;
 
     // Wait until tx gets executed
     // TODO put to common
     let mut blocks_sub = &mut env
-        .node_proc
+        .node
         .client()
         .blocks()
         .subscribe_finalized()
@@ -99,8 +87,9 @@ async fn eth_sendRawTransaction() {
         "get",
     );
     assert!(output.status.success());
+    let res = Deserializer::from_slice(&output.stdout);
     // (should be flipped to true)
-    assert!(get!(&output.stdout, ["data"]["Tuple"]["values"][0]["Bool"])
-        .as_bool()
-        .expect("can't find bool in output data"));
+    assert!(json_get!(
+        res["data"]["Tuple"]["values"][0]["Bool"].as_bool()
+    ));
 }
