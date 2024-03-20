@@ -24,6 +24,35 @@ impl<R: subxt::Config> Env<R> {
     pub fn http_url(&self) -> String {
         self.node.url(Protocol::HTTP)
     }
+
+    /// Wait until a specified event is emitted in a finalized block,
+    /// but no longer than `timeout` number of blocks.
+    pub async fn wait_for_event(&mut self, name: &str, timeout: usize) {
+        use futures::StreamExt;
+
+        let mut blocks_sub = &mut self
+            .node
+            .client()
+            .blocks()
+            .subscribe_finalized()
+            .await
+            .expect("can't subscribe to finalized blocks")
+            .take(timeout);
+
+        while let Some(block) = blocks_sub.next().await {
+            let block = block.expect("can't get next finalized block");
+            let events = block.events().await.expect("can't get events from block");
+
+            if let Some(_) = events.iter().find(|e| {
+                e.as_ref()
+                    .expect("failed to read event")
+                    .variant_name()
+                    .eq(name)
+            }) {
+                break;
+            }
+        }
+    }
 }
 // Default set of commonly used types by Substrate runtimes.
 pub enum SubstrateConfig {}

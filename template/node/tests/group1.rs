@@ -52,32 +52,8 @@ async fn eth_sendRawTransaction() {
 
     let _tx_hash = json_get!(res["result"].as_str());
 
-    use futures::StreamExt;
-
     // Wait until tx gets executed
-    // TODO put to common
-    let mut blocks_sub = &mut env
-        .node
-        .client()
-        .blocks()
-        .subscribe_finalized()
-        .await
-        .expect("can't subscribe to finalized blocks")
-        .take(3);
-
-    while let Some(block) = blocks_sub.next().await {
-        let block = block.expect("can't get next finalized block");
-        let events = block.events().await.expect("can't get events from block");
-
-        if let Some(_) = events.iter().find(|e| {
-            e.as_ref()
-                .expect("failed to read event")
-                .variant_name()
-                .eq("EthTxExecuted")
-        }) {
-            break;
-        }
-    }
+    let _ = &env.wait_for_event("EthTxExecuted", 3).await;
 
     // check state
     let output = contracts::call(
