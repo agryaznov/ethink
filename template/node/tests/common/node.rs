@@ -173,22 +173,25 @@ where
 fn find_path_and_port_from_output(r: impl Read + Send) -> (String, String) {
     let mut buf = BufReader::new(r);
     let (mut base_path, mut rpc_port) = (None, None);
+
     while base_path.is_none() || rpc_port.is_none() {
         let mut line = String::new();
         let _ = buf
             .read_line(&mut line)
             .expect("failed to obtain next line from stdout for port and base path discovery");
-        // does the line contain our port (we expect this specific output from
-        // substrate).
+
         if rpc_port.is_none() {
+            // does the line contain our port (we expect this specific output from
+            // substrate).
             if let Some(port) = line
                 .rsplit_once("Running JSON-RPC server: addr=127.0.0.1:")
                 .map(|(_, s)| s)
                 // trim non-numeric chars from the end of the port part of the line.
                 .and_then(|s| s.split_once(","))
-                .map(|s| s.0)
+                .map(|s| s.0.to_string())
             {
-                rpc_port = Some(port.to_string());
+                rpc_port = Some(port);
+                continue;
             }
         }
 
@@ -198,12 +201,11 @@ fn find_path_and_port_from_output(r: impl Read + Send) -> (String, String) {
             if let Some(path) = line
                 .rsplit_once("Database: RocksDb at ")
                 .map(|(_, s)| s)
-                .and_then(|s|
-            // extract base-path from db-path
-                 s.split_once("/chains/"))
-                .map(|(p, _)| p)
+                // extract base-path from db-path
+                .and_then(|s| s.split_once("/chains/"))
+                .map(|(p, _)| p.to_string())
             {
-                base_path = Some(path.to_string());
+                base_path = Some(path);
             }
         }
     }
