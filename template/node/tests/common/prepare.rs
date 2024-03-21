@@ -3,11 +3,19 @@ use super::{node::*, *};
 use serde_json::Deserializer;
 
 /// Spawn a node and deploy a contract to it
-pub async fn node_and_contract<R: subxt::Config>(manifest_path: &str) -> Env<R> {
-    let node = TestNodeProcess::<R>::build(NODE_BIN)
-        .spawn()
-        .await
-        .unwrap_or_else(|err| ::core::panic!("Error spawning ethink-node: {:?}", err));
+pub async fn node_and_contract<R: subxt::Config>(
+    manifest_path: &str,
+    signer: Option<&str>,
+) -> Env<R> {
+    let mut builder = TestNodeProcess::<R>::build(NODE_BIN);
+    let node = if let Some(key) = signer {
+        builder.with_signer(key)
+    } else {
+        &mut builder
+    }
+    .spawn()
+    .await
+    .unwrap_or_else(|err| ::core::panic!("Error spawning ethink-node: {:?}", err));
 
     // deploy contract
     let output = contracts::deploy(manifest_path, node.url(Protocol::WS).as_str());

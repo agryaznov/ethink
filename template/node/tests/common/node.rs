@@ -12,7 +12,6 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use sp_keyring::AccountKeyring;
 use std::{
     ffi::{OsStr, OsString},
     io::{BufRead, BufReader, Read},
@@ -82,7 +81,7 @@ where
 /// Construct a test node process.
 pub struct TestNodeProcessBuilder<R> {
     node_path: OsString,
-    authority: Option<AccountKeyring>,
+    signer: Option<String>,
     marker: std::marker::PhantomData<R>,
 }
 
@@ -96,14 +95,14 @@ where
     {
         Self {
             node_path: node_path.as_ref().into(),
-            authority: None,
+            signer: None,
             marker: Default::default(),
         }
     }
 
-    /// Set the authority development account for a node in validator mode e.g. --alice.
-    pub fn with_authority(&mut self, account: AccountKeyring) -> &mut Self {
-        self.authority = Some(account);
+    /// Insert a ecdsa key for signing into node's keystore
+    pub fn with_signer(&mut self, key: &str) -> &mut Self {
+        self.signer = Some(key.to_string());
         self
     }
 
@@ -111,17 +110,11 @@ where
     pub async fn spawn(&self) -> Result<TestNodeProcess<R>, String> {
         let mut cmd = process::Command::new(&self.node_path);
         cmd.env("RUST_LOG", "info")
-            .arg("--dev")
             .stdout(process::Stdio::piped())
             .stderr(process::Stdio::piped())
+            .arg("--dev")
             .arg("--port=0")
             .arg("--rpc-port=0");
-
-        if let Some(authority) = self.authority {
-            let authority = format!("{authority:?}");
-            let arg = format!("--{}", authority.as_str().to_lowercase());
-            cmd.arg(arg);
-        }
 
         let mut proc = cmd.spawn().map_err(|e| {
             format!(
@@ -131,10 +124,33 @@ where
             )
         })?;
 
-        // Wait for RPC port to be logged (it's logged to stderr):
         let stderr = proc.stderr.take().unwrap();
-        let port = find_substrate_ports_from_output(stderr);
+        // Wait for RPC port and DB path to be logged (it's logged to stderr):
+        let (path, port) = find_path_and_port_from_output(stderr);
+        // expect to have a number here (the chars after '127.0.0.1:') and parse them
+        // into a u16.
+        let port = port
+            .parse()
+            .unwrap_or_else(|_| panic!("valid port expected for log line, got '{port}'"));
         let ws_url = format!("ws://127.0.0.1:{port}");
+
+        if let Some(signer) = &self.signer {
+            let base_path_arg = format!("-d={path}");
+            let surl_arg = format!("--suri={signer}");
+            let inserted = process::Command::new(&self.node_path)
+                .arg("key")
+                .arg("insert")
+                .arg("--dev")
+                .arg(&base_path_arg)
+                // TODO
+                .arg("--key-type=ethi")
+                .arg("--scheme=ecdsa")
+                .arg(&surl_arg)
+                .output()
+                .map_or(false, |o| o.status.success());
+
+            assert!(inserted, "failed to insert signer key into keystore");
+        }
 
         // Connect to the node with a `subxt` client:
         let client = OnlineClient::from_url(ws_url.clone()).await;
@@ -152,29 +168,52 @@ where
     }
 }
 
-// Consume a stderr reader from a spawned substrate command and
-// locate the port numbers that are logged out to it.
-fn find_substrate_ports_from_output(r: impl Read + Send + 'static) -> u16 {
-    BufReader::new(r)
-        .lines()
-        .find_map(|line| {
-            let line = line.expect("failed to obtain next line from stdout for port discovery");
+// Consume a stderr reader from a spawned substrate node command and
+// locate the data strings needed that should be logged out to it.
+fn find_path_and_port_from_output(r: impl Read + Send) -> (String, String) {
+    let mut buf = BufReader::new(r);
+    let (mut base_path, mut rpc_port) = (None, None);
+
+    while base_path.is_none() || rpc_port.is_none() {
+        let mut line = String::new();
+        let _ = buf
+            .read_line(&mut line)
+            .expect("failed to obtain next line from stdout for port and base path discovery");
+
+        if rpc_port.is_none() {
             // does the line contain our port (we expect this specific output from
             // substrate).
-            let line_end = line
+            if let Some(port) = line
                 .rsplit_once("Running JSON-RPC server: addr=127.0.0.1:")
-                .map(|(_, port_str)| port_str)?;
-            // trim non-numeric chars from the end of the port part of the line.
-            let port_str = line_end.trim_end_matches(|b: char| !b.is_ascii_digit());
-            // expect to have a number here (the chars after '127.0.0.1:') and parse them
-            // into a u16.
-            let port_num = port_str
-                .parse()
-                .unwrap_or_else(|_| panic!("valid port expected for log line, got '{port_str}'"));
+                .map(|(_, s)| s)
+                // trim non-numeric chars from the end of the port part of the line.
+                .and_then(|s| s.split_once(","))
+                .map(|s| s.0.to_string())
+            {
+                rpc_port = Some(port);
+                continue;
+            }
+        }
 
-            Some(port_num)
-        })
-        .expect("we should find a port before the reader ends")
+        if base_path.is_none() {
+            // does the line contain database path (we expect this specific output from
+            // substrate).
+            if let Some(path) = line
+                .rsplit_once("Database: RocksDb at ")
+                .map(|(_, s)| s)
+                // extract base-path from db-path
+                .and_then(|s| s.split_once("/chains/"))
+                .map(|(p, _)| p.to_string())
+            {
+                base_path = Some(path);
+            }
+        }
+    }
+
+    (
+        base_path.expect("we should find a base path before the reader ends"),
+        rpc_port.expect("we should find a port before the reader ends"),
+    )
 }
 // #[cfg(test)]
 // mod tests {
