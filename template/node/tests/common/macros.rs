@@ -51,3 +51,14 @@ macro_rules! contract_call {
         )
     };
 }
+
+/// Prepare node and contract for testing env
+#[macro_export]
+macro_rules! prepare_node_and_contract {
+    ( $manifest:ident ) => {
+        prepare::node_and_contract($manifest, None).await
+    };
+    ( $manifest:ident, $signer:ident ) => {
+        prepare::node_and_contract($manifest, Some($signer)).await
+    };
+}
