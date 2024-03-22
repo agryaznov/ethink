@@ -29,7 +29,7 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 
 // ETH RPC support
-use ep_account::EthereumSignature;
+use ep_crypto::EthereumSignature;
 use ep_rpc::EthTx;
 use pallet_ethink;
 
@@ -65,7 +65,7 @@ pub type BlockNumber = u32;
 pub type Signature = EthereumSignature;
 /// Some way of identifying an account on the chain. We intentionally make it equivalent
 /// to the public key of our transaction signing scheme.
-/// This is derived to ep_account::AccountId20 because of the used EthereumSignature above.
+/// This is derived to ep_crypto::AccountId20 because of the used EthereumSignature above.
 pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
 /// Balance of an account.
 pub type Balance = u128;

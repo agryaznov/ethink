@@ -64,7 +64,7 @@ frame-benchmarking-cli = { git = "https://github.com/agryaznov/polkadot-sdk", br
 ethink-runtime.workspace = true
 ethink-rpc.workspace = true
 ep-rpc = { workspace = true, features = ["default"] }
-ep-account.workspace = true
+ep-crypto.workspace = true
 
 # CLI-specific dependencies
 try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", optional = true }

@@ -1,6 +1,6 @@
 use super::*;
 use crate::CallRequest;
-use ep_account::AccountId20;
+use ep_crypto::AccountId20;
 use ethereum::{LegacyTransaction, LegacyTransactionMessage};
 use futures::future::TryFutureExt;
 use sp_core::crypto::KeyTypeId;
@@ -51,14 +51,11 @@ where
     /// If not, raises an error.
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
-
         let TransactionRequest { from, .. } = request.clone();
-
-        // TODO impl self.accounts() and take the first one from there
         let from = from.ok_or(internal_err("no origin account provided for tx"))?;
         let msg = TxMessage::from(request);
-        // Lookup keystore for a proper key for signing
-        // Sign the transaction
+        // Lookup keystore for a proper key for signing,
+        // and sign the transaction
         let sig = self
             .keystore
             .ecdsa_public_keys(KeyTypeId(*b"ethi"))

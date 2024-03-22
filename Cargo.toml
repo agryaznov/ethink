@@ -9,7 +9,7 @@ members = [
 	"template/node",
 	"template/runtime",
     "primitives/rpc",
-    "primitives/account",
+    "primitives/crypto",
     "frame/ethink",
 ]
 exclude = [ "dapp/contracts/flipper.ink" ]
@@ -59,6 +59,6 @@ ethink-rpc-core = { path = "client/rpc-core", default-features = false }
 ethink-runtime = { path = "template/runtime", default-features = false }
 mappings = { path = "client/mappings", default-features = false }
 ep-rpc = { path = "primitives/rpc", default-features = false }
-ep-account = { path = "primitives/account", default-features = false }
+ep-crypto = { path = "primitives/crypto", default-features = false }
 pallet-ethink = { path = "frame/ethink", default-features = false }
 ep-self-contained = { path = "primitives/self-contained", default-features = false }

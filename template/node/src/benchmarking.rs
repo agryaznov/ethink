@@ -12,7 +12,7 @@ use sp_core::{ecdsa, Encode, Pair};
 use sp_inherents::{InherentData, InherentDataProvider};
 use sp_runtime::{OpaqueExtrinsic, SaturatedConversion};
 // ETH RPC
-use ep_account::AccountId20;
+use ep_crypto::AccountId20;
 
 use std::{sync::Arc, time::Duration};
 

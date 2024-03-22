@@ -1,8 +1,8 @@
 [package]
-name = "ep-account"
+name = "ep-crypto"
 version = "0.1.0"
 license = "Apache-2.0"
-description = "Primitives for AccountId20."
+description = "Crypto primitives for ethink!"
 edition.workspace = true
 
 [dependencies]
