@@ -1977,7 +1977,7 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e48c92028aaa870e83d51c64e5d4e0b6981b360c522198c23959f219a4e1b15b"
 
 [[package]]
-name = "ep-account"
+name = "ep-crypto"
 version = "0.1.0"
 dependencies = [
  "hex",
@@ -2092,7 +2092,7 @@ name = "ethink-node"
 version = "4.0.0-dev"
 dependencies = [
  "clap",
- "ep-account",
+ "ep-crypto",
  "ep-rpc",
  "ethink-rpc",
  "ethink-runtime",
@@ -2145,7 +2145,7 @@ dependencies = [
 name = "ethink-rpc"
 version = "0.1.0"
 dependencies = [
- "ep-account",
+ "ep-crypto",
  "ep-rpc",
  "ethereum",
  "ethereum-types",
@@ -2184,7 +2184,7 @@ dependencies = [
 name = "ethink-runtime"
 version = "0.1.0"
 dependencies = [
- "ep-account",
+ "ep-crypto",
  "ep-rpc",
  "ep-self-contained",
  "frame-executive",
