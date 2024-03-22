@@ -54,8 +54,8 @@ where
         let TransactionRequest { from, .. } = request.clone();
         let from = from.ok_or(internal_err("no origin account provided for tx"))?;
         let msg = TxMessage::from(request);
-        // Lookup keystore for a proper key for signing
-        // Sign the transaction
+        // Lookup keystore for a proper key for signing,
+        // and sign the transaction
         let sig = self
             .keystore
             .ecdsa_public_keys(KeyTypeId(*b"ethi"))
