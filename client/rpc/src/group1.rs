@@ -14,22 +14,15 @@ where
 {
     pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
-        // TODO refactor
+
         let slice = &bytes.0[..];
         if slice.is_empty() {
             return Err(internal_err("transaction data is empty"));
         }
 
-        log::debug!(target: "ethink:rpc", "eth_sendRawTx encoded: 0x{}", hex::encode(&slice));
+        let tx: EthTx = ethereum::EnvelopedDecodable::decode(slice)
+            .map_err(|_| internal_err("decode transaction failed"))?;
 
-        let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
-            Ok(tx) => tx,
-            Err(_) => return Err(internal_err("decode transaction failed")),
-        };
-
-        log::debug!(target: "ethink:rpc", "eth_sendRawTx decoded: {:#?}", &tx);
-
-        // TODO: DRY (this is used in several places)
         let tx_hash = tx.hash();
         // Compose extrinsic for submission
         let extrinsic = self
@@ -50,6 +43,7 @@ where
     /// If not, raises an error.
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
+
         let TransactionRequest { from, .. } = request.clone();
         let from: AccountId20 = from
             .ok_or(internal_err("no origin account provided for tx"))?
@@ -62,7 +56,7 @@ where
         // and sign the transaction
         let signature = signer.try_sign(msg.clone()).map_err(internal_err)?;
 
-        // TODO refactor via From<(msg,sig)>
+        // Compose Ethereum transaction
         let LegacyTransactionMessage {
             nonce,
             gas_price,
@@ -74,7 +68,6 @@ where
         } = msg;
 
         let tx: EthTx = LegacyTransaction {
-            // TODO put to sg calc step above
             signature,
             nonce,
             gas_price,
@@ -85,9 +78,6 @@ where
         }
         .into();
 
-        log::debug!(target: "ethink:rpc", "eth_sendTx: {:#?}", &tx);
-
-        // TODO: DRY
         let tx_hash = tx.hash();
         // Compose extrinsic for submission
         let extrinsic = self
@@ -118,8 +108,6 @@ where
             data,
             ..
         } = request;
-
-        log::debug!(target: "ethink:rpc", "call(): from: {:?} to: {:?} value: {:02x?} data: {:02x?}", &from, &to, &value, &data);
 
         let result = self
             .client
