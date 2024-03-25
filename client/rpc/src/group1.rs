@@ -1,9 +1,8 @@
 use super::*;
-use crate::CallRequest;
+use crate::{signer::EthereumSigner, CallRequest};
 use ep_crypto::AccountId20;
 use ethereum::{LegacyTransaction, LegacyTransactionMessage};
 use futures::future::TryFutureExt;
-use sp_core::crypto::KeyTypeId;
 use sp_runtime::{generic::BlockId, transaction_validity::TransactionSource};
 
 impl<B, C, P> EthRPC<B, C, P>
@@ -15,22 +14,15 @@ where
 {
     pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
-        // TODO refactor
+
         let slice = &bytes.0[..];
         if slice.is_empty() {
             return Err(internal_err("transaction data is empty"));
         }
 
-        log::debug!(target: "ethink:rpc", "eth_sendRawTx encoded: 0x{}", hex::encode(&slice));
+        let tx: EthTx = ethereum::EnvelopedDecodable::decode(slice)
+            .map_err(|_| internal_err("decode transaction failed"))?;
 
-        let tx: EthTx = match ethereum::EnvelopedDecodable::decode(slice) {
-            Ok(tx) => tx,
-            Err(_) => return Err(internal_err("decode transaction failed")),
-        };
-
-        log::debug!(target: "ethink:rpc", "eth_sendRawTx decoded: {:#?}", &tx);
-
-        // TODO: DRY (this is used in several places)
         let tx_hash = tx.hash();
         // Compose extrinsic for submission
         let extrinsic = self
@@ -51,34 +43,20 @@ where
     /// If not, raises an error.
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
+
         let TransactionRequest { from, .. } = request.clone();
-        let from = from.ok_or(internal_err("no origin account provided for tx"))?;
-        let msg = TxMessage::from(request);
-        // Lookup keystore for a proper key for signing,
+        let from: AccountId20 = from
+            .ok_or(internal_err("no origin account provided for tx"))?
+            .into();
+        let msg = TxMessage::from(request).0;
+
+        // Lookup keystore for a proper key for signing
+        let signer =
+            EthereumSigner::try_from((self.keystore.clone(), from)).map_err(internal_err)?;
         // and sign the transaction
-        let sig = self
-            .keystore
-            .ecdsa_public_keys(KeyTypeId(*b"ethi"))
-            .iter()
-            .find(|&pk| AccountId20::from(pk.clone()).0.as_ref() == from.as_fixed_bytes())
-            .and_then(|pk| {
-                self.keystore
-                    .ecdsa_sign_prehashed(KeyTypeId(*b"ethi"), pk, msg.0.hash().as_fixed_bytes())
-                    .map_err(internal_err)
-                    .transpose()
-            })
-            .ok_or(internal_err("no key found to sign tx"))??;
+        let signature = signer.try_sign(msg.clone()).map_err(internal_err)?;
 
-        // Some Eth specific signature magic,
-        // TODO combine with above and move to utils
-        let v = match msg.0.chain_id {
-            None => 27,
-            Some(chain_id) => 2 * chain_id + 35,
-        } + sig.0[64] as u64;
-        let r = H256::from_slice(&sig.0[0..32]);
-        let s = H256::from_slice(&sig.0[32..64]);
-
-        // TODO refactor via From<(msg,sig)>
+        // Compose Ethereum transaction
         let LegacyTransactionMessage {
             nonce,
             gas_price,
@@ -87,12 +65,10 @@ where
             value,
             input,
             ..
-        } = msg.0;
+        } = msg;
 
         let tx: EthTx = LegacyTransaction {
-            // TODO put to sg calc step above
-            signature: ethereum::TransactionSignature::new(v, r, s)
-                .ok_or_else(|| internal_err("signer generated invalid signature"))?,
+            signature,
             nonce,
             gas_price,
             gas_limit,
@@ -102,9 +78,6 @@ where
         }
         .into();
 
-        log::debug!(target: "ethink:rpc", "eth_sendTx: {:#?}", &tx);
-
-        // TODO: DRY
         let tx_hash = tx.hash();
         // Compose extrinsic for submission
         let extrinsic = self
@@ -135,8 +108,6 @@ where
             data,
             ..
         } = request;
-
-        log::debug!(target: "ethink:rpc", "call(): from: {:?} to: {:?} value: {:02x?} data: {:02x?}", &from, &to, &value, &data);
 
         let result = self
             .client

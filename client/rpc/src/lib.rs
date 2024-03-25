@@ -1,8 +1,12 @@
+// ETH RPC methods grouped according to mapping table
 mod group1;
 mod group2;
 mod group3;
 mod group4;
 mod group5;
+
+// auxilinary utils
+mod signer;
 
 use ep_rpc::ETHRuntimeRPC;
 use ethereum::TransactionV2 as EthTx;
@@ -16,12 +20,15 @@ use sc_transaction_pool_api::TransactionPool;
 use sp_api::HeaderT;
 use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
+use sp_core::crypto::KeyTypeId;
 use sp_keystore::Keystore;
 use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
 use mappings;
+
+pub const ETHINK_KEYTYPE_ID: KeyTypeId = KeyTypeId(*b"ethi");
 
 // TODO move to utils
 pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee::core::Error {
