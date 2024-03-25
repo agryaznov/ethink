@@ -68,6 +68,7 @@ impl EthereumSignature {
     }
 }
 
+// TODO this thing does not sign anything; hence needs renaming.
 #[derive(
     Clone,
     Copy,
