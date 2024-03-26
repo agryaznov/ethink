@@ -109,21 +109,19 @@ where
             ..
         } = request;
 
-        let result = self
-            .client
+        self.client
             .runtime_api()
             .call(
                 hash,
-                from.unwrap(),
-                to.unwrap(),
+                from.ok_or(internal_err("empty `from` in call rq"))?,
+                to.ok_or(internal_err("empty `to` in call rq"))?,
                 data.unwrap_or_default().0,
                 value.unwrap_or(0.into()),
                 U256::MAX,
             )
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
-            .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
-
-        Ok(result.into())
+            .map_err(|err| internal_err(format!("runtime error on eth_call(): {:?}", err)))
+            .map(From::from)
     }
 
     pub async fn estimate_gas(
