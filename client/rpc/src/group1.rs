@@ -2,12 +2,10 @@ use super::*;
 use crate::{signer::EthereumSigner, CallRequest};
 use ep_crypto::AccountId20;
 use ethereum::{LegacyTransaction, LegacyTransactionMessage};
-use futures::future::TryFutureExt;
-use sp_runtime::{generic::BlockId, transaction_validity::TransactionSource};
 
 impl<B, C, P> EthRPC<B, C, P>
 where
-    B: BlockT,
+    B: BlockT<Hash = sp_core::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
@@ -23,19 +21,7 @@ where
         let tx: EthTx = ethereum::EnvelopedDecodable::decode(slice)
             .map_err(|_| internal_err("decode transaction failed"))?;
 
-        let tx_hash = tx.hash();
-        // Compose extrinsic for submission
-        let extrinsic = self
-            .client
-            .runtime_api()
-            .convert_transaction(hash, tx)
-            .map_err(|_| internal_err("cannot access runtime api"))?;
-        // Submit extrinsic to pool
-        self.pool
-            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
-            .map_ok(move |_| tx_hash)
-            .map_err(internal_err)
-            .await
+        self.compose_extrinsic_and_submit(hash, tx).await
     }
 
     /// Signs and submits a tx.
@@ -78,19 +64,7 @@ where
         }
         .into();
 
-        let tx_hash = tx.hash();
-        // Compose extrinsic for submission
-        let extrinsic = self
-            .client
-            .runtime_api()
-            .convert_transaction(hash, tx)
-            .map_err(|_| internal_err("cannot access runtime api"))?;
-        // Submit extrinsic to pool
-        self.pool
-            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
-            .map_ok(move |_| tx_hash)
-            .map_err(internal_err)
-            .await
+        self.compose_extrinsic_and_submit(hash, tx).await
     }
 
     pub async fn call(
@@ -109,23 +83,23 @@ where
             ..
         } = request;
 
-        let result = self
-            .client
+        self.client
             .runtime_api()
             .call(
                 hash,
-                from.unwrap(),
-                to.unwrap(),
+                from.ok_or(internal_err("empty `from` in call rq"))?,
+                to.ok_or(internal_err("empty `to` in call rq"))?,
                 data.unwrap_or_default().0,
                 value.unwrap_or(0.into()),
                 U256::MAX,
             )
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
-            .map_err(|err| internal_err(format!("runtime error on call: {:?}", err)))?;
-
-        Ok(result.into())
+            .map_err(|err| internal_err(format!("runtime error on eth_call(): {:?}", err)))
+            .map(From::from)
     }
 
+    // for this we do same as for call() but return consumed gas val
+    // we encode sp_weights::Weight, which is 64*2 bytes length, into U256 value
     pub async fn estimate_gas(
         &self,
         _request: CallRequest,

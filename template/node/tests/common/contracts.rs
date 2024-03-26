@@ -1,6 +1,26 @@
 use crate::common::*;
 use std::process;
 
+pub struct Weight(pub sp_weights::Weight);
+
+impl From<&serde_json::Map<std::string::String, serde_json::Value>> for Weight {
+    fn from(value: &serde_json::Map<std::string::String, serde_json::Value>) -> Self {
+        let ref_time = value["ref_time"]
+            .as_number()
+            .expect("no ref_time number in response")
+            .as_u64()
+            .expect("failed to parse ref_time as u64");
+
+        let proof_size = value["proof_size"]
+            .as_number()
+            .expect("no proof_size number in response")
+            .as_u64()
+            .expect("failed to parse proof_size as u64");
+
+        Self(sp_weights::Weight::from_parts(ref_time, proof_size))
+    }
+}
+
 /// Deploy contract to the node exposed via `url`, and return the output
 pub fn deploy(manifest_path: &str, url: &str) -> process::Output {
     let surl_arg = format!("-s={ALITH_KEY}");

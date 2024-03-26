@@ -14,6 +14,7 @@ use ethereum_types::{H160, H256, H64, U256, U64};
 pub use ethink_rpc_core::types::Transaction as Tx;
 use ethink_rpc_core::types::*;
 pub use ethink_rpc_core::EthApiServer;
+use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
@@ -22,7 +23,11 @@ use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_core::crypto::KeyTypeId;
 use sp_keystore::Keystore;
-use sp_runtime::traits::{Block as BlockT, NumberFor, PhantomData};
+use sp_runtime::{
+    generic::BlockId,
+    traits::{Block as BlockT, NumberFor, PhantomData},
+    transaction_validity::TransactionSource,
+};
 use std::collections::BTreeMap;
 use std::sync::Arc;
 
@@ -30,7 +35,6 @@ use mappings;
 
 pub const ETHINK_KEYTYPE_ID: KeyTypeId = KeyTypeId(*b"ethi");
 
-// TODO move to utils
 pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee::core::Error {
     jsonrpsee::core::Error::Call(jsonrpsee::types::error::CallError::Custom(
         jsonrpsee::types::error::ErrorObject::owned(
@@ -44,7 +48,6 @@ pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee
     ))
 }
 
-// TODO move to utils
 pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
     err(jsonrpsee::types::error::INTERNAL_ERROR_CODE, message, None)
 }
@@ -59,7 +62,7 @@ pub struct EthRPC<B: BlockT, C, P> {
 
 impl<B, C, P> EthRPC<B, C, P>
 where
-    B: BlockT<Hash = ethereum_types::H256>,
+    B: BlockT<Hash = sp_core::H256>,
     B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
@@ -75,7 +78,29 @@ where
     }
 }
 
-// TODO re-write as macros, as every impl just calls the same-named method of the struct
+impl<B, C, P> EthRPC<B, C, P>
+where
+    B: BlockT<Hash = sp_core::H256>,
+    C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
+    P: TransactionPool<Block = B> + 'static,
+    C::Api: ETHRuntimeRPC<B>,
+{
+    async fn compose_extrinsic_and_submit(&self, hash: H256, tx: EthTx) -> RpcResult<H256> {
+        let tx_hash = tx.hash();
+        let extrinsic = self
+            .client
+            .runtime_api()
+            .convert_transaction(hash, tx)
+            .map_err(|_| internal_err("cannot access runtime api"))?;
+        // Submit extrinsic to pool
+        self.pool
+            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
+            .map_ok(move |_| tx_hash)
+            .map_err(internal_err)
+            .await
+    }
+}
+
 #[async_trait]
 impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
