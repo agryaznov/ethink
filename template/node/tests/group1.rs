@@ -78,15 +78,15 @@ async fn eth_call() {
     // (Flipper is deployed with `false` state)
     // Make eth_call rpc request
     let rq = json!({
-    "jsonrpc": "2.0",
-    "method": "eth_call",
-    "params": [{
-                   "from": ALITH_ADDRESS,
-                   "to": &env.contract_address(),
-                   "data": "0x2f865bd9"
-               },
-               "latest"],
-        "id": 0
+       "jsonrpc": "2.0",
+       "method": "eth_call",
+       "params": [{
+                      "from": ALITH_ADDRESS,
+                      "to": &env.contract_address(),
+                      "data": "0x2f865bd9"
+                  },
+                  "latest"],
+       "id": 0
     });
     let rs = rpc_rq!(env, rq);
     // Handle response
@@ -108,31 +108,28 @@ async fn eth_call() {
     assert_eq!(*result, "0x00000000080001");
 }
 
-// #[tokio::test]
-// async fn eth_estimateGas() {
-//     // Spawn node and deploy contract
-//     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
-//     // (Flipper is deployed with `false` state)
-//     // Make eth_call rpc request
-//     let rq = json!({
-//     "jsonrpc": "2.0",
-//     "method": "eth_estimateGas",
-//     "params": [{
-//                    "from": "null",
-//                    "to": &env.contract_address(),
-//                    "data": "0x2f865bd9"
-//                },
-//                "latest"],
-//         "id": 1
-//     });
-//     let rs = rpc_rq!(env, rq);
-//     let js = rs
-//         .into_iter::<serde_json::Value>()
-//         .next()
-//         .expect("blank json output")
-//         .expect("can't decode json output");
-//     println!("rpc result: {js:#?})");
-//     // Should return gas spent
-//     //    assert_eq!(json_get!(rs["result"].as_str()), "0x3e8");
-//     panic!()
-// }
+#[tokio::test]
+async fn eth_estimateGas() {
+    // Spawn node and deploy contract
+    let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
+    // (Flipper is deployed with `false` state)
+    // Make eth_call rpc request
+    let rq = json!({
+       "jsonrpc": "2.0",
+       "method": "eth_estimateGas",
+       "params": [{
+                      "from": json!(null),
+                      "to": &env.contract_address(),
+                      "data": "0x2f865bd9"
+                  },
+                  "latest"],
+       "id": 0
+    });
+    let rs = rpc_rq!(env, rq);
+    // Handle response
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    // Should return gas spent
+    let result = extract_result!(&json);
+    assert_eq!(*result, "0x3e8");
+}
