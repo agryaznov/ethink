@@ -99,6 +99,7 @@ where
     }
 
     // for this we do same as for call() but return consumed gas val
+    // we encode sp_weights::Weight, which is 64*2 bytes length, into U256 value
     pub async fn estimate_gas(
         &self,
         _request: CallRequest,
