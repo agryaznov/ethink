@@ -98,6 +98,7 @@ where
             .map(From::from)
     }
 
+    // for this we do same as for call() but return consumed gas val
     pub async fn estimate_gas(
         &self,
         _request: CallRequest,
