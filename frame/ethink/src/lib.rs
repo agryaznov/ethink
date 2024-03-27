@@ -156,6 +156,8 @@ pub trait Executor<RuntimeCall> {
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
     fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    /// Call contract
+    fn bare_call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> u64;
 }
 
 pub use self::pallet::*;

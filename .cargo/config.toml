@@ -1,7 +1,7 @@
 [alias]
 b = "build"
 t = "test --test *"
-r = "run -- --dev -d tmp -linfo,ethin=debug"
+r = "run -- --dev -lerror,ethin=debug"
 
 [env]
 FLIPPER_PATH = { value = "dapp/contracts/flipper.ink/Cargo.toml", relative = true, force = true }

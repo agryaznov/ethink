@@ -833,7 +833,37 @@ impl_runtime_apis! {
 
             Ok(res.encode())
         }
-
+        /// Gas estimate, calls contract but returns only Weight spent
+        fn gas_estimate(
+            from: H160,
+            to: H160,
+            data: Vec<u8>,
+            value: U256,
+            _gas_limit: U256,
+        ) -> Result<U256, sp_runtime::DispatchError> {
+            // TODO: do we need to validate tx first here?
+            // TODO: put this logic into runner?
+            let from = AccountId::from(from);
+            let to = AccountId::from(to);
+            let res = Contracts::bare_call(
+                from,
+                to,
+                value.try_into().unwrap_or_default(), // TODO
+                Weight::from_all(u64::MAX),           // TODO
+                None,
+                data,
+                CONTRACTS_DEBUG_OUTPUT,
+                CONTRACTS_EVENTS,
+                pallet_contracts::Determinism::Enforced,
+            );
+            // ensure successfull execution
+            let _ = res.result?;
+            // get consumed weight
+            let weight = res.gas_consumed;
+            // encode Weight into U256
+            Ok(U256([weight.ref_time(), weight.proof_size(), 0, 0]))
+        }
+        /// Wraps ETH transaction into an extrinsic
          fn convert_transaction(
              tx: EthTx,
          ) -> <Block as BlockT>::Extrinsic {
@@ -899,7 +929,7 @@ impl_runtime_apis! {
 }
 
 pub struct ContractsExecutor;
-// TODO better naming
+
 impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
     fn is_contract(who: H160) -> bool {
         // This could possibly be optimized later with another method which uses
@@ -924,5 +954,9 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         } else {
             pallet_balances::Call::<Runtime>::transfer_allow_death { dest, value }.into()
         }
+    }
+
+    fn bare_call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> u64 {
+        0u64
     }
 }

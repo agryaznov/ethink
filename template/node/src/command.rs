@@ -1,7 +1,7 @@
-use crate::chain_spec::get_account_id_from_seed;
 use crate::{
     benchmarking::{inherent_benchmark_data, RemarkBuilder, TransferKeepAliveBuilder},
     chain_spec,
+    chain_spec::get_account_id_from_seed,
     cli::{Cli, Subcommand},
     service,
 };

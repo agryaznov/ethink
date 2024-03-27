@@ -95,6 +95,7 @@ where
             )
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on eth_call(): {:?}", err)))
+            //            .map(|r| r.encode())
             .map(From::from)
     }
 
@@ -102,9 +103,30 @@ where
     // we encode sp_weights::Weight, which is 64*2 bytes length, into U256 value
     pub async fn estimate_gas(
         &self,
-        _request: CallRequest,
+        request: CallRequest,
         _number: Option<BlockNumber>,
     ) -> RpcResult<U256> {
-        Ok(1000u32.into())
+        let hash = self.client.info().best_hash;
+
+        let CallRequest {
+            from,
+            to,
+            value,
+            data,
+            ..
+        } = request;
+
+        self.client
+            .runtime_api()
+            .gas_estimate(
+                hash,
+                from.ok_or(internal_err("empty `from` in call rq"))?,
+                to.ok_or(internal_err("empty `to` in call rq"))?,
+                data.unwrap_or_default().0,
+                value.unwrap_or(0.into()),
+                U256::MAX,
+            )
+            .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
+            .map_err(|err| internal_err(format!("runtime error on eth_call(): {:?}", err)))
     }
 }

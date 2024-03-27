@@ -11,15 +11,13 @@ mod signer;
 use ep_rpc::ETHRuntimeRPC;
 use ethereum::TransactionV2 as EthTx;
 use ethereum_types::{H160, H256, H64, U256, U64};
-pub use ethink_rpc_core::types::Transaction as Tx;
 use ethink_rpc_core::types::*;
-pub use ethink_rpc_core::EthApiServer;
+pub use ethink_rpc_core::{types::Transaction as Tx, EthApiServer};
 use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
-use sp_api::HeaderT;
-use sp_api::ProvideRuntimeApi;
+use sp_api::{HeaderT, ProvideRuntimeApi};
 use sp_blockchain::HeaderBackend;
 use sp_core::crypto::KeyTypeId;
 use sp_keystore::Keystore;
@@ -28,8 +26,7 @@ use sp_runtime::{
     traits::{Block as BlockT, NumberFor, PhantomData},
     transaction_validity::TransactionSource,
 };
-use std::collections::BTreeMap;
-use std::sync::Arc;
+use std::{collections::BTreeMap, sync::Arc};
 
 use mappings;
 

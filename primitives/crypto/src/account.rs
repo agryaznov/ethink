@@ -108,8 +108,7 @@ impl From<ecdsa::Public> for AccountId20 {
 
 #[cfg(test)]
 mod tests {
-    use super::account::*;
-    use super::signing::*;
+    use super::{account::*, signing::*};
     use sp_core::{ecdsa, Pair, H160, H256};
     use sp_io::hashing::keccak_256;
     use sp_runtime::traits::IdentifyAccount;

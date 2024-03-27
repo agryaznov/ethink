@@ -123,12 +123,20 @@ sp_api::decl_runtime_apis! {
         fn nonce(address: H160) -> U256;
         /// Call
         fn call(
-             from: H160,
+            from: H160,
             to: H160,
             data: Vec<u8>,
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, sp_runtime::DispatchError>;
+        /// Gas estimate
+        fn gas_estimate(
+            from: H160,
+            to: H160,
+            data: Vec<u8>,
+            value: U256,
+            gas_limit: U256,
+        ) -> Result<U256, sp_runtime::DispatchError>;
 
         fn convert_transaction(transaction: ethereum::TransactionV2) -> <Block as BlockT>::Extrinsic;
 
