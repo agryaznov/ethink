@@ -94,6 +94,7 @@ where
     T: Send + Sync + Config,
     T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
     T::AccountId: From<sp_core::H160>,
+    T::Contracts: Executor<T::RuntimeCall>,
     BalanceOf<T>: TryFrom<sp_core::U256>,
 {
     pub fn is_self_contained(&self) -> bool {
@@ -152,12 +153,20 @@ where
 /// Provider of the contracts functionality
 /// This is pallet_contracts in our case
 pub trait Executor<RuntimeCall> {
+    type ExecResult;
+
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
     fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
     /// Call contract
-    fn bare_call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> u64;
+    fn call_contract(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> Self::ExecResult;
 }
 
 pub use self::pallet::*;
@@ -192,6 +201,7 @@ pub mod pallet {
         OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
         T::AccountId: From<sp_core::H160>,
         T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
+        T::Contracts: Executor<T::RuntimeCall>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
         /// Transact an Ethereum transaction.
@@ -281,7 +291,22 @@ pub mod pallet {
     // }
 }
 
-impl<T: Config> Pallet<T> {
+impl<T> Pallet<T>
+where
+    T: Config,
+    T::Contracts: Executor<T::RuntimeCall>,
+{
+    pub fn contract_call(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> <T::Contracts as Executor<T::RuntimeCall>>::ExecResult {
+        // TODO rename to call
+        T::Contracts::call_contract(from, to, data, value, gas_limit)
+    }
+
     fn extract_tx_fields(tx: &Transaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {
         let mut sig = [0u8; 65];
         let mut msg = [0u8; 32];

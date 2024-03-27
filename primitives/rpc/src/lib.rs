@@ -115,13 +115,13 @@ pub struct EVMExecInfo<T> {
 sp_api::decl_runtime_apis! {
     /// Runtime-exposed API necessary for ETH-compatibility layer.
     pub trait ETHRuntimeRPC {
-        /// Returns runtime defined pallet_evm::ChainId.
+        /// Return runtime-defined CHAIN_ID.
         fn chain_id() -> u64;
-        /// Returns account balance.
+        /// Return account balance.
         fn account_free_balance(address: H160) -> U256;
-        /// Returns account nonce.
+        /// Return account nonce.
         fn nonce(address: H160) -> U256;
-        /// Call
+        /// Call contract (without extrinsic submission)
         fn call(
             from: H160,
             to: H160,
@@ -129,7 +129,7 @@ sp_api::decl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, sp_runtime::DispatchError>;
-        /// Gas estimate
+        /// Estimate gas needed for a contract call
         fn gas_estimate(
             from: H160,
             to: H160,
@@ -137,7 +137,7 @@ sp_api::decl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<U256, sp_runtime::DispatchError>;
-
+        /// Wrap ETH transaction into an extrinsic
         fn convert_transaction(transaction: ethereum::TransactionV2) -> <Block as BlockT>::Extrinsic;
     }
 }
