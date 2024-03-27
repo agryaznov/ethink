@@ -94,6 +94,7 @@ where
     T: Send + Sync + Config,
     T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
     T::AccountId: From<sp_core::H160>,
+    T::Contracts: Executor<T::RuntimeCall>,
     BalanceOf<T>: TryFrom<sp_core::U256>,
 {
     pub fn is_self_contained(&self) -> bool {
@@ -152,10 +153,14 @@ where
 /// Provider of the contracts functionality
 /// This is pallet_contracts in our case
 pub trait Executor<RuntimeCall> {
+    type ExecResult;
+
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
-    fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    fn build_dispatchable(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    /// Call contract
+    fn call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> Self::ExecResult;
 }
 
 pub use self::pallet::*;
@@ -190,6 +195,7 @@ pub mod pallet {
         OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
         T::AccountId: From<sp_core::H160>,
         T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
+        T::Contracts: Executor<T::RuntimeCall>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
         /// Transact an Ethereum transaction.
@@ -201,12 +207,12 @@ pub mod pallet {
                 ensure_ethereum_transaction(origin)?.into();
 
             // We received Ethereum transaction,
-            // need to route it either as a contract call or jsut a balance transfer
+            // need to route it either as a contract call or just a balance transfer
             // determinant for this is pallet_contracts' ContractInfo storage:
             // if it has the destination AccountId among its keys,
             // then it's a contract call. For now we going to do this via
             // pallet_contracts::code_hash()
-            // This could possibly be optimized later with another method which uses
+            // TODO This could possibly be optimized later with another method which uses
             // StorageMap::contains_key() instead of StorageMap::get() under the hood.
 
             log::debug!(target: "ethink:pallet", "Received Eth Tx: {:?}", &tx);
@@ -222,7 +228,7 @@ pub mod pallet {
             let from_acc: T::AccountId = from.clone().into();
             System::<T>::inc_account_nonce(from_acc);
 
-            let call = T::Contracts::construct_call(to, value, data);
+            let call = T::Contracts::build_dispatchable(to, value, data);
             log::debug!(target: "ethink:pallet", "Dispatching Call...");
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
@@ -279,7 +285,21 @@ pub mod pallet {
     // }
 }
 
-impl<T: Config> Pallet<T> {
+impl<T> Pallet<T>
+where
+    T: Config,
+    T::Contracts: Executor<T::RuntimeCall>,
+{
+    pub fn contract_call(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> <T::Contracts as Executor<T::RuntimeCall>>::ExecResult {
+        T::Contracts::call(from, to, data, value, gas_limit)
+    }
+
     fn extract_tx_fields(tx: &Transaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {
         let mut sig = [0u8; 65];
         let mut msg = [0u8; 32];

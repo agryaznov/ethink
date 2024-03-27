@@ -20,6 +20,13 @@ impl From<&serde_json::Map<std::string::String, serde_json::Value>> for Weight {
         Self(sp_weights::Weight::from_parts(ref_time, proof_size))
     }
 }
+// How we encode Weight into U256 to comply with ETH RPC return value
+impl From<Weight> for sp_core::U256 {
+    fn from(value: Weight) -> sp_core::U256 {
+        // TODO via Encode
+        sp_core::U256([value.0.ref_time(), value.0.proof_size(), 0, 0])
+    }
+}
 
 /// Deploy contract to the node exposed via `url`, and return the output
 pub fn deploy(manifest_path: &str, url: &str) -> process::Output {

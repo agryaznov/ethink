@@ -6,6 +6,7 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
+use codec::Encode;
 use frame_support::{dispatch::DispatchClass, traits::Nothing};
 use frame_system::{
     limits::{BlockLength, BlockWeights},
@@ -27,7 +28,6 @@ use sp_std::prelude::*;
 #[cfg(feature = "std")]
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
-
 // ETH RPC support
 use ep_crypto::EthereumSignature;
 use ep_rpc::EthTx;
@@ -788,110 +788,57 @@ impl_runtime_apis! {
     }
 
     impl ep_rpc::ETHRuntimeRPC<Block> for Runtime {
-        /// CHAIN_ID constant is defined in your runtime.
         fn chain_id() -> u64 {
             CHAIN_ID
         }
-        /// Unlike Frontier, we don't introduce any new balance system.
-        /// We use AccountId20 with the standard pallet_balances as usual.
+
         fn account_free_balance(address: H160) -> U256 {
             let bal = Balances::free_balance(
                 &address.into(),
             );
             bal.into()
         }
-        /// Account nonce
+
         fn nonce(address: H160) -> U256 {
             let nonce = System::account_nonce(AccountId::from(address.clone())).into();
             nonce
         }
-        /// Call contract without submitting extrinsic
+
         fn call(
             from: H160,
             to: H160,
             data: Vec<u8>,
             value: U256,
-            _gas_limit: U256,
+            gas_limit: U256,
         ) -> Result<Vec<u8>, sp_runtime::DispatchError> {
-            use codec::Encode;
-            // TODO: do we need to validate tx first here?
-            // TODO: put this logic into runner?
-            let from = AccountId::from(from);
-            let to = AccountId::from(to);
-            let res = Contracts::bare_call(
-                from,
-                to,
-                value.try_into().unwrap_or_default(), // TODO
-                Weight::from_all(u64::MAX),           // TODO
-                None,
-                data,
-                CONTRACTS_DEBUG_OUTPUT,
-                CONTRACTS_EVENTS,
-                pallet_contracts::Determinism::Enforced,
-            )
-            .result?;
+            let res = Ethink::contract_call(from, to, data, value, gas_limit).result?;
 
             Ok(res.encode())
         }
 
-         fn convert_transaction(
+        fn gas_estimate(
+            from: H160,
+            to: H160,
+            data: Vec<u8>,
+            value: U256,
+            gas_limit: U256,
+        ) -> Result<U256, sp_runtime::DispatchError> {
+            let res = Ethink::contract_call(from, to, data, value, gas_limit);
+            // ensure successful execution
+            let _ = res.result?;
+            // get consumed weight
+            let weight = res.gas_consumed;
+            // encode Weight into U256
+            Ok(U256([weight.ref_time(), weight.proof_size(), 0, 0]))
+        }
+
+        fn convert_transaction(
              tx: EthTx,
          ) -> <Block as BlockT>::Extrinsic {
             UncheckedExtrinsic::new_unsigned(
                pallet_ethink::Call::<Runtime>::transact { tx }.into(),
             )
          }
-
-        // TODO remove
-        // debugging xt decoding issues
-        fn print_xt(from: H160, to: H160, value: U256) -> Result<(), sp_runtime::DispatchError> {
-           use codec::Encode;
-
-           let to = AccountId::from(to);
-           let from = AccountId::from(from);
-
-           let xt = UncheckedExtrinsic::new_unsigned(
-            pallet_contracts::Call::<Runtime>::call {
-                dest: to.clone().into(),
-                value: value.try_into()?,
-                gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
-                storage_deposit_limit: None,
-                data: vec![99u8, 58u8, 165u8, 81u8],
-            }.into()).encode();
-
-            log::debug!(target: "ethink:runtime", "ENCODED XT: {:02x?}", &xt);
-
-
-            let extra: SignedExtra =
-                (
-                    frame_system::CheckNonZeroSender::<Runtime>::new(),
-                    frame_system::CheckSpecVersion::<Runtime>::new(),
-                    frame_system::CheckTxVersion::<Runtime>::new(),
-                    frame_system::CheckGenesis::<Runtime>::new(),
-                    frame_system::CheckEra::<Runtime>::from(sp_runtime::generic::Era::immortal()),
-                    frame_system::CheckNonce::<Runtime>::from(0),
-                    frame_system::CheckWeight::<Runtime>::new(),
-                    pallet_transaction_payment::ChargeTransactionPayment::<Runtime>::from(0),
-                );
-
-           let sig = EthereumSignature::dummy();
-
-           let xt = UncheckedExtrinsic::new_signed(
-            pallet_contracts::Call::<Runtime>::call {
-                dest: to.into(),
-                value: value.try_into()?,
-                gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
-                storage_deposit_limit: None,
-                data: vec![99u8, 58u8, 165u8, 81u8],
-            }.into(),
-               from.into(),
-               sig,
-               extra,
-           ).encode();
-
-            log::debug!(target: "ethink", "ENCODED SIGNED XT: {:02x?}", &xt);
-            Ok(())
-        }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646
@@ -899,15 +846,19 @@ impl_runtime_apis! {
 }
 
 pub struct ContractsExecutor;
-// TODO better naming
+
+use pallet_contracts_primitives::ContractExecResult;
+
 impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
+    type ExecResult = ContractExecResult<Balance, EventRecord>;
+
     fn is_contract(who: H160) -> bool {
-        // This could possibly be optimized later with another method which uses
+        // TODO This could possibly be optimized later with another method which uses
         // StorageMap::contains_key() instead of StorageMap::get() under the hood.
         Contracts::code_hash(&who.into()).is_some()
     }
 
-    fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
+    fn build_dispatchable(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         // TODO make fn fallible
         let value = value.try_into().unwrap_or_default();
@@ -924,5 +875,28 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         } else {
             pallet_balances::Call::<Runtime>::transfer_allow_death { dest, value }.into()
         }
+    }
+
+    fn call(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        _gas_limit: U256,
+    ) -> Self::ExecResult {
+        let from = AccountId::from(from);
+        let to = AccountId::from(to);
+
+        Contracts::bare_call(
+            from,
+            to,
+            value.try_into().unwrap_or_default(), // TODO
+            Weight::from_all(u64::MAX),           // TODO
+            None,
+            data,
+            CONTRACTS_DEBUG_OUTPUT,
+            CONTRACTS_EVENTS,
+            pallet_contracts::Determinism::Enforced,
+        )
     }
 }

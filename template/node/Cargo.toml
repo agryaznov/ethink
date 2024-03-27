@@ -76,7 +76,8 @@ substrate-build-script-utils = { git = "https://github.com/agryaznov/polkadot-sd
 # needed in e2e tests
 ureq = { version = "2.9.6", features = ["json"] }
 tokio = { version = "1.36", features = ["rt", "macros"] }
-serde_json = "1.0"
+serde.workspace = true
+serde_json.workspace = true
 subxt = "0.29.0"
 log.workspace = true
 sp-weights = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }

@@ -4,8 +4,8 @@
 mod common;
 
 use common::*;
-use serde_json::Deserializer;
-use sp_core::Encode;
+use serde_json::{value::Serializer, Deserializer};
+use sp_runtime::Serialize;
 use ureq::json;
 
 #[tokio::test]
@@ -113,7 +113,6 @@ async fn eth_call() {
 async fn eth_estimateGas() {
     // Spawn node and deploy contract
     let env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
-
     // Retrieve gas estimation via cargo-contract dry-run
     let output = contract_call!(env, "flip", false);
     let rs = Deserializer::from_slice(&output.stdout);
@@ -121,17 +120,17 @@ async fn eth_estimateGas() {
         .as_object()
         .expect("contract address not returned")
         .to_owned();
-    let weight = contracts::Weight::from(&gas_consumed).0;
-    let weight_encoded = format!("0x{}", hex::encode(&weight.encode()));
-
+    let weight = contracts::Weight::from(&gas_consumed);
+    let json_val = sp_core::U256::from(weight).serialize(Serializer).unwrap();
+    let weight_str_expected = json_val.as_str().unwrap();
     // Make ETH rpc request
     let rq = json!({
        "jsonrpc": "2.0",
        "method": "eth_estimateGas",
        "params": [{
-                      "from": json!(null),
+                      "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": "0x2f865bd9"
+                      "data": "0xcde4efa9"
                   },
                   "latest"],
        "id": 0
@@ -141,6 +140,6 @@ async fn eth_estimateGas() {
     let json = to_json_val!(rs);
     ensure_no_err!(&json);
     // Should return gas spent value equal to the retrieved above
-    let result = extract_result!(&json);
-    assert_eq!(*result, weight_encoded);
+    let weight_str_returned = extract_result!(&json);
+    assert_eq!(weight_str_returned, &weight_str_expected);
 }
