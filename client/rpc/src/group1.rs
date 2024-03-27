@@ -25,7 +25,7 @@ where
     }
 
     /// Signs and submits a tx.
-    /// Signigning is performed with the key from the node's keystorage, if there is a key for the sender account.
+    /// Signing is performed with the key from the node's keystorage, if there is a key for the sender account.
     /// If not, raises an error.
     pub async fn send_transaction(&self, request: TransactionRequest) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;
@@ -95,7 +95,6 @@ where
             )
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on eth_call(): {:?}", err)))
-            //            .map(|r| r.encode())
             .map(From::from)
     }
 

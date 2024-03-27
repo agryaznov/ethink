@@ -139,8 +139,6 @@ sp_api::decl_runtime_apis! {
         ) -> Result<U256, sp_runtime::DispatchError>;
 
         fn convert_transaction(transaction: ethereum::TransactionV2) -> <Block as BlockT>::Extrinsic;
-
-        fn print_xt(from: H160, to: H160, value: U256) -> Result<(), sp_runtime::DispatchError>;
     }
 }
 

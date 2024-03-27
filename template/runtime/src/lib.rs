@@ -871,57 +871,6 @@ impl_runtime_apis! {
                pallet_ethink::Call::<Runtime>::transact { tx }.into(),
             )
          }
-
-        // TODO remove
-        // debugging xt decoding issues
-        fn print_xt(from: H160, to: H160, value: U256) -> Result<(), sp_runtime::DispatchError> {
-           use codec::Encode;
-
-           let to = AccountId::from(to);
-           let from = AccountId::from(from);
-
-           let xt = UncheckedExtrinsic::new_unsigned(
-            pallet_contracts::Call::<Runtime>::call {
-                dest: to.clone().into(),
-                value: value.try_into()?,
-                gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
-                storage_deposit_limit: None,
-                data: vec![99u8, 58u8, 165u8, 81u8],
-            }.into()).encode();
-
-            log::debug!(target: "ethink:runtime", "ENCODED XT: {:02x?}", &xt);
-
-
-            let extra: SignedExtra =
-                (
-                    frame_system::CheckNonZeroSender::<Runtime>::new(),
-                    frame_system::CheckSpecVersion::<Runtime>::new(),
-                    frame_system::CheckTxVersion::<Runtime>::new(),
-                    frame_system::CheckGenesis::<Runtime>::new(),
-                    frame_system::CheckEra::<Runtime>::from(sp_runtime::generic::Era::immortal()),
-                    frame_system::CheckNonce::<Runtime>::from(0),
-                    frame_system::CheckWeight::<Runtime>::new(),
-                    pallet_transaction_payment::ChargeTransactionPayment::<Runtime>::from(0),
-                );
-
-           let sig = EthereumSignature::dummy();
-
-           let xt = UncheckedExtrinsic::new_signed(
-            pallet_contracts::Call::<Runtime>::call {
-                dest: to.into(),
-                value: value.try_into()?,
-                gas_limit: Weight::from_parts(1_000_000u64, 1_000_000u64),
-                storage_deposit_limit: None,
-                data: vec![99u8, 58u8, 165u8, 81u8],
-            }.into(),
-               from.into(),
-               sig,
-               extra,
-           ).encode();
-
-            log::debug!(target: "ethink", "ENCODED SIGNED XT: {:02x?}", &xt);
-            Ok(())
-        }
         // others to be added here, see for reference:
         // https://docs.rs/fp-rpc/2.1.0/fp_rpc/trait.EthereumRuntimeRPCApi.html#method.call
         // https://github.com/paritytech/frontier/blob/ef9f16cf4f512274114d8caac7e69ab06e622786/template/runtime/src/lib.rs#L646

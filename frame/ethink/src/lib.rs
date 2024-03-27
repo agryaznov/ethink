@@ -203,12 +203,12 @@ pub mod pallet {
                 ensure_ethereum_transaction(origin)?.into();
 
             // We received Ethereum transaction,
-            // need to route it either as a contract call or jsut a balance transfer
+            // need to route it either as a contract call or just a balance transfer
             // determinant for this is pallet_contracts' ContractInfo storage:
             // if it has the destination AccountId among its keys,
             // then it's a contract call. For now we going to do this via
             // pallet_contracts::code_hash()
-            // This could possibly be optimized later with another method which uses
+            // TODO This could possibly be optimized later with another method which uses
             // StorageMap::contains_key() instead of StorageMap::get() under the hood.
 
             log::debug!(target: "ethink:pallet", "Received Eth Tx: {:?}", &tx);
