@@ -158,15 +158,9 @@ pub trait Executor<RuntimeCall> {
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
-    fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    fn build_dispatchable(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
     /// Call contract
-    fn call_contract(
-        from: H160,
-        to: H160,
-        data: Vec<u8>,
-        value: U256,
-        gas_limit: U256,
-    ) -> Self::ExecResult;
+    fn call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> Self::ExecResult;
 }
 
 pub use self::pallet::*;
@@ -234,7 +228,7 @@ pub mod pallet {
             let from_acc: T::AccountId = from.clone().into();
             System::<T>::inc_account_nonce(from_acc);
 
-            let call = T::Contracts::construct_call(to, value, data);
+            let call = T::Contracts::build_dispatchable(to, value, data);
             log::debug!(target: "ethink:pallet", "Dispatching Call...");
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
@@ -303,8 +297,7 @@ where
         value: U256,
         gas_limit: U256,
     ) -> <T::Contracts as Executor<T::RuntimeCall>>::ExecResult {
-        // TODO rename to call
-        T::Contracts::call_contract(from, to, data, value, gas_limit)
+        T::Contracts::call(from, to, data, value, gas_limit)
     }
 
     fn extract_tx_fields(tx: &Transaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {

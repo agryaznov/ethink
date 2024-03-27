@@ -858,7 +858,7 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         Contracts::code_hash(&who.into()).is_some()
     }
 
-    fn construct_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
+    fn build_dispatchable(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         // TODO make fn fallible
         let value = value.try_into().unwrap_or_default();
@@ -877,7 +877,7 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         }
     }
 
-    fn call_contract(
+    fn call(
         from: H160,
         to: H160,
         data: Vec<u8>,
