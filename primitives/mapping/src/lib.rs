@@ -1,13 +1,14 @@
-pub use ethink_rpc_core::types::Block as EthBlock;
-
 use ethereum_types::{H256, U256};
 use ethink_rpc_core::types::{BlockTransactions as EthBlockTxs, Header as EthHeader};
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
-
+// TODO move these types to primitives
+pub use ethink_rpc_core::types::Block as EthBlock;
+/// Substrate block, convertible to Ethereum block
 pub struct SubBlock<B>(pub B);
 
 impl<B: BlockT<Hash = H256>> From<SubBlock<B>> for EthBlock {
-    // Generate dumb eth block from the given substrate block
+    // Generate dumb ETH block with empty tx list,
+    // from the given substrate block
     fn from(b: SubBlock<B>) -> Self {
         let h = b.0.header();
 
@@ -19,29 +20,12 @@ impl<B: BlockT<Hash = H256>> From<SubBlock<B>> for EthBlock {
             number: Some(U256::from(
                 UniqueSaturatedInto::<u128>::unique_saturated_into(*h.number()),
             )),
-            uncles_hash: Default::default(),
-            author: Default::default(),
-            miner: Default::default(),
-            receipts_root: Default::default(),
-            gas_used: Default::default(),
-            gas_limit: Default::default(),
-            extra_data: Default::default(),
-            logs_bloom: Default::default(),
-            timestamp: Default::default(),
-            difficulty: Default::default(),
-            nonce: Default::default(),
-            size: Default::default(),
+            ..Default::default()
         };
-        // For now just fill it with empty
-        let transactions = EthBlockTxs::Hashes(vec![]);
 
         Self {
             header,
-            transactions,
-            total_difficulty: Default::default(),
-            uncles: Default::default(),
-            size: Default::default(),
-            base_fee_per_gas: Default::default(),
+            ..Default::default()
         }
     }
 }

@@ -44,8 +44,15 @@ impl Serialize for BlockTransactions {
     }
 }
 
+impl Default for BlockTransactions {
+    fn default() -> Self {
+        Self::Hashes(vec![])
+    }
+}
+
+// TODO put types to primitives
 /// Block representation
-#[derive(Debug, Serialize)]
+#[derive(Debug, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Block {
     /// Header of the block
@@ -65,7 +72,7 @@ pub struct Block {
 }
 
 /// Block header representation.
-#[derive(Clone, Debug, Eq, PartialEq, Serialize)]
+#[derive(Clone, Debug, Eq, PartialEq, Serialize, Default)]
 #[serde(rename_all = "camelCase")]
 pub struct Header {
     /// Hash of the block
