@@ -1,4 +1,6 @@
 use crate::common::*;
+use std::io::BufReader;
+use std::io::BufRead;
 use std::process;
 
 pub struct Weight(pub sp_weights::Weight);
@@ -29,7 +31,7 @@ impl From<Weight> for sp_core::U256 {
 }
 
 /// Deploy contract to the node exposed via `url`, and return the output
-pub fn deploy(manifest_path: &str, url: &str) -> process::Output {
+pub fn deploy(url: &str, manifest_path: &str) -> process::Output {
     let surl_arg = format!("-s={ALITH_KEY}");
     let manifest_arg = format!("--manifest-path={manifest_path}");
     let url_arg = format!("--url={}", url);
@@ -84,4 +86,31 @@ pub fn call(
     assert!(output.status.success());
 
     output
+}
+
+/// Encode input data for contract call
+pub fn encode(url: &str, manifest_path: &str, msg: &str) -> String {
+    let manifest = &format!("--manifest-path={manifest_path}");
+    let url = &format!("--url={url}");
+    let msg = &format!("--message={msg}");
+
+    let args = vec!["contract", "encode", url, manifest, msg];
+
+    let output = process::Command::new("cargo")
+        .args(args.as_slice())
+        .output()
+        .expect("failed to encode with cargo-contract");
+
+    assert!(output.status.success());
+
+    // perse stdout for the encoded data string
+    let hex = BufReader::new(output.stdout.as_slice())
+        .lines()
+        .find_map(|line| {
+            let line = line.expect("failed to get next line from cargo-contract stdout");
+            line.split_once("Encoded data: ").map(|(_, hex)| hex.to_owned())
+        })
+        .expect("can't find encoded data string in cargo-contract stdout");
+
+    format!("0x{hex}")
 }

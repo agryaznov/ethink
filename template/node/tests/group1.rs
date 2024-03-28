@@ -21,7 +21,7 @@ async fn eth_sendRawTransaction() {
       "params": ["0xf86508808405f5e10094ac7da28b0a6e94dec4c9d2bfa6917ff476e6a944\
                   8084cde4efa978a09fda452d7a17d1a7cc98cf88343394f02627d079ef881f\
                   c36fc1361769c15a07a0112514d3a2e44ed85fc8c632e044239a17e83db41a\
-                  99f253d63b3281aa3dd5ab"],
+                  99f253d63b3281aa3dd5ab"],  // TODO call data encoding logic
       "id": 0
      });
     // Handle response
@@ -52,7 +52,7 @@ async fn eth_sendTransaction() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": "0xcde4efa9"
+                  "data": "0xcde4efa9"  // TODO call data encoding logic
                  },
                  "latest"],
       "id": 0
@@ -84,7 +84,7 @@ async fn eth_call() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": "0x2f865bd9"
+                      "data": "0x2f865bd9"  // TODO call data encoding logic
                   },
                   "latest"],
        "id": 0
@@ -130,7 +130,7 @@ async fn eth_estimateGas() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": "0xcde4efa9"
+                      "data": "0xcde4efa9" // TODO call data encoding logic
                   },
                   "latest"],
        "id": 0

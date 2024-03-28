@@ -829,6 +829,7 @@ impl_runtime_apis! {
             // get consumed weight
             let weight = res.gas_consumed;
             // encode Weight into U256
+            // TODO put this convertion logic into special crate (will serve as reference to UI devs)
             Ok(U256([weight.ref_time(), weight.proof_size(), 0, 0]))
         }
 
