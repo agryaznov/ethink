@@ -31,7 +31,7 @@ async fn eth_sendRawTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
     // Check state
-    let output = contract_call!(env, "get", false);
+    let output = contracts::call(&env, "get", false);
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -64,7 +64,7 @@ async fn eth_sendTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
     // Check state
-    let output = contract_call!(env, "get", false);
+    let output = contracts::call(&env, "get", false);
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -97,7 +97,7 @@ async fn eth_call() {
     let result = extract_result!(&json);
     assert_eq!(*result, "0x00000000080000");
     // Flip it via contract call
-    let _ = contract_call!(env, "flip", true);
+    let _ = contracts::call(&env, "flip", true);
     // Wait until tx gets executed
     let _ = &env.wait_for_event("contracts.Called", 2).await;
     // Make eth_call rpc request again
@@ -114,7 +114,7 @@ async fn eth_estimateGas() {
     // Spawn node and deploy contract
     let env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
     // Retrieve gas estimation via cargo-contract dry-run
-    let output = contract_call!(env, "flip", false);
+    let output = contracts::call(&env, "flip", false);
     let rs = Deserializer::from_slice(&output.stdout);
     let gas_consumed = json_get!(rs["gas_consumed"])
         .as_object()

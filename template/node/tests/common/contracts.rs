@@ -25,7 +25,7 @@ impl From<&serde_json::Map<std::string::String, serde_json::Value>> for Weight {
 // How we encode Weight into U256 to comply with ETH RPC return value
 impl From<Weight> for sp_core::U256 {
     fn from(value: Weight) -> sp_core::U256 {
-        // TODO via Encode
+        // TODO add conversion crate
         sp_core::U256([value.0.ref_time(), value.0.proof_size(), 0, 0])
     }
 }
@@ -51,17 +51,11 @@ pub fn deploy(url: &str, manifest_path: &str) -> process::Output {
 }
 
 /// Call contract on the node exposed via `url`, and return the output
-pub fn call(
-    url: &str,
-    manifest_path: &str,
-    address: &str,
-    msg: &str,
-    execute: bool,
-) -> process::Output {
+pub fn call(env: &Env<PolkadotConfig>, msg: &str, execute: bool) -> process::Output {
     let surl = &format!("-s={ALITH_KEY}");
-    let manifest = &format!("--manifest-path={manifest_path}");
-    let url = &format!("--url={url}");
-    let contract = &format!("--contract={address}");
+    let manifest = &format!("--manifest-path={}", env.contract.manifest_path);
+    let url = &format!("--url={}", env.ws_url());
+    let contract = &format!("--contract={}", env.contract.address);
     let msg = &format!("--message={msg}");
 
     let mut args = vec![
