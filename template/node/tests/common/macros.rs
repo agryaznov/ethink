@@ -50,21 +50,6 @@ macro_rules! rpc_rq {
     };
 }
 
-/// Make a call to contract, ensure success return,
-/// and decode its output.
-#[macro_export]
-macro_rules! contract_call {
-    ( $env:ident, $msg:literal, $exec:literal ) => {
-        contracts::call(
-            $env.ws_url().as_str(),
-            &$env.contract_manifest(),
-            &$env.contract_address(),
-            $msg,
-            $exec,
-        )
-    };
-}
-
 /// Prepare node and contract for testing env
 #[macro_export]
 macro_rules! prepare_node_and_contract {

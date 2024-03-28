@@ -18,7 +18,7 @@ pub async fn node_and_contract<R: subxt::Config>(
     .unwrap_or_else(|err| ::core::panic!("Error spawning ethink-node: {:?}", err));
 
     // deploy contract
-    let output = contracts::deploy(manifest_path, node.url(Protocol::WS).as_str());
+    let output = contracts::deploy(node.url(Protocol::WS).as_str(), manifest_path);
     // Look for contract address in the json output
     let rs = Deserializer::from_slice(&output.stdout);
     let contract_address = json_get!(rs["contract"])
