@@ -9,10 +9,10 @@ mod group5;
 mod signer;
 
 use ep_rpc::ETHRuntimeRPC;
+use ep_mapping;
+use ethink_rpc_core::types::*;
 use ethereum::TransactionV2 as EthTx;
 use ethereum_types::{H160, H256, H64, U256, U64};
-use ethink_rpc_core::types::*;
-pub use ethink_rpc_core::{types::Transaction as Tx, EthApiServer};
 use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
 use sc_client_api::BlockBackend;
@@ -28,7 +28,7 @@ use sp_runtime::{
 };
 use std::{collections::BTreeMap, sync::Arc};
 
-use mappings;
+pub use ethink_rpc_core::{types::Transaction as Tx, EthApiServer};
 
 pub const ETHINK_KEYTYPE_ID: KeyTypeId = KeyTypeId(*b"ethi");
 

@@ -1,5 +1,5 @@
 use super::*;
-use mappings::{EthBlock, SubBlock};
+use ep_mapping::{EthBlock, SubBlock};
 
 impl<B, C, P> EthRPC<B, C, P>
 where

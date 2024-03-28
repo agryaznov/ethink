@@ -1,6 +1,6 @@
 [package]
-name = "mappings"
-description = "ETH<>Polkadot SDK data structures mappings"
+name = "ep-mapping"
+description = "ETH<>Polkadot SDK data structures converters"
 version = "0.1.0"
 edition.workspace = true
 

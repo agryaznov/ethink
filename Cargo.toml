@@ -5,9 +5,9 @@ edition = "2021"
 members = [
     "client/rpc",
     "client/rpc-core",
-    "client/mappings",
 	"template/node",
 	"template/runtime",
+    "primitives/mapping",
     "primitives/rpc",
     "primitives/crypto",
     "frame/ethink",
@@ -57,7 +57,7 @@ frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "et
 ethink-rpc = { path = "client/rpc", default-features = false }
 ethink-rpc-core = { path = "client/rpc-core", default-features = false }
 ethink-runtime = { path = "template/runtime", default-features = false }
-mappings = { path = "client/mappings", default-features = false }
+ep-mapping = { path = "primitives/mapping", default-features = false }
 ep-rpc = { path = "primitives/rpc", default-features = false }
 ep-crypto = { path = "primitives/crypto", default-features = false }
 pallet-ethink = { path = "frame/ethink", default-features = false }

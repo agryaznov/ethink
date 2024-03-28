@@ -142,12 +142,14 @@ sp_api::decl_runtime_apis! {
     }
 }
 
+// TODO remove
 /// Fallback transaction converter when the `ConvertTransactionRuntimeApi` is not available. For almost all
 /// non-legacy cases, you can instantiate this type as `NoTransactionConverter`.
 pub trait ConvertTransaction<E> {
     fn convert_transaction(&self, transaction: ethereum::TransactionV2) -> E;
 }
 
+// TODO remove
 /// No fallback transaction converter is available.
 /// `NoTransactionConverter` is a non-instantiable type (an enum with no variants),
 /// so we are guaranteed at compile time that `NoTransactionConverter` can never be instantiated.
