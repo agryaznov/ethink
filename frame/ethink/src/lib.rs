@@ -43,7 +43,7 @@ use sp_std::{marker::PhantomData, prelude::*};
 
 pub use ethereum::{
     AccessListItem, BlockV2 as Block, LegacyTransactionMessage, Log, ReceiptV3 as Receipt,
-    TransactionAction, TransactionV2 as Transaction,
+    TransactionAction, TransactionV2 as EthTransaction,
 };
 
 pub type BalanceOf<T> =
@@ -104,6 +104,7 @@ where
     pub fn check_self_contained(&self) -> Option<Result<H160, TransactionValidityError>> {
         if let Call::transact { tx } = self {
             let check = || {
+                // TODO return proper error on sig verification failure
                 let origin = Pallet::<T>::extract_tx_fields(tx)
                     .0
                     .ok_or(InvalidTransaction::Custom(42u8))?;
@@ -137,9 +138,9 @@ where
                 return Some(Err(e));
             }
             let tx_nonce = match tx {
-                Transaction::Legacy(t) => t.nonce,
-                Transaction::EIP2930(t) => t.nonce,
-                Transaction::EIP1559(t) => t.nonce,
+                EthTransaction::Legacy(t) => t.nonce,
+                EthTransaction::EIP2930(t) => t.nonce,
+                EthTransaction::EIP1559(t) => t.nonce,
             };
             let builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
 
@@ -158,7 +159,7 @@ pub trait Executor<RuntimeCall> {
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
-    fn build_dispatchable(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    fn build_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
     /// Call contract
     fn call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> Self::ExecResult;
 }
@@ -202,7 +203,8 @@ pub mod pallet {
         #[pallet::call_index(0)]
         // TODO weight
         #[pallet::weight(42)]
-        pub fn transact(origin: OriginFor<T>, tx: Transaction) -> DispatchResult {
+        pub fn transact(origin: OriginFor<T>, tx: EthTransaction) -> DispatchResult {
+            // TODO rename, it is not really ensure ethereum tx
             let origin: frame_system::RawOrigin<T::AccountId> =
                 ensure_ethereum_transaction(origin)?.into();
 
@@ -221,6 +223,8 @@ pub mod pallet {
 
             log::debug!(target: "ethink:pallet", "From: {:?}\nTo: {:?}\nValue: {:?}", &from, &to, &value);
 
+            // TODO what happens here is signature verification,
+            // which is worth mentioning here
             let from = from.ok_or(Error::<T>::TxConvertionFailed)?;
             let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
 
@@ -228,7 +232,7 @@ pub mod pallet {
             let from_acc: T::AccountId = from.clone().into();
             System::<T>::inc_account_nonce(from_acc);
 
-            let call = T::Contracts::build_dispatchable(to, value, data);
+            let call = T::Contracts::build_call(to, value, data);
             log::debug!(target: "ethink:pallet", "Dispatching Call...");
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
@@ -236,7 +240,7 @@ pub mod pallet {
             })?;
 
             let tx_hash = tx.hash();
-            Self::deposit_event(Event::EthTxExecuted { from, to, tx_hash });
+            Self::deposit_event(Event::EthTransactionExecuted { from, to, tx_hash });
 
             Ok(())
         }
@@ -246,7 +250,7 @@ pub mod pallet {
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event {
         /// An Ethereum transaction was successfully executed.
-        EthTxExecuted {
+        EthTransactionExecuted {
             from: H160,
             to: H160,
             tx_hash: H256,
@@ -300,11 +304,13 @@ where
         T::Contracts::call(from, to, data, value, gas_limit)
     }
 
-    fn extract_tx_fields(tx: &Transaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {
+    // TODO make fallible and return proper error on sig verification fail
+    // TODO also rename to a better name
+    fn extract_tx_fields(tx: &EthTransaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {
         let mut sig = [0u8; 65];
         let mut msg = [0u8; 32];
         let (to, value, data) = match tx {
-            Transaction::Legacy(t) => {
+            EthTransaction::Legacy(t) => {
                 sig[0..32].copy_from_slice(&t.signature.r()[..]);
                 sig[32..64].copy_from_slice(&t.signature.s()[..]);
                 sig[64] = t.signature.standard_v();
@@ -320,7 +326,7 @@ where
                     t.input.clone(),
                 )
             }
-            Transaction::EIP2930(t) => {
+            EthTransaction::EIP2930(t) => {
                 sig[0..32].copy_from_slice(&t.r[..]);
                 sig[32..64].copy_from_slice(&t.s[..]);
                 sig[64] = t.odd_y_parity as u8;
@@ -336,7 +342,7 @@ where
                     t.input.clone(),
                 )
             }
-            Transaction::EIP1559(t) => {
+            EthTransaction::EIP1559(t) => {
                 sig[0..32].copy_from_slice(&t.r[..]);
                 sig[32..64].copy_from_slice(&t.s[..]);
                 sig[64] = t.odd_y_parity as u8;
@@ -353,7 +359,7 @@ where
                 )
             }
         };
-
+        // We check ethereum signature is valid here!
         let from = sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg)
             .ok()
             .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))));

@@ -3,6 +3,7 @@ use ethink_rpc_core::types::{BlockTransactions as EthBlockTxs, Header as EthHead
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
 // TODO move these types to primitives
 pub use ethink_rpc_core::types::Block as EthBlock;
+// TODO move all types to primitives /types
 /// Substrate block, convertible to Ethereum block
 pub struct SubBlock<B>(pub B);
 

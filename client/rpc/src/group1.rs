@@ -18,7 +18,7 @@ where
             return Err(internal_err("transaction data is empty"));
         }
 
-        let tx: EthTx = ethereum::EnvelopedDecodable::decode(slice)
+        let tx: EthTransaction = ethereum::EnvelopedDecodable::decode(slice)
             .map_err(|_| internal_err("decode transaction failed"))?;
 
         self.compose_extrinsic_and_submit(hash, tx).await
@@ -53,7 +53,7 @@ where
             ..
         } = msg;
 
-        let tx: EthTx = LegacyTransaction {
+        let tx: EthTransaction = LegacyTransaction {
             signature,
             nonce,
             gas_price,

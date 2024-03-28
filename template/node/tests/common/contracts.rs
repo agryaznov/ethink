@@ -1,7 +1,8 @@
 use crate::common::*;
-use std::io::BufRead;
-use std::io::BufReader;
-use std::process;
+use std::{
+    io::{BufRead, BufReader},
+    process,
+};
 
 pub struct Weight(pub sp_weights::Weight);
 

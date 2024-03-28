@@ -30,7 +30,7 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 // ETH RPC support
 use ep_crypto::EthereumSignature;
-use ep_rpc::EthTx;
+use ep_rpc::EthTransaction;
 use pallet_ethink;
 
 // A few exports that help ease life for downstream crates.
@@ -793,15 +793,13 @@ impl_runtime_apis! {
         }
 
         fn account_free_balance(address: H160) -> U256 {
-            let bal = Balances::free_balance(
+            Balances::free_balance(
                 &address.into(),
-            );
-            bal.into()
+            ).into()
         }
 
         fn nonce(address: H160) -> U256 {
-            let nonce = System::account_nonce(AccountId::from(address.clone())).into();
-            nonce
+            System::account_nonce(AccountId::from(address)).into()
         }
 
         fn call(
@@ -811,9 +809,9 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, sp_runtime::DispatchError> {
-            let res = Ethink::contract_call(from, to, data, value, gas_limit).result?;
-
-            Ok(res.encode())
+            Ethink::contract_call(from, to, data, value, gas_limit)
+                .result
+                .map(|res| res.encode())
         }
 
         fn gas_estimate(
@@ -833,11 +831,11 @@ impl_runtime_apis! {
             Ok(U256([weight.ref_time(), weight.proof_size(), 0, 0]))
         }
 
-        fn convert_transaction(
-             tx: EthTx,
+        fn build_extrinsic(
+             from: EthTransaction,
          ) -> <Block as BlockT>::Extrinsic {
             UncheckedExtrinsic::new_unsigned(
-               pallet_ethink::Call::<Runtime>::transact { tx }.into(),
+               pallet_ethink::Call::<Runtime>::transact { tx: from }.into(),
             )
          }
         // others to be added here, see for reference:
@@ -859,7 +857,7 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         Contracts::code_hash(&who.into()).is_some()
     }
 
-    fn build_dispatchable(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
+    fn build_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         // TODO make fn fallible
         let value = value.try_into().unwrap_or_default();

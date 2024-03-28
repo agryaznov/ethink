@@ -10,7 +10,7 @@ mod signer;
 
 use ep_mapping;
 use ep_rpc::ETHRuntimeRPC;
-use ethereum::TransactionV2 as EthTx;
+use ethereum::TransactionV2 as EthTransaction;
 use ethereum_types::{H160, H256, H64, U256, U64};
 use ethink_rpc_core::types::*;
 use futures::future::TryFutureExt;
@@ -82,12 +82,16 @@ where
     P: TransactionPool<Block = B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
-    async fn compose_extrinsic_and_submit(&self, hash: H256, tx: EthTx) -> RpcResult<H256> {
+    async fn compose_extrinsic_and_submit(
+        &self,
+        hash: H256,
+        tx: EthTransaction,
+    ) -> RpcResult<H256> {
         let tx_hash = tx.hash();
         let extrinsic = self
             .client
             .runtime_api()
-            .convert_transaction(hash, tx)
+            .build_extrinsic(hash, tx)
             .map_err(|_| internal_err("cannot access runtime api"))?;
         // Submit extrinsic to pool
         self.pool

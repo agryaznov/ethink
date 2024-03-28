@@ -29,7 +29,7 @@ async fn eth_sendRawTransaction() {
     ensure_no_err!(&json);
     let _tx_hash = extract_result!(&json);
     // Wait until tx gets executed
-    let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
+    let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
     let output = contracts::call(&env, "get", false);
     let rs = Deserializer::from_slice(&output.stdout);
@@ -62,7 +62,7 @@ async fn eth_sendTransaction() {
     ensure_no_err!(&json);
     let _tx_hash = extract_result!(&json);
     // Wait until tx gets executed
-    let _ = &env.wait_for_event("ethink.EthTxExecuted", 3).await;
+    let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
     let output = contracts::call(&env, "get", false);
     let rs = Deserializer::from_slice(&output.stdout);
