@@ -1,6 +1,6 @@
 use crate::common::*;
-use std::io::BufReader;
 use std::io::BufRead;
+use std::io::BufReader;
 use std::process;
 
 pub struct Weight(pub sp_weights::Weight);
@@ -89,15 +89,15 @@ pub fn call(
 }
 
 /// Encode input data for contract call
-pub fn encode(url: &str, manifest_path: &str, msg: &str) -> String {
-    let manifest = &format!("--manifest-path={manifest_path}");
-    let url = &format!("--url={url}");
-    let msg = &format!("--message={msg}");
-
-    let args = vec!["contract", "encode", url, manifest, msg];
+pub fn encode(manifest_path: &str, msg: &str) -> String {
+    let manifest_arg = &format!("--manifest-path={manifest_path}");
+    let msg_arg = &format!("--message={msg}");
 
     let output = process::Command::new("cargo")
-        .args(args.as_slice())
+        .arg("contract")
+        .arg("encode")
+        .arg(&manifest_arg)
+        .arg(&msg_arg)
         .output()
         .expect("failed to encode with cargo-contract");
 
@@ -108,7 +108,8 @@ pub fn encode(url: &str, manifest_path: &str, msg: &str) -> String {
         .lines()
         .find_map(|line| {
             let line = line.expect("failed to get next line from cargo-contract stdout");
-            line.split_once("Encoded data: ").map(|(_, hex)| hex.to_owned())
+            line.split_once("Encoded data: ")
+                .map(|(_, hex)| hex.to_owned())
         })
         .expect("can't find encoded data string in cargo-contract stdout");
 

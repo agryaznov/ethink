@@ -52,7 +52,7 @@ async fn eth_sendTransaction() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": "0xcde4efa9"  // TODO call data encoding logic
+                  "data": contracts::encode(FLIPPER_PATH, "flip")
                  },
                  "latest"],
       "id": 0
@@ -77,14 +77,14 @@ async fn eth_call() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
     // (Flipper is deployed with `false` state)
-    // Make eth_call rpc request
+    // Make eth_call rpc request to get() flipper state
     let rq = json!({
        "jsonrpc": "2.0",
        "method": "eth_call",
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": "0x2f865bd9"  // TODO call data encoding logic
+                      "data": contracts::encode(FLIPPER_PATH, "get")
                   },
                   "latest"],
        "id": 0
@@ -130,7 +130,7 @@ async fn eth_estimateGas() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": "0xcde4efa9" // TODO call data encoding logic
+                      "data": contracts::encode(FLIPPER_PATH, "flip")
                   },
                   "latest"],
        "id": 0
