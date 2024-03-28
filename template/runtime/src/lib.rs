@@ -547,7 +547,7 @@ impl ep_self_contained::SelfContainedCall for RuntimeCall {
         match self {
             call @ RuntimeCall::Ethink(pallet_ethink::Call::transact { .. }) => {
                 Some(call.dispatch(RuntimeOrigin::from(
-                    pallet_ethink::RawOrigin::EthereumTransaction(info),
+                    pallet_ethink::RawOrigin::EthTransaction(info),
                 )))
             }
             _ => None,
