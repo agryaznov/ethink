@@ -23,10 +23,7 @@ mod tests;
 
 use frame_support::{
     dispatch::{DispatchInfo, PostDispatchInfo},
-    traits::{
-        fungible::{Inspect, Mutate},
-        EnsureOrigin,
-    },
+    traits::fungible::{Inspect, Mutate},
 };
 use frame_system::{pallet_prelude::OriginFor, CheckWeight, Pallet as System};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
@@ -37,7 +34,7 @@ use sp_runtime::{
     transaction_validity::{
         InvalidTransaction, TransactionValidity, TransactionValidityError, ValidTransactionBuilder,
     },
-    RuntimeDebug,
+    DispatchError, RuntimeDebug,
 };
 use sp_std::{marker::PhantomData, prelude::*};
 
@@ -51,41 +48,23 @@ pub type BalanceOf<T> =
 
 #[derive(Clone, Eq, PartialEq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub enum RawOrigin {
-    EthereumTransaction(H160),
+    EthTransaction(H160),
 }
 
 impl<A: From<H160>> Into<frame_system::RawOrigin<A>> for RawOrigin {
     fn into(self) -> frame_system::RawOrigin<A> {
-        let Self::EthereumTransaction(acc) = self;
+        let Self::EthTransaction(acc) = self;
+        // Signature was already checked in check_self_contained()
         frame_system::RawOrigin::<A>::Signed(acc.into())
     }
 }
 
-pub fn ensure_ethereum_transaction<OuterOrigin>(o: OuterOrigin) -> Result<RawOrigin, &'static str>
+pub fn ensure_eth_transaction<OuterOrigin>(o: OuterOrigin) -> Result<RawOrigin, &'static str>
 where
     OuterOrigin: Into<Result<RawOrigin, OuterOrigin>>,
 {
-    match o.into() {
-        Ok(raw_origin) => Ok(raw_origin),
-        _ => Err("Bad origin: not a valid Ethereum transaction"),
-    }
-}
-
-pub struct EnsureEthereumTransaction;
-impl<O: Into<Result<RawOrigin, O>> + From<RawOrigin>> EnsureOrigin<O>
-    for EnsureEthereumTransaction
-{
-    type Success = H160;
-    fn try_origin(o: O) -> Result<Self::Success, O> {
-        o.into().map(|o| match o {
-            RawOrigin::EthereumTransaction(id) => id,
-        })
-    }
-
-    #[cfg(feature = "runtime-benchmarks")]
-    fn try_successful_origin() -> Result<O, ()> {
-        Ok(O::from(RawOrigin::EthereumTransaction(Default::default())))
-    }
+    o.into()
+        .map_err(|_| "Bad origin: not a valid Ethereum transaction")
 }
 
 impl<T> Call<T>
@@ -93,7 +72,7 @@ where
     OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
     T: Send + Sync + Config,
     T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
-    T::AccountId: From<sp_core::H160>,
+    T::AccountId: From<sp_core::H160> + Into<sp_core::H160>,
     T::Contracts: Executor<T::RuntimeCall>,
     BalanceOf<T>: TryFrom<sp_core::U256>,
 {
@@ -102,19 +81,10 @@ where
     }
 
     pub fn check_self_contained(&self) -> Option<Result<H160, TransactionValidityError>> {
-        if let Call::transact { tx } = self {
-            let check = || {
-                // TODO return proper error on sig verification failure
-                let origin = Pallet::<T>::extract_tx_fields(tx)
-                    .0
-                    .ok_or(InvalidTransaction::Custom(42u8))?;
-
-                Ok(origin)
-            };
-
-            Some(check())
-        } else {
-            None
+        match self {
+            Call::transact { tx } => Some(Pallet::<T>::check_eth_signature(tx)),
+            // Not a self-contained call
+            _ => None,
         }
     }
 
@@ -133,20 +103,21 @@ where
         dispatch_info: &DispatchInfoOf<T::RuntimeCall>,
         len: usize,
     ) -> Option<TransactionValidity> {
-        if let Call::transact { tx } = self {
-            if let Err(e) = CheckWeight::<T>::do_validate(dispatch_info, len) {
-                return Some(Err(e));
-            }
-            let tx_nonce = match tx {
-                EthTransaction::Legacy(t) => t.nonce,
-                EthTransaction::EIP2930(t) => t.nonce,
-                EthTransaction::EIP1559(t) => t.nonce,
-            };
-            let builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
+        match &self {
+            Call::transact { tx } => {
+                if let Err(e) = CheckWeight::<T>::do_validate(dispatch_info, len) {
+                    return Some(Err(e));
+                }
+                let tx_nonce = match tx {
+                    EthTransaction::Legacy(t) => t.nonce,
+                    EthTransaction::EIP2930(t) => t.nonce,
+                    EthTransaction::EIP1559(t) => t.nonce,
+                };
+                let builder = ValidTransactionBuilder::default().and_provides((origin, tx_nonce));
 
-            Some(builder.build())
-        } else {
-            None
+                Some(builder.build())
+            }
+            _ => None,
         }
     }
 }
@@ -159,9 +130,15 @@ pub trait Executor<RuntimeCall> {
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
-    fn build_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall>;
     /// Call contract
-    fn call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> Self::ExecResult;
+    fn call(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> Result<Self::ExecResult, DispatchError>;
 }
 
 pub use self::pallet::*;
@@ -194,20 +171,18 @@ pub mod pallet {
     impl<T: Config> Pallet<T>
     where
         OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
-        T::AccountId: From<sp_core::H160>,
+        T::AccountId: From<sp_core::H160> + Into<sp_core::H160>,
         T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
         T::Contracts: Executor<T::RuntimeCall>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
-        /// Transact an Ethereum transaction.
+        /// Transact a call coming from ETH RPC
         #[pallet::call_index(0)]
         // TODO weight
         #[pallet::weight(42)]
         pub fn transact(origin: OriginFor<T>, tx: EthTransaction) -> DispatchResult {
-            // TODO rename, it is not really ensure ethereum tx
             let origin: frame_system::RawOrigin<T::AccountId> =
-                ensure_ethereum_transaction(origin)?.into();
-
+                ensure_eth_transaction(origin)?.into();
             // We received Ethereum transaction,
             // need to route it either as a contract call or just a balance transfer
             // determinant for this is pallet_contracts' ContractInfo storage:
@@ -216,31 +191,25 @@ pub mod pallet {
             // pallet_contracts::code_hash()
             // TODO This could possibly be optimized later with another method which uses
             // StorageMap::contains_key() instead of StorageMap::get() under the hood.
-
-            log::debug!(target: "ethink:pallet", "Received Eth Tx: {:?}", &tx);
-
-            let (from, to, value, data) = Self::extract_tx_fields(&tx);
-
-            log::debug!(target: "ethink:pallet", "From: {:?}\nTo: {:?}\nValue: {:?}", &from, &to, &value);
-
-            // TODO what happens here is signature verification,
-            // which is worth mentioning here
-            let from = from.ok_or(Error::<T>::TxConvertionFailed)?;
-            let to = to.ok_or(Error::<T>::TxConvertionFailed)?;
-
+            let from = origin.clone();
+            let from = from.as_signed().ok_or(Error::<T>::BadEthSignature)?;
+            let (to, value, data) = Self::unpack_eth_tx(&tx).ok_or(Error::<T>::TxNotSupported)?;
+            // CREATE is not supported
+            let to = to.ok_or(Error::<T>::TxNotSupported)?;
             // Increase nonce of the sender account
-            let from_acc: T::AccountId = from.clone().into();
-            System::<T>::inc_account_nonce(from_acc);
-
-            let call = T::Contracts::build_call(to, value, data);
-            log::debug!(target: "ethink:pallet", "Dispatching Call...");
+            System::<T>::inc_account_nonce(from);
+            // Compose propoer destination pallet call
+            let call =
+                T::Contracts::build_call(to, value, data).ok_or(Error::<T>::TxNotSupported)?;
+            // Make call
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
-
+            // Deposit Event
             let tx_hash = tx.hash();
-            Self::deposit_event(Event::EthTransactionExecuted { from, to, tx_hash });
+            let from = (*from).clone().into();
+            Self::deposit_event(Event::TxExecuted { from, to, tx_hash });
 
             Ok(())
         }
@@ -249,22 +218,16 @@ pub mod pallet {
     #[pallet::event]
     #[pallet::generate_deposit(pub(super) fn deposit_event)]
     pub enum Event {
-        /// An Ethereum transaction was successfully executed.
-        EthTransactionExecuted {
-            from: H160,
-            to: H160,
-            tx_hash: H256,
-            //            exit_reason: ExitReason,
-            //            extra_data: Vec<u8>,
-        },
+        /// A call coming from ETH RPC was successfully executed.
+        TxExecuted { from: H160, to: H160, tx_hash: H256 },
     }
 
     #[pallet::error]
     pub enum Error<T> {
-        /// Signature is invalid.
-        InvalidSignature,
-        /// Eth transaction convertion into extrinsic failed
-        TxConvertionFailed,
+        /// Signature is invalid
+        BadEthSignature,
+        /// Type of transaction is not supported
+        TxNotSupported,
         /// Transaction execution failed
         TxExecutionFailed,
     }
@@ -272,21 +235,6 @@ pub mod pallet {
     /// The current Ethereum receipts.
     #[pallet::storage]
     pub type CurrentReceipts<T: Config> = StorageValue<_, Vec<Receipt>>;
-
-    // #[pallet::genesis_config]
-    // #[derive(Default)]
-    // pub struct GenesisConfig {}
-
-    // #[pallet::genesis_build]
-    // impl<T: Config> GenesisBuild<T> for GenesisConfig {
-    // 	fn build(&self) {
-    // 		<Pallet<T>>::store_block(None, U256::zero());
-    // 		frame_support::storage::unhashed::put::<EthereumStorageSchema>(
-    // 			PALLET_ETHEREUM_SCHEMA,
-    // 			&EthereumStorageSchema::V3,
-    // 		);
-    // 	}
-    // }
 }
 
 impl<T> Pallet<T>
@@ -300,16 +248,14 @@ where
         data: Vec<u8>,
         value: U256,
         gas_limit: U256,
-    ) -> <T::Contracts as Executor<T::RuntimeCall>>::ExecResult {
+    ) -> Result<<T::Contracts as Executor<T::RuntimeCall>>::ExecResult, DispatchError> {
         T::Contracts::call(from, to, data, value, gas_limit)
     }
 
-    // TODO make fallible and return proper error on sig verification fail
-    // TODO also rename to a better name
-    fn extract_tx_fields(tx: &EthTransaction) -> (Option<H160>, Option<H160>, U256, Vec<u8>) {
+    fn check_eth_signature(tx: &EthTransaction) -> Result<H160, TransactionValidityError> {
         let mut sig = [0u8; 65];
         let mut msg = [0u8; 32];
-        let (to, value, data) = match tx {
+        match tx {
             EthTransaction::Legacy(t) => {
                 sig[0..32].copy_from_slice(&t.signature.r()[..]);
                 sig[32..64].copy_from_slice(&t.signature.s()[..]);
@@ -317,54 +263,33 @@ where
                 msg.copy_from_slice(
                     &ethereum::LegacyTransactionMessage::from(t.clone()).hash()[..],
                 );
-                (
-                    match t.action {
-                        TransactionAction::Call(h) => Some(h),
-                        TransactionAction::Create => None,
-                    },
-                    t.value,
-                    t.input.clone(),
-                )
             }
-            EthTransaction::EIP2930(t) => {
-                sig[0..32].copy_from_slice(&t.r[..]);
-                sig[32..64].copy_from_slice(&t.s[..]);
-                sig[64] = t.odd_y_parity as u8;
-                msg.copy_from_slice(
-                    &ethereum::EIP2930TransactionMessage::from(t.clone()).hash()[..],
-                );
-                (
-                    match t.action {
-                        TransactionAction::Call(h) => Some(h),
-                        TransactionAction::Create => None,
-                    },
-                    t.value,
-                    t.input.clone(),
-                )
+            // We only support Legacy. EIP2930 and EIP1559 are not supported
+            _ => {
+                return Err(TransactionValidityError::Invalid(
+                    InvalidTransaction::BadProof,
+                ))
             }
-            EthTransaction::EIP1559(t) => {
-                sig[0..32].copy_from_slice(&t.r[..]);
-                sig[32..64].copy_from_slice(&t.s[..]);
-                sig[64] = t.odd_y_parity as u8;
-                msg.copy_from_slice(
-                    &ethereum::EIP1559TransactionMessage::from(t.clone()).hash()[..],
-                );
-                (
-                    match t.action {
-                        TransactionAction::Call(h) => Some(h),
-                        TransactionAction::Create => None,
-                    },
-                    t.value,
-                    t.input.clone(),
-                )
-            }
-        };
+        }
         // We check ethereum signature is valid here!
-        let from = sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg)
-            .ok()
-            .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))));
+        sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg)
+            .map_err(|_| TransactionValidityError::Invalid(InvalidTransaction::BadProof))
+            .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))))
+    }
 
-        (from, to, value, data)
+    fn unpack_eth_tx(tx: &EthTransaction) -> Option<(Option<H160>, U256, Vec<u8>)> {
+        match tx {
+            EthTransaction::Legacy(t) => Some((
+                match t.action {
+                    TransactionAction::Call(h) => Some(h),
+                    TransactionAction::Create => None,
+                },
+                t.value,
+                t.input.clone(),
+            )),
+            // We only support Legacy, EIP2930 and EIP1559 are not supported
+            _ => None,
+        }
     }
 }
 

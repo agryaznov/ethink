@@ -29,7 +29,7 @@ use sp_runtime::{
 
 use crate::{CheckedExtrinsic, CheckedSignature, SelfContainedCall};
 
-/// A extrinsic right from the external world. This is unchecked and so
+/// An extrinsic right from the external world. This is unchecked and so
 /// can contain a signature.
 #[derive(PartialEq, Eq, Clone, Encode, Decode, Debug, TypeInfo)]
 pub struct UncheckedExtrinsic<Address, Call, Signature, Extra: SignedExtension>(
@@ -100,20 +100,18 @@ where
                     InvalidTransaction::BadProof,
                 ));
             }
-
             let signed_info = self.0.function.check_self_contained().ok_or(
-                TransactionValidityError::Invalid(InvalidTransaction::BadProof),
+                // None returned means that
+                // the call is not supposed to be self-contrained
+                TransactionValidityError::Invalid(InvalidTransaction::Call),
             )??;
             Ok(CheckedExtrinsic {
                 signed: CheckedSignature::SelfContained(signed_info),
                 function: self.0.function,
             })
         } else {
-            if let Some(ref s) = self.0.signature {
-                log::debug!(target: "ep_self_contained", "----------> I AM THE SIG inside UXTS: -->{:?}<--", &s.1);
-            }
             let checked = Checkable::<Lookup>::check(self.0, lookup).map_err(|e| {
-                log::debug!(target: "ep_self_contained", "BAD SIGNATURE!!!!");
+                log::error!(target: "ep_self_contained", "BAD SIGNATURE!");
                 e
             })?;
             Ok(CheckedExtrinsic {

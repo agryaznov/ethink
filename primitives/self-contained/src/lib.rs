@@ -29,19 +29,20 @@ use sp_runtime::{
     transaction_validity::{TransactionValidity, TransactionValidityError},
 };
 
-/// A call that has self-contained functions. A self-contained
-/// function is something that has its signature embedded in its call.
+// TODO better name
+/// Self-contained dispatchable, which means it contains inner signed ethereum transaction.
 pub trait SelfContainedCall: Dispatchable {
     /// Validated signature info.
     type SignedInfo;
 
-    /// Returns whether the current call is a self-contained function.
+    /// Returns whether the call is self-contained
     fn is_self_contained(&self) -> bool;
-    /// Check signatures of a self-contained function. Returns `None`
-    /// if the function is not a self-contained.
+    /// Check signatures for a self-contained call. Returns `None`
+    /// if the call is not a self-contained.
     fn check_self_contained(&self) -> Option<Result<Self::SignedInfo, TransactionValidityError>>;
-    /// Validate a self-contained function. Returns `None` if the
+    /// Validate a self-contained call transaction. Returns `None` if the
     /// function is not a self-contained.
+    /// This is used for validation inside transaction pool.
     fn validate_self_contained(
         &self,
         info: &Self::SignedInfo,
@@ -67,8 +68,8 @@ pub trait SelfContainedCall: Dispatchable {
         self.validate_self_contained(info, dispatch_info, len)
             .map(|res| res.map(|_| ()))
     }
-    /// Apply a self-contained function. Returns `None` if the
-    /// function is not a self-contained.
+    /// Apply a self-contained call transaction. Returns `None` if the
+    /// call is not self-contained.
     fn apply_self_contained(
         self,
         info: Self::SignedInfo,

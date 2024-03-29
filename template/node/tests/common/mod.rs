@@ -18,7 +18,7 @@ struct Contract {
     pub address: String,
 }
 
-// Testing environment, consisting of a node with a deployed contract
+// Testing environment, consisting of a node with a deployed cont   qract
 pub struct Env<R: subxt::Config> {
     pub node: TestNodeProcess<R>,
     contract: Contract,
@@ -32,10 +32,6 @@ impl<R: subxt::Config> Env<R> {
         };
 
         Env { node, contract }
-    }
-
-    pub fn contract_manifest(&self) -> &str {
-        &self.contract.manifest_path.as_str()
     }
 
     pub fn contract_address(&self) -> &str {
