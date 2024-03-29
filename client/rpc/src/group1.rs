@@ -80,6 +80,7 @@ where
             to,
             value,
             data,
+            gas,
             ..
         } = request;
 
@@ -89,9 +90,9 @@ where
                 hash,
                 from.ok_or(internal_err("empty `from` in call rq"))?,
                 to.ok_or(internal_err("empty `to` in call rq"))?,
-                data.unwrap_or_default().0,
-                value.unwrap_or(0.into()),
-                U256::MAX,
+                data.unwrap_or_default().0, // TODO
+                value.unwrap_or(0.into()),  // TODO
+                gas.unwrap_or(0.into()),    // TODO
             )
             .map_err(|err| internal_err(format!("execution fatal: {:?}", err)))?
             .map_err(|err| internal_err(format!("runtime error on eth_call(): {:?}", err)))
