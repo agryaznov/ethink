@@ -23,10 +23,7 @@ mod tests;
 
 use frame_support::{
     dispatch::{DispatchInfo, PostDispatchInfo},
-    traits::{
-        fungible::{Inspect, Mutate},
-        EnsureOrigin,
-    },
+    traits::fungible::{Inspect, Mutate},
 };
 use frame_system::{pallet_prelude::OriginFor, CheckWeight, Pallet as System};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
@@ -162,8 +159,6 @@ pub mod pallet {
         type Currency: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
         /// Contracts engine
         type Contracts: Executor<<Self as Config>::Call>;
-        // AccountId
-        //        type AccountId: Into<sp_core::H160>;
     }
 
     #[pallet::call]
