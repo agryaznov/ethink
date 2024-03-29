@@ -2,15 +2,15 @@ use ethereum_types::{H256, U256};
 use ethink_rpc_core::types::Header as EthHeader;
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
 // TODO move these types to primitives
-pub use ethink_rpc_core::types::Block as EthBlock;
+pub use ethink_rpc_core::types::Block as EthereumBlock;
 // TODO move all types to primitives /types
 /// Substrate block, convertible to Ethereum block
-pub struct SubBlock<B>(pub B);
+pub struct SubstrateBlock<B>(pub B);
 
-impl<B: BlockT<Hash = H256>> From<SubBlock<B>> for EthBlock {
+impl<B: BlockT<Hash = H256>> From<SubstrateBlock<B>> for EthereumBlock {
     // Generate dumb ETH block with empty tx list,
     // from the given substrate block
-    fn from(b: SubBlock<B>) -> Self {
+    fn from(b: SubstrateBlock<B>) -> Self {
         let h = b.0.header();
 
         let header = EthHeader {
