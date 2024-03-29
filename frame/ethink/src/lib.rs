@@ -34,7 +34,7 @@ use sp_runtime::{
     transaction_validity::{
         InvalidTransaction, TransactionValidity, TransactionValidityError, ValidTransactionBuilder,
     },
-    RuntimeDebug,
+    DispatchError, RuntimeDebug,
 };
 use sp_std::{marker::PhantomData, prelude::*};
 
@@ -132,7 +132,13 @@ pub trait Executor<RuntimeCall> {
     /// Construct proper runtime call for the input provided
     fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall>;
     /// Call contract
-    fn call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> Self::ExecResult;
+    fn call(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> Result<Self::ExecResult, DispatchError>;
 }
 
 pub use self::pallet::*;
@@ -242,7 +248,7 @@ where
         data: Vec<u8>,
         value: U256,
         gas_limit: U256,
-    ) -> <T::Contracts as Executor<T::RuntimeCall>>::ExecResult {
+    ) -> Result<<T::Contracts as Executor<T::RuntimeCall>>::ExecResult, DispatchError> {
         T::Contracts::call(from, to, data, value, gas_limit)
     }
 
