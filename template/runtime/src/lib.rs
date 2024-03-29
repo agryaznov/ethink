@@ -30,6 +30,7 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 // ETH RPC support
 use ep_crypto::EthereumSignature;
+use ep_mapping::SubstrateWeight;
 use ep_rpc::EthTransaction;
 use pallet_ethink;
 
@@ -825,10 +826,9 @@ impl_runtime_apis! {
             // ensure successful execution
             let _ = res.result?;
             // get consumed weight
-            let weight = res.gas_consumed;
-            // encode Weight into U256
-            // TODO add conversion crate
-            Ok(U256([weight.ref_time(), weight.proof_size(), 0, 0]))
+            let weight: SubstrateWeight = res.gas_consumed.into();
+            // convert Weight into U256
+            Ok(weight.into())
         }
 
         fn build_extrinsic(
@@ -857,16 +857,17 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         Contracts::code_hash(&who.into()).is_some()
     }
 
-    fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall> {
+    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         let value = value.try_into().ok()?;
+        let gas_limit = SubstrateWeight::from(gas_limit).into();
 
         Some(if Self::is_contract(to) {
             pallet_contracts::Call::<Runtime>::call {
                 dest,
                 value,
                 data,
-                gas_limit: Weight::from_all(u64::MAX), // TODO
+                gas_limit,
                 storage_deposit_limit: None,
             }
             .into()
@@ -880,7 +881,7 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         to: H160,
         data: Vec<u8>,
         value: U256,
-        _gas_limit: U256,
+        gas_limit: U256,
     ) -> Result<Self::ExecResult, DispatchError> {
         let from = AccountId::from(from);
         let to = AccountId::from(to);
@@ -891,14 +892,13 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             .try_into()
             .map_err(|_| DispatchError::Arithmetic(ArithmeticError::Overflow))?;
 
-        // TODO
-        // let gas_limit = gas_limit.try_into()
+        let gas_limit = SubstrateWeight::from(gas_limit).into();
 
         Ok(Contracts::bare_call(
             from,
             to,
             value,
-            Weight::from_all(u64::MAX), // TODO
+            gas_limit,
             None,
             data,
             CONTRACTS_DEBUG_OUTPUT,
