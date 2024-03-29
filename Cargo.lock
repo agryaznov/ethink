@@ -1998,10 +1998,8 @@ dependencies = [
 name = "ep-mapping"
 version = "0.1.0"
 dependencies = [
- "ethereum-types",
- "ethink-rpc-core",
  "sp-core 21.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
- "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
+ "sp-weights 20.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
 ]
 
 [[package]]
@@ -2159,7 +2157,6 @@ name = "ethink-rpc"
 version = "0.1.0"
 dependencies = [
  "ep-crypto",
- "ep-mapping",
  "ep-rpc",
  "ethereum",
  "ethereum-types",
@@ -2198,6 +2195,7 @@ name = "ethink-runtime"
 version = "0.1.0"
 dependencies = [
  "ep-crypto",
+ "ep-mapping",
  "ep-rpc",
  "ep-self-contained",
  "frame-executive",

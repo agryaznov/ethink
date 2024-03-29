@@ -43,6 +43,7 @@ sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethi
 sp-runtime-interface = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
+sp-weights = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sc-client-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sc-transaction-pool-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 sc-network = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
