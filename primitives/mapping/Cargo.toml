@@ -1,15 +1,17 @@
 [package]
 name = "ep-mapping"
-description = "ETH<>Polkadot SDK data structures converters"
+description = "ETH<>Polkadot SDK data types conversions"
 version = "0.1.0"
 edition.workspace = true
 
 [dependencies]
-
-ethereum-types.workspace = true
-sp-runtime = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
-ethink-rpc-core.workspace = true
+sp-weights = { workspace = true, default-features = false }
 
 [features]
-default = []
+default = ["std"]
+std = [
+	# Substrate
+	"sp-core/std",
+	"sp-weights/std",
+]

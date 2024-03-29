@@ -30,6 +30,7 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 // ETH RPC support
 use ep_crypto::EthereumSignature;
+use ep_mapping::SubstrateWeight;
 use ep_rpc::EthTransaction;
 use pallet_ethink;
 
@@ -825,10 +826,9 @@ impl_runtime_apis! {
             // ensure successful execution
             let _ = res.result?;
             // get consumed weight
-            let weight = res.gas_consumed;
-            // encode Weight into U256
-            // TODO add conversion crate
-            Ok(U256([weight.ref_time(), weight.proof_size(), 0, 0]))
+            let weight: SubstrateWeight = res.gas_consumed.into();
+            // convert Weight into U256
+            Ok(weight.into())
         }
 
         fn build_extrinsic(

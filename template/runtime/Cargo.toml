@@ -55,6 +55,7 @@ sp-debug-derive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = 
 # ethink
 ep-rpc.workspace = true
 ep-crypto.workspace = true
+ep-mapping.workspace = true
 pallet-ethink.workspace = true
 ep-self-contained = { workspace = true, features = ["serde"] }
 
@@ -97,4 +98,5 @@ std = [
 	"ep-rpc/std",
 	"ep-crypto/std",
 	"ep-self-contained/std",
+	"ep-mapping/std",
 ]

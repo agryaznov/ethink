@@ -8,7 +8,10 @@ mod group5;
 // auxilinary utils
 mod signer;
 
-use ep_mapping;
+// block mapping
+// TODO think for a proper crate for this
+mod block;
+
 use ep_rpc::ETHRuntimeRPC;
 use ethereum::TransactionV2 as EthTransaction;
 use ethereum_types::{H160, H256, H64, U256, U64};
