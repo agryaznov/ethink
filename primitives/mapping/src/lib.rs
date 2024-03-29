@@ -2,4 +2,6 @@
 
 mod weight;
 
+use sp_core::U256;
+pub use sp_weights::Weight;
 pub use weight::SubstrateWeight;

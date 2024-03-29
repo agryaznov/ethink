@@ -1,5 +1,4 @@
-use sp_core::U256;
-use sp_weights::Weight;
+use super::*;
 
 /// Substrate Weight, convertible to U256
 pub struct SubstrateWeight(Weight);
