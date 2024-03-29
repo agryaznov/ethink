@@ -880,7 +880,7 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         to: H160,
         data: Vec<u8>,
         value: U256,
-        _gas_limit: U256,
+        gas_limit: U256,
     ) -> Result<Self::ExecResult, DispatchError> {
         let from = AccountId::from(from);
         let to = AccountId::from(to);
@@ -891,14 +891,13 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             .try_into()
             .map_err(|_| DispatchError::Arithmetic(ArithmeticError::Overflow))?;
 
-        // TODO
-        // let gas_limit = gas_limit.try_into()
+        let gas_limit = SubstrateWeight::from(gas_limit).into();
 
         Ok(Contracts::bare_call(
             from,
             to,
             value,
-            Weight::from_all(u64::MAX), // TODO
+            gas_limit,
             None,
             data,
             CONTRACTS_DEBUG_OUTPUT,
