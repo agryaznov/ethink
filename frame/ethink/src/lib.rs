@@ -130,7 +130,7 @@ pub trait Executor<RuntimeCall> {
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
-    fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall>;
+    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall>;
     /// Call contract
     fn call(
         from: H160,
@@ -193,14 +193,16 @@ pub mod pallet {
             // StorageMap::contains_key() instead of StorageMap::get() under the hood.
             let from = origin.clone();
             let from = from.as_signed().ok_or(Error::<T>::BadEthSignature)?;
-            let (to, value, data) = Self::unpack_eth_tx(&tx).ok_or(Error::<T>::TxNotSupported)?;
+            let (to, value, data, gas_limit) =
+                Self::unpack_eth_tx(&tx).ok_or(Error::<T>::TxNotSupported)?;
             // CREATE is not supported
             let to = to.ok_or(Error::<T>::TxNotSupported)?;
             // Increase nonce of the sender account
             System::<T>::inc_account_nonce(from);
-            // Compose propoer destination pallet call
-            let call =
-                T::Contracts::build_call(to, value, data).ok_or(Error::<T>::TxNotSupported)?;
+            // Compose proper destination pallet call
+            // TODO add test for gas_limit
+            let call = T::Contracts::build_call(to, value, data, gas_limit)
+                .ok_or(Error::<T>::TxNotSupported)?;
             // Make call
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
@@ -277,7 +279,7 @@ where
             .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))))
     }
 
-    fn unpack_eth_tx(tx: &EthTransaction) -> Option<(Option<H160>, U256, Vec<u8>)> {
+    fn unpack_eth_tx(tx: &EthTransaction) -> Option<(Option<H160>, U256, Vec<u8>, U256)> {
         match tx {
             EthTransaction::Legacy(t) => Some((
                 match t.action {
@@ -286,6 +288,7 @@ where
                 },
                 t.value,
                 t.input.clone(),
+                t.gas_limit,
             )),
             // We only support Legacy, EIP2930 and EIP1559 are not supported
             _ => None,

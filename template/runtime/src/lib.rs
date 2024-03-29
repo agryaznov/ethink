@@ -857,16 +857,17 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         Contracts::code_hash(&who.into()).is_some()
     }
 
-    fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall> {
+    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         let value = value.try_into().ok()?;
+        let gas_limit = SubstrateWeight::from(gas_limit).into();
 
         Some(if Self::is_contract(to) {
             pallet_contracts::Call::<Runtime>::call {
                 dest,
                 value,
                 data,
-                gas_limit: Weight::from_all(u64::MAX), // TODO
+                gas_limit,
                 storage_deposit_limit: None,
             }
             .into()
