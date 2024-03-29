@@ -1,5 +1,5 @@
 use super::*;
-use ep_mapping::{EthBlock, SubBlock};
+use ep_mapping::{EthereumBlock, SubstrateBlock};
 
 impl<B, C, P> EthRPC<B, C, P>
 where
@@ -12,7 +12,7 @@ where
             .client
             .block(hash)
             .map_err(|err| internal_err(format!("Failed fetching block: {:?}", err)))?
-            .map(|b| EthBlock::from(SubBlock(b.block)))
+            .map(|b| EthereumBlock::from(SubstrateBlock(b.block)))
             .map(|b| RichBlock {
                 inner: b,
                 extra_info: BTreeMap::new(),
@@ -64,7 +64,7 @@ where
             .client
             .block(hash)
             .map_err(|err| internal_err(format!("Failed fetching block body: {:?}", err)))?
-            .map(|b| EthBlock::from(SubBlock(b.block)))
+            .map(|b| EthereumBlock::from(SubstrateBlock(b.block)))
             .map(|b| RichBlock {
                 inner: b,
                 extra_info: BTreeMap::new(),
