@@ -130,7 +130,7 @@ pub trait Executor<RuntimeCall> {
     /// Check if AccountId is owned by a contract
     fn is_contract(who: H160) -> bool;
     /// Construct proper runtime call for the input provided
-    fn build_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall;
+    fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall>;
     /// Call contract
     fn call(from: H160, to: H160, data: Vec<u8>, value: U256, gas_limit: U256) -> Self::ExecResult;
 }
@@ -193,7 +193,8 @@ pub mod pallet {
             // Increase nonce of the sender account
             System::<T>::inc_account_nonce(from);
             // Compose propoer destination pallet call
-            let call = T::Contracts::build_call(to, value, data);
+            let call =
+                T::Contracts::build_call(to, value, data).ok_or(Error::<T>::TxNotSupported)?;
             // Make call
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);

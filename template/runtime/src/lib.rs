@@ -857,12 +857,11 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         Contracts::code_hash(&who.into()).is_some()
     }
 
-    fn build_call(to: H160, value: U256, data: Vec<u8>) -> RuntimeCall {
+    fn build_call(to: H160, value: U256, data: Vec<u8>) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
-        // TODO make fn fallible
-        let value = value.try_into().unwrap_or_default();
+        let value = value.try_into().ok()?;
 
-        if Self::is_contract(to) {
+        Some(if Self::is_contract(to) {
             pallet_contracts::Call::<Runtime>::call {
                 dest,
                 value,
@@ -873,7 +872,7 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             .into()
         } else {
             pallet_balances::Call::<Runtime>::transfer_allow_death { dest, value }.into()
-        }
+        })
     }
 
     fn call(
