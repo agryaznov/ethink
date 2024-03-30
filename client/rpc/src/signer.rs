@@ -1,21 +1,20 @@
 //! Means for signing an Ethereum transaction
 use ethereum::{LegacyTransactionMessage, TransactionSignature};
-use ethereum_types::H256;
 
 // Substrate
 use sp_core::ecdsa;
 use sp_keystore::KeystorePtr;
 
 use crate::ETHINK_KEYTYPE_ID;
-use ep_crypto::AccountId20;
+use ep_crypto::{AccountId20, EthereumSignature};
 
+// TODO move to ep_crypto
 /// ETH transaction signer, comprised of account_id and ref to a keystore holding
 /// secret key for that account_id.
 pub struct EthereumSigner {
     keystore: KeystorePtr,
     pub_key: ecdsa::Public,
 }
-
 impl EthereumSigner {
     pub fn try_sign(&self, msg: LegacyTransactionMessage) -> Result<TransactionSignature, String> {
         let sig = self
@@ -29,15 +28,9 @@ impl EthereumSigner {
             .expect("we checked that keystore contains needed secret upon signer construction; qed")
             .map_err(|_| "Failed to sign tx".to_string())?;
 
-        // Some Ethereum-specific signature magic
-        let v = match msg.chain_id {
-            None => 27,
-            Some(chain_id) => 2 * chain_id + 35,
-        } + sig.0[64] as u64;
-        let r = H256::from_slice(&sig.0[0..32]);
-        let s = H256::from_slice(&sig.0[32..64]);
+        let sig: Option<TransactionSignature> = EthereumSignature::new(sig).into();
 
-        TransactionSignature::new(v, r, s).ok_or("signer generated invalid signature".to_string())
+        sig.ok_or("signer generated invalid signature".to_string())
     }
 }
 
