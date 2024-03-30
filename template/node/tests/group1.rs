@@ -3,12 +3,21 @@
 
 mod common;
 
+use std::str::FromStr;
+
 use common::*;
+use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
+use ep_rpc::EthTransaction;
+use ethereum::{
+    EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
+};
 use serde_json::{value::Serializer, Deserializer};
-use sp_core::U256;
+use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use ureq::json;
+
+// TODO add checks_signature() test (similar to sendRawTx test)
 
 #[tokio::test]
 async fn eth_sendRawTransaction() {
@@ -16,15 +25,49 @@ async fn eth_sendRawTransaction() {
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request (to flip it to `true`)
-    // TODO pass gas_limit
+    let address = AccountId20::from_str(&env.contract_address()).unwrap();
+
+    let nonce = 1.into();
+    let gas_price = 0.into();
+    let gas_limit = Into::<U256>::into(SubstrateWeight::from(Weight::MAX));
+    let action = ethereum::TransactionAction::Call(address.into());
+    let value = 0.into();
+    let input =
+        hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x")).unwrap();
+    let chain_id = None;
+
+    let msg = LegacyTransactionMessage {
+        nonce,
+        gas_price,
+        gas_limit,
+        action,
+        value,
+        input: input.clone(),
+        chain_id,
+    };
+
+    let pair = ecdsa::Pair::from_string(ALITH_KEY, None).unwrap();
+    let sig = EthereumSignature::new(pair.sign_prehashed(&msg.hash().into()));
+    let sig: Option<TransactionSignature> = sig.into();
+    let signature = sig.expect("signer generated no signature");
+
+    let tx = EthTransaction::Legacy(LegacyTransaction {
+        nonce,
+        gas_price,
+        gas_limit,
+        action,
+        value,
+        input,
+        signature,
+    });
+
+    let tx_hex = format!("0x{}", hex::encode(tx.encode()));
+
     let rs = rpc_rq!(env,
     {
       "jsonrpc": "2.0",
       "method": "eth_sendRawTransaction",
-      "params": ["0xf86508808405f5e10094ac7da28b0a6e94dec4c9d2bfa6917ff476e6a944\
-                  8084cde4efa978a09fda452d7a17d1a7cc98cf88343394f02627d079ef881f\
-                  c36fc1361769c15a07a0112514d3a2e44ed85fc8c632e044239a17e83db41a\
-                  99f253d63b3281aa3dd5ab"],  // TODO call data encoding logic
+      "params": [ &tx_hex ],
       "id": 0
      });
     // Handle response

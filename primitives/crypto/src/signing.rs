@@ -1,8 +1,11 @@
 //! Ethereum signing facilities
+use ethereum::TransactionSignature;
+use ethereum_types::{H160, H256};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
+
 // Substrate
-use sp_core::{ecdsa, RuntimeDebug, H160, H256};
+use sp_core::{ecdsa, RuntimeDebug};
 use sp_io::hashing::keccak_256;
 use sp_runtime_interface::pass_by::PassByInner;
 
@@ -57,6 +60,18 @@ impl EthereumSignature {
         Self::new(ecdsa::Signature::from_raw(d))
     }
 
+    fn to_vrs(&self, chain_id: Option<u64>) -> (u64, H256, H256) {
+        // Some Ethereum-specific signature magic
+        let v = match chain_id {
+            None => 27,
+            Some(chain_id) => 2 * chain_id + 35,
+        } + self.0 .0[64] as u64;
+        let r = H256::from_slice(&self.0 .0[0..32]);
+        let s = H256::from_slice(&self.0 .0[32..64]);
+
+        (v, r, s)
+    }
+
     // TODO remove, this is a dbg helper
     pub fn dummy() -> Self {
         let mut bytes = [0u8; 65];
@@ -65,6 +80,14 @@ impl EthereumSignature {
         ).unwrap();
         let s = ecdsa::Signature::from_slice(&bytes).unwrap();
         EthereumSignature(s)
+    }
+}
+
+impl Into<Option<TransactionSignature>> for EthereumSignature {
+    fn into(self) -> Option<TransactionSignature> {
+        let (v, r, s) = self.to_vrs(None);
+
+        TransactionSignature::new(v, r, s)
     }
 }
 

@@ -13,6 +13,8 @@ log.workspace = true
 scale-codec.workspace = true
 scale-info.workspace = true
 serde = { workspace = true, optional = true }
+ethereum.workspace = true
+ethereum-types.workspace = true
 
 # Substrate
 sp-core.workspace = true

@@ -1980,6 +1980,8 @@ checksum = "e48c92028aaa870e83d51c64e5d4e0b6981b360c522198c23959f219a4e1b15b"
 name = "ep-crypto"
 version = "0.1.0"
 dependencies = [
+ "ethereum",
+ "ethereum-types",
  "hex",
  "impl-serde",
  "libsecp256k1",
@@ -2103,6 +2105,7 @@ dependencies = [
  "ep-crypto",
  "ep-mapping",
  "ep-rpc",
+ "ethereum",
  "ethink-rpc",
  "ethink-runtime",
  "frame-benchmarking",
