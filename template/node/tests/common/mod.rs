@@ -2,6 +2,7 @@ pub mod node;
 #[macro_use]
 pub mod macros;
 pub mod contracts;
+pub mod eth;
 pub mod prepare;
 
 pub const NODE_BIN: &'static str = env!("CARGO_BIN_EXE_ethink-node");

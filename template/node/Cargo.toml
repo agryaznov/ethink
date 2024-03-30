@@ -83,6 +83,7 @@ subxt = "0.29.0"
 log.workspace = true
 sp-weights = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 hex.workspace = true
+ethereum.workspace = true
 
 [features]
 default = []

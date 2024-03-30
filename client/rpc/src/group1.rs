@@ -21,6 +21,8 @@ where
         let tx: EthTransaction = ethereum::EnvelopedDecodable::decode(slice)
             .map_err(|_| internal_err("decode transaction failed"))?;
 
+        log::error!(target: "ethink:rpc", "EthTransaction: {:#?}", &tx);
+
         self.compose_extrinsic_and_submit(hash, tx).await
     }
 

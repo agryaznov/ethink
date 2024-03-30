@@ -1,7 +1,9 @@
 //! Ethereum account primitives
+use ethereum_types::{H160, H256};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
-use sp_core::{ecdsa, H160, H256};
+
+use sp_core::ecdsa;
 use sp_io::hashing::keccak_256;
 
 /// A fully Ethereum-compatible `AccountId`.
