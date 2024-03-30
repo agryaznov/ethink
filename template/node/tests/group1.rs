@@ -27,39 +27,20 @@ async fn eth_sendRawTransaction() {
     // Make ETH RPC request (to flip it to `true`)
     let address = AccountId20::from_str(&env.contract_address()).unwrap();
 
-    let nonce = 1.into();
-    let gas_price = 0.into();
-    let gas_limit = Into::<U256>::into(SubstrateWeight::from(Weight::MAX));
+    // TODO refactor: create struct TestTxInput: Default
+    let nonce = 1;
+    let gas_price = 0;
+    let gas_limit = SubstrateWeight::from(Weight::MAX);
     let action = ethereum::TransactionAction::Call(address.into());
-    let value = 0.into();
+    let value = 0;
     let input =
         hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x")).unwrap();
     let chain_id = None;
-
-    let msg = LegacyTransactionMessage {
-        nonce,
-        gas_price,
-        gas_limit,
-        action,
-        value,
-        input: input.clone(),
-        chain_id,
-    };
-
     let pair = ecdsa::Pair::from_string(ALITH_KEY, None).unwrap();
-    let sig = EthereumSignature::new(pair.sign_prehashed(&msg.hash().into()));
-    let sig: Option<TransactionSignature> = sig.into();
-    let signature = sig.expect("signer generated no signature");
 
-    let tx = EthTransaction::Legacy(LegacyTransaction {
-        nonce,
-        gas_price,
-        gas_limit,
-        action,
-        value,
-        input,
-        signature,
-    });
+    let tx = eth::compose_and_sign_eth_tx(
+        nonce, gas_price, gas_limit, action, value, input, chain_id, pair,
+    );
 
     let tx_hex = format!("0x{}", hex::encode(tx.encode()));
 
