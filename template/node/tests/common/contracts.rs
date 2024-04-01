@@ -1,9 +1,11 @@
-use crate::common::*;
+use crate::{common::*, Serialize};
+use serde::Serializer;
 use std::{
     io::{BufRead, BufReader},
     process,
 };
 
+// TODO couldn't we use ep_mapping::weight here?
 pub struct Weight(pub sp_weights::Weight);
 
 impl From<&serde_json::Map<std::string::String, serde_json::Value>> for Weight {
@@ -30,6 +32,34 @@ impl From<Weight> for sp_core::U256 {
         sp_core::U256([value.0.ref_time(), value.0.proof_size(), 0, 0])
     }
 }
+
+#[derive(Clone)]
+pub struct ContractInput(Vec<u8>);
+
+impl Serialize for ContractInput {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        format!("0x{}", hex::encode(&self.0)).serialize(serializer)
+    }
+}
+
+impl From<Vec<u8>> for ContractInput {
+    fn from(v: Vec<u8>) -> Self {
+        Self(v)
+    }
+}
+
+impl Into<Vec<u8>> for ContractInput {
+    fn into(self) -> Vec<u8> {
+        self.0
+    }
+}
+
+// impl Deserialize for ContractInput {
+//     fn deserialize<D: Serializer>(&self, deserializer: D) -> Result<Self, S::Error> {
+
+//         u.serialize(serializer)
+//     }
+// }
 
 /// Deploy contract to the node exposed via `url`, and return the output
 pub fn deploy(url: &str, manifest_path: &str) -> process::Output {
@@ -84,7 +114,7 @@ pub fn call(env: &Env<PolkadotConfig>, msg: &str, execute: bool) -> process::Out
 }
 
 /// Encode input data for contract call
-pub fn encode(manifest_path: &str, msg: &str) -> String {
+pub fn encode(manifest_path: &str, msg: &str) -> ContractInput {
     let manifest_arg = &format!("--manifest-path={manifest_path}");
     let msg_arg = &format!("--message={msg}");
 
@@ -98,15 +128,17 @@ pub fn encode(manifest_path: &str, msg: &str) -> String {
 
     assert!(output.status.success());
 
-    // perse stdout for the encoded data string
-    let hex = BufReader::new(output.stdout.as_slice())
+    // parse stdout for the encoded data string
+    let bytes = BufReader::new(output.stdout.as_slice())
         .lines()
         .find_map(|line| {
             let line = line.expect("failed to get next line from cargo-contract stdout");
             line.split_once("Encoded data: ")
                 .map(|(_, hex)| hex.to_owned())
         })
-        .expect("can't find encoded data string in cargo-contract stdout");
+        .map(hex::decode)
+        .expect("can't find encoded data string in cargo-contract stdout")
+        .expect("can't deserialize encoded data from cargo-contract stdout");
 
-    format!("0x{hex}")
+    ContractInput(bytes)
 }

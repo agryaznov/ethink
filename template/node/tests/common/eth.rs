@@ -1,6 +1,6 @@
 use crate::{
-    ecdsa, EthTransaction, EthereumSignature, LegacyTransaction, LegacyTransactionMessage,
-    SubstrateWeight, TransactionSignature, Weight, U256,
+    ecdsa, ContractInput, EthTransaction, EthereumSignature, LegacyTransaction,
+    LegacyTransactionMessage, SubstrateWeight, TransactionSignature, Weight, U256,
 };
 
 use sp_core::crypto::Pair;
@@ -13,7 +13,7 @@ pub struct EthTxInput {
     pub gas_limit: SubstrateWeight,
     pub action: ethereum::TransactionAction,
     pub value: u64,
-    pub data: Vec<u8>,
+    pub data: ContractInput,
     pub chain_id: Option<u64>,
     pub signer: ecdsa::Pair,
 }
@@ -26,7 +26,7 @@ impl Default for EthTxInput {
             gas_limit: SubstrateWeight::from(Weight::MAX),
             action: ethereum::TransactionAction::Call(Default::default()),
             value: 0u64,
-            data: vec![0],
+            data: vec![0].into(),
             chain_id: None,
             signer: ecdsa::Pair::generate().0,
         }
@@ -46,7 +46,7 @@ impl From<EthTxInput> for LegacyTransactionMessage {
             gas_limit,
             action: v.action,
             value,
-            input: v.data,
+            input: v.data.into(),
             chain_id: v.chain_id,
         }
     }

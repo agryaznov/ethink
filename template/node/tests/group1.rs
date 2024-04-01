@@ -3,9 +3,7 @@
 
 mod common;
 
-use std::str::FromStr;
-
-use common::{eth::EthTxInput, *};
+use common::{contracts::ContractInput, eth::EthTxInput, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
@@ -24,21 +22,15 @@ async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
     // (Flipper is deployed with `false` state)
-    // Make ETH RPC request (to flip it to `true`)
-    let address = AccountId20::from_str(&env.contract_address()).unwrap();
-
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
-        action: ethereum::TransactionAction::Call(address.into()),
-        data: hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x"))
-            .unwrap(),
+        action: ethereum::TransactionAction::Call(env.contract_address().into()),
+        data: contracts::encode(FLIPPER_PATH, "flip"), // TODO refactor with ContractInput(Vec<u8>): Serialize,
         ..Default::default()
     };
-
     let tx = eth::compose_and_sign_tx(input);
-
-    let tx_hex = format!("0x{}", hex::encode(tx.encode()));
-
+    let tx_hex = format!("0x{:x}", &tx.encode());
+    // Make ETH RPC request (to switch flipper to `true`)
     let rs = rpc_rq!(env,
     {
       "jsonrpc": "2.0",
@@ -74,7 +66,7 @@ async fn eth_sendTransaction() {
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
                   "data": contracts::encode(FLIPPER_PATH, "flip"),
-                  "gas": Into::<U256>::into(SubstrateWeight::from(Weight::MAX)).to_string()
+                  "gas": SubstrateWeight::max()
                  },
                  "latest"],
       "id": 0
@@ -142,7 +134,7 @@ async fn eth_call() {
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
                       "data": contracts::encode(FLIPPER_PATH, "get"),
-                      "gas": Into::<U256>::into(SubstrateWeight::from(Weight::MAX)).to_string()
+                      "gas": SubstrateWeight::max()
                   },
                   "latest"],
        "id": 0

@@ -12,11 +12,12 @@ pub const ALITH_KEY: &'static str = env!("ALITH_KEY");
 pub const BALTATHAR_ADDRESS: &'static str = env!("BALTATHAR_ADDRESS");
 pub const BALTATHAR_KEY: &'static str = env!("BALTATHAR_KEY");
 
+use crate::AccountId20;
 use node::{Protocol, TestNodeProcess};
 
 struct Contract {
     pub manifest_path: String,
-    pub address: String,
+    pub address: AccountId20,
 }
 
 // Testing environment, consisting of a node with a deployed cont   qract
@@ -26,7 +27,7 @@ pub struct Env<R: subxt::Config> {
 }
 
 impl<R: subxt::Config> Env<R> {
-    pub fn new(node: TestNodeProcess<R>, manifest_path: String, address: String) -> Self {
+    pub fn new(node: TestNodeProcess<R>, manifest_path: String, address: AccountId20) -> Self {
         let contract = Contract {
             manifest_path,
             address,
@@ -35,8 +36,8 @@ impl<R: subxt::Config> Env<R> {
         Env { node, contract }
     }
 
-    pub fn contract_address(&self) -> &str {
-        &self.contract.address.as_str()
+    pub fn contract_address(&self) -> AccountId20 {
+        self.contract.address
     }
 
     pub fn ws_url(&self) -> String {
@@ -77,6 +78,7 @@ impl<R: subxt::Config> Env<R> {
         }
     }
 }
+
 // Default set of commonly used types by Substrate runtimes.
 pub enum SubstrateConfig {}
 
