@@ -3,9 +3,7 @@
 
 mod common;
 
-use std::str::FromStr;
-
-use common::*;
+use common::{contracts::ContractInput, eth::EthTxInput, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
@@ -24,26 +22,15 @@ async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH);
     // (Flipper is deployed with `false` state)
-    // Make ETH RPC request (to flip it to `true`)
-    let address = AccountId20::from_str(&env.contract_address()).unwrap();
-
-    // TODO refactor: create struct TestTxInput: Default
-    let nonce = 1;
-    let gas_price = 0;
-    let gas_limit = SubstrateWeight::from(Weight::MAX);
-    let action = ethereum::TransactionAction::Call(address.into());
-    let value = 0;
-    let input =
-        hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x")).unwrap();
-    let chain_id = None;
-    let pair = ecdsa::Pair::from_string(ALITH_KEY, None).unwrap();
-
-    let tx = eth::compose_and_sign_eth_tx(
-        nonce, gas_price, gas_limit, action, value, input, chain_id, pair,
-    );
-
-    let tx_hex = format!("0x{}", hex::encode(tx.encode()));
-
+    let input = EthTxInput {
+        signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
+        action: ethereum::TransactionAction::Call(env.contract_address().into()),
+        data: contracts::encode(FLIPPER_PATH, "flip"),
+        ..Default::default()
+    };
+    let tx = eth::compose_and_sign_tx(input);
+    let tx_hex = format!("0x{:x}", &tx.encode());
+    // Make ETH RPC request (to switch flipper to `true`)
     let rs = rpc_rq!(env,
     {
       "jsonrpc": "2.0",
@@ -65,6 +52,7 @@ async fn eth_sendRawTransaction() {
         .as_bool()
         .expect("can't parse contract output"));
 }
+
 #[tokio::test]
 async fn eth_sendTransaction() {
     // Spawn node and deploy contract
@@ -79,7 +67,7 @@ async fn eth_sendTransaction() {
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
                   "data": contracts::encode(FLIPPER_PATH, "flip"),
-                  "gas": Into::<U256>::into(SubstrateWeight::from(Weight::MAX)).to_string()
+                  "gas": SubstrateWeight::max()
                  },
                  "latest"],
       "id": 0
@@ -123,7 +111,7 @@ async fn gas_limit_is_respected() {
     ensure_no_err!(&json);
     let _tx_hash = extract_result!(&json);
     // Wait until tx gets executed (or timeout)
-    // TODO shuold there be emitted event on falure?
+    // TODO should there be an emitted event on falure?
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
     let output = contracts::call(&env, "get", false);
@@ -147,7 +135,7 @@ async fn eth_call() {
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
                       "data": contracts::encode(FLIPPER_PATH, "get"),
-                      "gas": Into::<U256>::into(SubstrateWeight::from(Weight::MAX)).to_string()
+                      "gas": SubstrateWeight::max()
                   },
                   "latest"],
        "id": 0
@@ -179,13 +167,11 @@ async fn eth_estimateGas() {
     // Retrieve gas estimation via cargo-contract dry-run
     let output = contracts::call(&env, "flip", false);
     let rs = Deserializer::from_slice(&output.stdout);
-    let gas_consumed = json_get!(rs["gas_consumed"])
-        .as_object()
-        .expect("contract address not returned")
-        .to_owned();
-    let weight = contracts::Weight::from(&gas_consumed);
-    let json_val = sp_core::U256::from(weight).serialize(Serializer).unwrap();
-    let weight_str_expected = json_val.as_str().unwrap();
+    let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
+    let weight = serde_json::from_value::<Weight>(gas_consumed)
+        .map(SubstrateWeight::from)
+        .unwrap();
+    let weight_str_expected = weight.serialize(Serializer).unwrap().to_owned();
     // Make ETH rpc request
     let rq = json!({
        "jsonrpc": "2.0",
@@ -202,7 +188,7 @@ async fn eth_estimateGas() {
     // Handle response
     let json = to_json_val!(rs);
     ensure_no_err!(&json);
-    // Should return gas spent value equal to the retrieved above
+    // Should return gas spent value equal to the one retrieved above
     let weight_str_returned = extract_result!(&json);
     assert_eq!(weight_str_returned, &weight_str_expected);
 }

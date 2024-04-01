@@ -1,6 +1,7 @@
 //! Prelude actions needed in most of the tests
-use super::{node::*, *};
+use crate::{node::*, *};
 use serde_json::Deserializer;
+use std::str::FromStr;
 
 /// Spawn a node and deploy a contract to it
 pub async fn node_and_contract<R: subxt::Config>(
@@ -23,8 +24,9 @@ pub async fn node_and_contract<R: subxt::Config>(
     let rs = Deserializer::from_slice(&output.stdout);
     let contract_address = json_get!(rs["contract"])
         .as_str()
+        .map(AccountId20::from_str)
         .expect("contract address not returned")
-        .to_string();
+        .expect("can't decode contract address");
 
     Env::new(node, manifest_path.to_string(), contract_address)
 }

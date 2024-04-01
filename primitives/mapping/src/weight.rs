@@ -1,7 +1,16 @@
+use sp_core::serde::{Serialize, Serializer};
+
 use super::*;
 
 /// Substrate Weight, convertible to U256
-pub struct SubstrateWeight(Weight);
+#[derive(Clone)]
+pub struct SubstrateWeight(pub Weight);
+
+impl SubstrateWeight {
+    pub fn max() -> Self {
+        Self(Weight::MAX)
+    }
+}
 
 impl From<U256> for SubstrateWeight {
     fn from(u: U256) -> Self {
@@ -24,5 +33,14 @@ impl From<Weight> for SubstrateWeight {
 impl Into<Weight> for SubstrateWeight {
     fn into(self) -> Weight {
         self.0
+    }
+}
+/// For serialization, we encode Weight as U256,
+/// so that the rpc returned value comply with Eth RPC
+impl Serialize for SubstrateWeight {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        let u = Into::<U256>::into(self.clone());
+
+        u.serialize(serializer)
     }
 }

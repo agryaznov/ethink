@@ -42,7 +42,7 @@ impl std::str::FromStr for AccountId20 {
 #[cfg(feature = "std")]
 impl std::fmt::Display for AccountId20 {
     fn fmt(&self, f: &mut std::fmt::Formatter<'_>) -> std::fmt::Result {
-        let address = hex::encode(self.0).trim_start_matches("0x").to_lowercase();
+        let address = hex::encode(self.0);
         let address_hash = hex::encode(keccak_256(address.as_bytes()));
 
         let checksum: String =
