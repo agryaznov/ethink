@@ -5,7 +5,7 @@ mod common;
 
 use std::str::FromStr;
 
-use common::*;
+use common::{eth::EthTxInput, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
@@ -13,7 +13,7 @@ use ethereum::{
     EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
 };
 use serde_json::{value::Serializer, Deserializer};
-use sp_core::{ecdsa, Pair, U256};
+use sp_core::{ecdsa, Bytes, Pair, U256};
 use sp_runtime::Serialize;
 use ureq::json;
 
@@ -27,20 +27,18 @@ async fn eth_sendRawTransaction() {
     // Make ETH RPC request (to flip it to `true`)
     let address = AccountId20::from_str(&env.contract_address()).unwrap();
 
-    // TODO refactor: create struct TestTxInput: Default
-    let nonce = 1;
-    let gas_price = 0;
-    let gas_limit = SubstrateWeight::from(Weight::MAX);
-    let action = ethereum::TransactionAction::Call(address.into());
-    let value = 0;
-    let input =
-        hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x")).unwrap();
-    let chain_id = None;
-    let pair = ecdsa::Pair::from_string(ALITH_KEY, None).unwrap();
-
-    let tx = eth::compose_and_sign_eth_tx(
-        nonce, gas_price, gas_limit, action, value, input, chain_id, pair,
+    let input = EthTxInput::new(
+        1,
+        0,
+        SubstrateWeight::from(Weight::MAX),
+        ethereum::TransactionAction::Call(address.into()),
+        0,
+        hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x")).unwrap(),
+        None,
+        ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
     );
+
+    let tx = eth::compose_and_sign_eth_tx(input);
 
     let tx_hex = format!("0x{}", hex::encode(tx.encode()));
 
