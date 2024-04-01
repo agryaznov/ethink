@@ -5,34 +5,6 @@ use std::{
     process,
 };
 
-// TODO couldn't we use ep_mapping::weight here?
-pub struct Weight(pub sp_weights::Weight);
-
-impl From<&serde_json::Map<std::string::String, serde_json::Value>> for Weight {
-    fn from(value: &serde_json::Map<std::string::String, serde_json::Value>) -> Self {
-        let ref_time = value["ref_time"]
-            .as_number()
-            .expect("no ref_time number in response")
-            .as_u64()
-            .expect("failed to parse ref_time as u64");
-
-        let proof_size = value["proof_size"]
-            .as_number()
-            .expect("no proof_size number in response")
-            .as_u64()
-            .expect("failed to parse proof_size as u64");
-
-        Self(sp_weights::Weight::from_parts(ref_time, proof_size))
-    }
-}
-// How we encode Weight into U256 to comply with ETH RPC return value
-impl From<Weight> for sp_core::U256 {
-    fn from(value: Weight) -> sp_core::U256 {
-        // TODO add conversion crate
-        sp_core::U256([value.0.ref_time(), value.0.proof_size(), 0, 0])
-    }
-}
-
 #[derive(Clone)]
 pub struct ContractInput(Vec<u8>);
 
@@ -53,13 +25,6 @@ impl Into<Vec<u8>> for ContractInput {
         self.0
     }
 }
-
-// impl Deserialize for ContractInput {
-//     fn deserialize<D: Serializer>(&self, deserializer: D) -> Result<Self, S::Error> {
-
-//         u.serialize(serializer)
-//     }
-// }
 
 /// Deploy contract to the node exposed via `url`, and return the output
 pub fn deploy(url: &str, manifest_path: &str) -> process::Output {
