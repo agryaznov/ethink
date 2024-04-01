@@ -25,7 +25,7 @@ async fn eth_sendRawTransaction() {
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
         action: ethereum::TransactionAction::Call(env.contract_address().into()),
-        data: contracts::encode(FLIPPER_PATH, "flip"), // TODO refactor with ContractInput(Vec<u8>): Serialize,
+        data: contracts::encode(FLIPPER_PATH, "flip"),
         ..Default::default()
     };
     let tx = eth::compose_and_sign_tx(input);
@@ -52,6 +52,7 @@ async fn eth_sendRawTransaction() {
         .as_bool()
         .expect("can't parse contract output"));
 }
+
 #[tokio::test]
 async fn eth_sendTransaction() {
     // Spawn node and deploy contract
@@ -110,7 +111,7 @@ async fn gas_limit_is_respected() {
     ensure_no_err!(&json);
     let _tx_hash = extract_result!(&json);
     // Wait until tx gets executed (or timeout)
-    // TODO shuold there be emitted event on falure?
+    // TODO should there be an emitted event on falure?
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
     let output = contracts::call(&env, "get", false);
@@ -166,13 +167,11 @@ async fn eth_estimateGas() {
     // Retrieve gas estimation via cargo-contract dry-run
     let output = contracts::call(&env, "flip", false);
     let rs = Deserializer::from_slice(&output.stdout);
-    let gas_consumed = json_get!(rs["gas_consumed"])
-        .as_object()
-        .expect("contract address not returned")
-        .to_owned();
-    let weight = contracts::Weight::from(&gas_consumed);
-    let json_val = sp_core::U256::from(weight).serialize(Serializer).unwrap();
-    let weight_str_expected = json_val.as_str().unwrap();
+    let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
+    let weight = serde_json::from_value::<Weight>(gas_consumed)
+        .map(SubstrateWeight::from)
+        .unwrap();
+    let weight_str_expected = weight.serialize(Serializer).unwrap().to_owned();
     // Make ETH rpc request
     let rq = json!({
        "jsonrpc": "2.0",
@@ -189,7 +188,7 @@ async fn eth_estimateGas() {
     // Handle response
     let json = to_json_val!(rs);
     ensure_no_err!(&json);
-    // Should return gas spent value equal to the retrieved above
+    // Should return gas spent value equal to the one retrieved above
     let weight_str_returned = extract_result!(&json);
     assert_eq!(weight_str_returned, &weight_str_expected);
 }

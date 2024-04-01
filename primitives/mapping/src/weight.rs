@@ -4,7 +4,7 @@ use super::*;
 
 /// Substrate Weight, convertible to U256
 #[derive(Clone)]
-pub struct SubstrateWeight(Weight);
+pub struct SubstrateWeight(pub Weight);
 
 impl SubstrateWeight {
     pub fn max() -> Self {
@@ -35,7 +35,8 @@ impl Into<Weight> for SubstrateWeight {
         self.0
     }
 }
-
+/// For serialization, we encode Weight as U256,
+/// so that the rpc returned value comply with Eth RPC
 impl Serialize for SubstrateWeight {
     fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
         let u = Into::<U256>::into(self.clone());
