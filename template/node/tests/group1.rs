@@ -13,7 +13,7 @@ use ethereum::{
     EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
 };
 use serde_json::{value::Serializer, Deserializer};
-use sp_core::{ecdsa, Bytes, Pair, U256};
+use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use ureq::json;
 
@@ -27,18 +27,15 @@ async fn eth_sendRawTransaction() {
     // Make ETH RPC request (to flip it to `true`)
     let address = AccountId20::from_str(&env.contract_address()).unwrap();
 
-    let input = EthTxInput::new(
-        1,
-        0,
-        SubstrateWeight::from(Weight::MAX),
-        ethereum::TransactionAction::Call(address.into()),
-        0,
-        hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x")).unwrap(),
-        None,
-        ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
-    );
+    let input = EthTxInput {
+        signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
+        action: ethereum::TransactionAction::Call(address.into()),
+        data: hex::decode(contracts::encode(FLIPPER_PATH, "flip").trim_start_matches("0x"))
+            .unwrap(),
+        ..Default::default()
+    };
 
-    let tx = eth::compose_and_sign_eth_tx(input);
+    let tx = eth::compose_and_sign_tx(input);
 
     let tx_hex = format!("0x{}", hex::encode(tx.encode()));
 

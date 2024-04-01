@@ -1,6 +1,7 @@
 use super::*;
 
 /// Substrate Weight, convertible to U256
+#[derive(Clone)]
 pub struct SubstrateWeight(Weight);
 
 impl From<U256> for SubstrateWeight {
