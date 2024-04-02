@@ -21,36 +21,36 @@ clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 hex-literal.workspace = true
 
+sc-transaction-pool-api.workspace = true
+sc-client-api.workspace = true
 sc-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-core = { workspace = true, default-features = false }
 sc-executor = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-network = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-service = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-telemetry = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-transaction-pool-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-client-api = { workspace = true, default-features = false }
+sp-core.workspace = true
+sp-keystore.workspace = true
+sp-runtime.workspace = true
+sp-io.workspace = true
+sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-consensus = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-keystore = { workspace = true, default-features = false }
-sp-runtime = { workspace = true, default-features = false }
-sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sp-keyring = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-pallet-transaction-payment = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+frame-system.workspace = true
+pallet-transaction-payment.workspace = true
 
 # These dependencies are used for the node template's RPCs
-jsonrpsee = { version = "0.16.2", features = ["server"] }
-sp-api = { workspace = true, default-features = false }
+jsonrpsee = { workspace = true, features = ["server"] }
+sp-api.workspace = true
 sc-rpc = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-rpc-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sp-blockchain.workspace = true
 sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 sc-basic-authorship = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
 substrate-frame-rpc-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
@@ -81,7 +81,7 @@ serde.workspace = true
 serde_json.workspace = true
 subxt = "0.29.0"
 log.workspace = true
-sp-weights = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sp-weights.workspace = true
 hex.workspace = true
 ethereum.workspace = true
 
