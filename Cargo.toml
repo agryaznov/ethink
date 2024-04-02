@@ -53,6 +53,9 @@ pallet-balances = { git = "https://github.com/agryaznov/polkadot-sdk", branch = 
 frame-support = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
 
+# Frontier
+fp-self-contained = { git = "https://github.com/agryaznov/frontier.git", branch = "ethink", default-features = false }
+
 # Local
 ethink-rpc = { path = "client/rpc", default-features = false }
 ethink-rpc-core = { path = "client/rpc-core", default-features = false }
@@ -61,4 +64,3 @@ ep-mapping = { path = "primitives/mapping", default-features = false }
 ep-rpc = { path = "primitives/rpc", default-features = false }
 ep-crypto = { path = "primitives/crypto", default-features = false }
 pallet-ethink = { path = "frame/ethink", default-features = false }
-ep-self-contained = { path = "primitives/self-contained", default-features = false }

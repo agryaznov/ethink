@@ -2005,18 +2005,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ep-self-contained"
-version = "1.0.0-dev"
-dependencies = [
- "frame-support",
- "log",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
-]
-
-[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2185,7 +2173,7 @@ dependencies = [
  "ep-crypto",
  "ep-mapping",
  "ep-rpc",
- "ep-self-contained",
+ "fp-self-contained",
  "frame-executive",
  "frame-support",
  "frame-system",
@@ -2424,6 +2412,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13624c2627564efccf4934284bdd98cbaa14e79b0b5a141218e507b3a823456"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "fp-self-contained"
+version = "1.0.0-dev"
+source = "git+https://github.com/agryaznov/frontier.git?branch=ethink#e477cf432e5e85eda5d11f33fa1ee170561e9905"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
 ]
 
 [[package]]
