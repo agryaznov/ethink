@@ -95,10 +95,10 @@ pub type SignedExtra = (
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic =
-    ep_self_contained::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
+    fp_self_contained::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 /// Extrinsic type that has already been checked.
 pub type CheckedExtrinsic =
-    ep_self_contained::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra, H160>;
+    fp_self_contained::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra, H160>;
 
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<
@@ -500,7 +500,7 @@ construct_runtime!(
     }
 );
 
-impl ep_self_contained::SelfContainedCall for RuntimeCall {
+impl fp_self_contained::SelfContainedCall for RuntimeCall {
     type SignedInfo = H160;
 
     fn is_self_contained(&self) -> bool {
