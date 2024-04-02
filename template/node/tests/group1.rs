@@ -15,8 +15,6 @@ use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use ureq::json;
 
-// TODO add checks_signature() test (similar to sendRawTx test)
-
 #[tokio::test]
 async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
@@ -50,7 +48,7 @@ async fn eth_sendRawTransaction() {
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
         .as_bool()
-        .expect("can't parse contract output"));
+        .expect("can't parse cargo contract output"));
 }
 
 #[tokio::test]
@@ -72,6 +70,7 @@ async fn eth_sendTransaction() {
                  "latest"],
       "id": 0
     });
+
     // Handle response
     let json = to_json_val!(rs);
     ensure_no_err!(&json);
@@ -84,7 +83,7 @@ async fn eth_sendTransaction() {
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
         .as_bool()
-        .expect("can't parse contract output"));
+        .expect("can't parse cargo contract output"));
 }
 
 #[tokio::test]
@@ -93,7 +92,7 @@ async fn gas_limit_is_respected() {
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, BALTATHAR_KEY);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request (to flip it to `true`)
-    // Insufficient gas_limit (0)
+    // Insufficient gas_limit (None => 0)
     let rs = rpc_rq!(env,
     {
       "jsonrpc": "2.0",
@@ -110,16 +109,54 @@ async fn gas_limit_is_respected() {
     let json = to_json_val!(rs);
     ensure_no_err!(&json);
     let _tx_hash = extract_result!(&json);
-    // Wait until tx gets executed (or timeout)
-    // TODO should there be an emitted event on falure?
-    let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
+    // Wait until tx fails (or timeout)
+    let _ = &env.wait_for_event("system.ExtrinsicFailed", 2).await;
     // Check state
     let output = contracts::call(&env, "get", false);
     let rs = Deserializer::from_slice(&output.stdout);
     // Should stay flipped to `false` as tx should have failed with insuficcient gas
     assert!(!json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
         .as_bool()
-        .expect("can't parse contract output"));
+        .expect("can't parse cargo contract output"));
+
+    // Now let's set gas_limit to be half of the amount estimated
+    // Retrieve gas estimation via cargo-contract dry-run
+    let output = contracts::call(&env, "flip", false);
+    let rs = Deserializer::from_slice(&output.stdout);
+    let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
+    let half_weight_consumed = serde_json::from_value::<Weight>(gas_consumed)
+        .map(|x| x.div(2))
+        .map(SubstrateWeight::from)
+        .unwrap();
+    // (Flipper is still at thdeployed with `false` state)
+    // Make ETH RPC request (to flip it to `true`)
+    // Insufficient gas_limit (half of estimated)
+    let rs = rpc_rq!(env,
+    {
+      "jsonrpc": "2.0",
+      "method": "eth_sendTransaction",
+      "params": [{
+                  "from": BALTATHAR_ADDRESS,
+                  "to": &env.contract_address(),
+                  "data": contracts::encode(FLIPPER_PATH, "flip"),
+                  "gas": half_weight_consumed,
+                 },
+                 "latest"],
+      "id": 1
+    });
+    // Handle response
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    let _tx_hash = extract_result!(&json);
+    // Wait until tx fails (or timeout)
+    let _ = &env.wait_for_event("system.ExtrinsicFailed", 2).await;
+    // Check state
+    let output = contracts::call(&env, "get", false);
+    let rs = Deserializer::from_slice(&output.stdout);
+    // Should stay flipped to `false` as tx should have failed with insuficcient gas
+    assert!(!json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
+        .as_bool()
+        .expect("can't parse cargo contract output"));
 }
 
 #[tokio::test]
