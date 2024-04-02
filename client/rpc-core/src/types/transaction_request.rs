@@ -24,8 +24,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{deserialize_data_or_input, Bytes};
 
-// TODO we don't really need to support all of these,
-// because it's not a real eth tx in our use case, just something that looks like one
+/// We only support Legacy Ethereum transaction format
 pub struct TxMessage(pub LegacyTransactionMessage);
 
 /// Transaction request coming from RPC
