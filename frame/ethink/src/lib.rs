@@ -273,7 +273,7 @@ where
                 ))
             }
         }
-        // We check ethereum signature is valid here!
+        // We check ethereum signature here, and derive sender account from it.
         sp_io::crypto::secp256k1_ecdsa_recover(&sig, &msg)
             .map_err(|_| TransactionValidityError::Invalid(InvalidTransaction::BadProof))
             .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))))
@@ -301,3 +301,5 @@ pub enum ReturnValue {
     Bytes(Vec<u8>),
     Hash(H160),
 }
+
+// TODO tests
