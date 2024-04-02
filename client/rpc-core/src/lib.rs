@@ -16,24 +16,11 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-// TODO this whole crate is a slihglty modified fc-rpc-core.
-// perhaps it's better to make a fork of it.
+//! This crate was produced by minimizing fc-rpc-core to things only needed for ethink!
 #![deny(unused_crate_dependencies)]
 
 pub mod types;
 
 mod eth;
-mod eth_pubsub;
-mod net;
-#[cfg(feature = "txpool")]
-mod txpool;
-mod web3;
 
-#[cfg(feature = "txpool")]
-pub use self::txpool::TxPoolApiServer;
-pub use self::{
-    eth::{EthApiServer, EthFilterApiServer},
-    eth_pubsub::EthPubSubApiServer,
-    net::NetApiServer,
-    web3::Web3ApiServer,
-};
+pub use self::eth::EthApiServer;

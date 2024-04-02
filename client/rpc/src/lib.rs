@@ -48,8 +48,18 @@ pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee
     ))
 }
 
-pub fn internal_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
+pub fn rpc_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
     err(jsonrpsee::types::error::INTERNAL_ERROR_CODE, message, None)
+}
+
+#[macro_export]
+macro_rules! rpc_err {
+    ( $msg:literal ) => {
+        $crate::rpc_err($msg)
+    };
+    ( $msg:literal, $args:tt ) => {
+        $crate::rpc_err(format!($msg, $args))
+    };
 }
 
 /// Eth RPC implementation.
@@ -95,12 +105,12 @@ where
             .client
             .runtime_api()
             .build_extrinsic(hash, tx)
-            .map_err(|_| internal_err("cannot access runtime api"))?;
+            .map_err(|_| rpc_err!("cannot access runtime api"))?;
         // Submit extrinsic to pool
         self.pool
             .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
             .map_ok(move |_| tx_hash)
-            .map_err(internal_err)
+            .map_err(rpc_err)
             .await
     }
 }

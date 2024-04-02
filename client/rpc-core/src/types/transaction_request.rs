@@ -24,8 +24,7 @@ use serde::{Deserialize, Serialize};
 
 use crate::types::{deserialize_data_or_input, Bytes};
 
-// TODO we don't really need to support all of these,
-// because it's not a real eth tx in our use case, just something that looks like one
+/// We only support Legacy Ethereum transaction format
 pub struct TxMessage(pub LegacyTransactionMessage);
 
 /// Transaction request coming from RPC
@@ -66,11 +65,11 @@ pub struct TransactionRequest {
 impl From<TransactionRequest> for TxMessage {
     fn from(req: TransactionRequest) -> Self {
         TxMessage(LegacyTransactionMessage {
-            nonce: U256::zero(),
-            gas_price: req.gas_price.unwrap_or_default(),
-            gas_limit: req.gas.unwrap_or_default(),
-            value: req.value.unwrap_or_default(),
-            input: req.data.map(|s| s.into_vec()).unwrap_or_default(),
+            nonce: req.nonce.unwrap_or_default(), // This doesn't count anyways (TODO though should it?)
+            gas_price: req.gas_price.unwrap_or_default(), // This doesn't count anyways
+            gas_limit: req.gas.unwrap_or_default(), // No gas_limit defaults 0 (TODO could be changed to MAX (no limit))
+            value: req.value.unwrap_or_default(),   // No value defaults to 0
+            input: req.data.map(|s| s.into_vec()).unwrap_or_default(), // No data defaults to vec![]
             action: match req.to {
                 Some(to) => ethereum::TransactionAction::Call(to),
                 None => ethereum::TransactionAction::Create,

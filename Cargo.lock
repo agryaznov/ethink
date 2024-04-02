@@ -556,17 +556,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "auto_impl"
-version = "1.2.0"
-source = "registry+https://github.com/rust-lang/crates.io-index"
-checksum = "3c87f3f15e7794432337fc718554eaa4dc8f04c9677a950ffe366f20a162ae42"
-dependencies = [
- "proc-macro2",
- "quote",
- "syn 2.0.55",
-]
-
-[[package]]
 name = "autocfg"
 version = "1.2.0"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2009,27 +1998,10 @@ name = "ep-rpc"
 version = "0.0.1"
 dependencies = [
  "ethereum",
- "ethereum-types",
- "evm",
- "parity-scale-codec",
- "scale-info",
  "sp-api",
  "sp-core 21.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
  "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
- "sp-state-machine 0.28.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
  "sp-std 8.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
-]
-
-[[package]]
-name = "ep-self-contained"
-version = "1.0.0-dev"
-dependencies = [
- "frame-support",
- "log",
- "parity-scale-codec",
- "scale-info",
- "serde",
- "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
 ]
 
 [[package]]
@@ -2184,7 +2156,7 @@ dependencies = [
 
 [[package]]
 name = "ethink-rpc-core"
-version = "1.1.0-dev"
+version = "0.1.0"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -2201,7 +2173,7 @@ dependencies = [
  "ep-crypto",
  "ep-mapping",
  "ep-rpc",
- "ep-self-contained",
+ "fp-self-contained",
  "frame-executive",
  "frame-support",
  "frame-system",
@@ -2226,7 +2198,6 @@ dependencies = [
  "sp-block-builder",
  "sp-consensus-aura",
  "sp-core 21.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
- "sp-debug-derive 8.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
  "sp-inherents",
  "sp-io 23.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
  "sp-offchain",
@@ -2263,60 +2234,6 @@ checksum = "958e4d70b6d5e81971bebec42271ec641e7ff4e170a6fa605f2b8a8b65cb97d3"
 dependencies = [
  "event-listener 4.0.3",
  "pin-project-lite 0.2.13",
-]
-
-[[package]]
-name = "evm"
-version = "0.39.1"
-source = "git+https://github.com/rust-blockchain/evm?rev=b7b82c7e1fc57b7449d6dfa6826600de37cc1e65#b7b82c7e1fc57b7449d6dfa6826600de37cc1e65"
-dependencies = [
- "auto_impl",
- "environmental",
- "ethereum",
- "evm-core",
- "evm-gasometer",
- "evm-runtime",
- "log",
- "parity-scale-codec",
- "primitive-types",
- "rlp",
- "scale-info",
- "serde",
- "sha3",
-]
-
-[[package]]
-name = "evm-core"
-version = "0.39.0"
-source = "git+https://github.com/rust-blockchain/evm?rev=b7b82c7e1fc57b7449d6dfa6826600de37cc1e65#b7b82c7e1fc57b7449d6dfa6826600de37cc1e65"
-dependencies = [
- "parity-scale-codec",
- "primitive-types",
- "scale-info",
- "serde",
-]
-
-[[package]]
-name = "evm-gasometer"
-version = "0.39.0"
-source = "git+https://github.com/rust-blockchain/evm?rev=b7b82c7e1fc57b7449d6dfa6826600de37cc1e65#b7b82c7e1fc57b7449d6dfa6826600de37cc1e65"
-dependencies = [
- "environmental",
- "evm-core",
- "evm-runtime",
- "primitive-types",
-]
-
-[[package]]
-name = "evm-runtime"
-version = "0.39.0"
-source = "git+https://github.com/rust-blockchain/evm?rev=b7b82c7e1fc57b7449d6dfa6826600de37cc1e65#b7b82c7e1fc57b7449d6dfa6826600de37cc1e65"
-dependencies = [
- "auto_impl",
- "environmental",
- "evm-core",
- "primitive-types",
- "sha3",
 ]
 
 [[package]]
@@ -2495,6 +2412,18 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e13624c2627564efccf4934284bdd98cbaa14e79b0b5a141218e507b3a823456"
 dependencies = [
  "percent-encoding",
+]
+
+[[package]]
+name = "fp-self-contained"
+version = "1.0.0-dev"
+source = "git+https://github.com/agryaznov/frontier.git?branch=ethink#e477cf432e5e85eda5d11f33fa1ee170561e9905"
+dependencies = [
+ "frame-support",
+ "parity-scale-codec",
+ "scale-info",
+ "serde",
+ "sp-runtime 24.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
 ]
 
 [[package]]

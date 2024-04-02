@@ -6,12 +6,12 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use codec::Encode;
 use frame_support::{dispatch::DispatchClass, traits::Nothing};
 use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
 };
+use scale_codec::Encode;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata, H160, U256};
@@ -95,10 +95,10 @@ pub type SignedExtra = (
 pub type SignedPayload = generic::SignedPayload<RuntimeCall, SignedExtra>;
 /// Unchecked extrinsic type as expected by this runtime.
 pub type UncheckedExtrinsic =
-    ep_self_contained::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
+    fp_self_contained::UncheckedExtrinsic<Address, RuntimeCall, Signature, SignedExtra>;
 /// Extrinsic type that has already been checked.
 pub type CheckedExtrinsic =
-    ep_self_contained::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra, H160>;
+    fp_self_contained::CheckedExtrinsic<AccountId, RuntimeCall, SignedExtra, H160>;
 
 /// Executive: handles dispatch to the various modules.
 pub type Executive = frame_executive::Executive<
@@ -397,7 +397,7 @@ impl pallet_assets::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Balance = u128;
     type AssetId = u32;
-    type AssetIdParameter = codec::Compact<u32>;
+    type AssetIdParameter = scale_codec::Compact<u32>;
     type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
     type Currency = Balances;
     type ForceOrigin = frame_system::EnsureRoot<AccountId>;
@@ -500,7 +500,7 @@ construct_runtime!(
     }
 );
 
-impl ep_self_contained::SelfContainedCall for RuntimeCall {
+impl fp_self_contained::SelfContainedCall for RuntimeCall {
     type SignedInfo = H160;
 
     fn is_self_contained(&self) -> bool {
