@@ -6,12 +6,12 @@
 #[cfg(feature = "std")]
 include!(concat!(env!("OUT_DIR"), "/wasm_binary.rs"));
 
-use codec::Encode;
 use frame_support::{dispatch::DispatchClass, traits::Nothing};
 use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
 };
+use scale_codec::Encode;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata, H160, U256};
@@ -397,7 +397,7 @@ impl pallet_assets::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Balance = u128;
     type AssetId = u32;
-    type AssetIdParameter = codec::Compact<u32>;
+    type AssetIdParameter = scale_codec::Compact<u32>;
     type CreateOrigin = AsEnsureOriginWithArg<EnsureSigned<AccountId>>;
     type Currency = Balances;
     type ForceOrigin = frame_system::EnsureRoot<AccountId>;

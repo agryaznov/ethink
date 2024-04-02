@@ -2210,7 +2210,6 @@ dependencies = [
  "sp-block-builder",
  "sp-consensus-aura",
  "sp-core 21.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
- "sp-debug-derive 8.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
  "sp-inherents",
  "sp-io 23.0.0 (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
  "sp-offchain",
