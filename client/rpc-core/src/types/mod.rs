@@ -18,40 +18,27 @@
 
 //! RPC types
 
-mod account_info;
 mod block;
 mod block_number;
 mod bytes;
 mod call_request;
 mod fee;
-mod filter;
 mod index;
 mod log;
 mod receipt;
 mod sync;
 mod transaction;
 mod transaction_request;
-#[cfg(feature = "txpool")]
-mod txpool;
 mod work;
-
-pub mod pubsub;
 
 use serde::{de::Error, Deserialize, Deserializer};
 
-#[cfg(feature = "txpool")]
-pub use self::txpool::{Get, Summary, TransactionMap, TxPoolResult, TxPoolTransaction};
 pub use self::{
-    account_info::{AccountInfo, EthAccount, ExtAccountInfo, RecoveredAccount, StorageProof},
     block::{Block, BlockTransactions, Header, Rich, RichBlock, RichHeader},
     block_number::BlockNumber,
     bytes::Bytes,
     call_request::{CallRequest, CallStateOverride},
     fee::{FeeHistory, FeeHistoryCache, FeeHistoryCacheItem, FeeHistoryCacheLimit},
-    filter::{
-        Filter, FilterAddress, FilterChanges, FilterPool, FilterPoolItem, FilterType,
-        FilteredParams, Topic, VariadicValue,
-    },
     index::Index,
     log::Log,
     receipt::Receipt,

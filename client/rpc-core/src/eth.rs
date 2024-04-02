@@ -58,7 +58,7 @@ pub trait EthApi {
     #[method(name = "eth_chainId")]
     fn chain_id(&self) -> RpcResult<Option<U64>>;
 
-    // TODO moved from Net
+    // (This one was moved from Net)
     /// Returns protocol version.
     #[method(name = "net_version")]
     fn version(&self) -> RpcResult<String>;
@@ -250,36 +250,4 @@ pub trait EthApi {
     /// Submit signed transaction, returning its hash.
     #[method(name = "eth_sendRawTransaction")]
     async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256>;
-}
-
-/// Eth filters rpc api (polling).
-#[rpc(server)]
-pub trait EthFilterApi {
-    /// Returns id of new filter.
-    #[method(name = "eth_newFilter")]
-    fn new_filter(&self, filter: Filter) -> RpcResult<U256>;
-
-    /// Returns id of new block filter.
-    #[method(name = "eth_newBlockFilter")]
-    fn new_block_filter(&self) -> RpcResult<U256>;
-
-    /// Returns id of new block filter.
-    #[method(name = "eth_newPendingTransactionFilter")]
-    fn new_pending_transaction_filter(&self) -> RpcResult<U256>;
-
-    /// Returns filter changes since last poll.
-    #[method(name = "eth_getFilterChanges")]
-    async fn filter_changes(&self, index: Index) -> RpcResult<FilterChanges>;
-
-    /// Returns all logs matching given filter (in a range 'from' - 'to').
-    #[method(name = "eth_getFilterLogs")]
-    async fn filter_logs(&self, index: Index) -> RpcResult<Vec<Log>>;
-
-    /// Uninstalls filter.
-    #[method(name = "eth_uninstallFilter")]
-    fn uninstall_filter(&self, index: Index) -> RpcResult<bool>;
-
-    /// Returns logs matching given filter object.
-    #[method(name = "eth_getLogs")]
-    async fn logs(&self, filter: Filter) -> RpcResult<Vec<Log>>;
 }
