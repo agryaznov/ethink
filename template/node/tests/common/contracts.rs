@@ -27,49 +27,70 @@ impl Into<Vec<u8>> for ContractInput {
 }
 
 /// Deploy contract to the node exposed via `url`, and return the output
-pub fn deploy(url: &str, manifest_path: &str) -> process::Output {
+pub fn deploy(url: &str, manifest_path: &str, args: Option<&str>) -> process::Output {
     let surl_arg = format!("-s={ALITH_KEY}");
     let manifest_arg = format!("--manifest-path={manifest_path}");
     let url_arg = format!("--url={}", url);
+    let mut args_arg = String::new();
+
+    let mut cmd_args = vec![
+        "contract",
+        "instantiate",
+        &surl_arg,
+        &url_arg,
+        &manifest_arg,
+        "-x",
+        "--skip-confirm",
+        "--output-json",
+    ];
+
+    if let Some(args) = args {
+        args_arg = format!("--args={args}");
+        cmd_args.push(&args_arg)
+    }
 
     process::Command::new("cargo")
-        .arg("contract")
-        .arg("instantiate")
-        .arg(&surl_arg)
-        .arg("--args=false")
-        .arg("-x")
-        .arg("--skip-confirm")
-        .arg("--output-json")
-        .arg(&manifest_arg)
-        .arg(&url_arg)
+        .args(cmd_args.as_slice())
         .output()
         .expect("failed to instantiate with cargo-contract")
 }
 
 /// Call contract on the node exposed via `url`, and return the output
-pub fn call(env: &Env<PolkadotConfig>, msg: &str, execute: bool) -> process::Output {
-    let surl = &format!("-s={ALITH_KEY}");
-    let manifest = &format!("--manifest-path={}", env.contract.manifest_path);
-    let url = &format!("--url={}", env.ws_url());
-    let contract = &format!("--contract={}", env.contract.address);
-    let msg = &format!("--message={msg}");
+pub fn call(
+    env: &Env<PolkadotConfig>,
+    msg: &str,
+    args: Option<&str>,
+    execute: bool,
+) -> process::Output {
+    let surl_arg = &format!("-s={ALITH_KEY}");
+    let manifest_arg = &format!("--manifest-path={}", env.contract.manifest_path);
+    let url_arg = &format!("--url={}", env.ws_url());
+    let contract_arg = &format!("--contract={}", env.contract.address);
+    let msg_arg = &format!("--message={msg}");
+    let mut args_arg = String::new();
 
-    let mut args = vec![
+    let mut cmd_args = vec![
         "contract",
         "call",
-        surl,
-        url,
-        manifest,
-        contract,
-        msg,
+        surl_arg,
+        url_arg,
+        manifest_arg,
+        contract_arg,
+        msg_arg,
         "--output-json",
     ];
+
+    if let Some(args) = args {
+        args_arg = format!("--args={args}");
+        cmd_args.push(&args_arg)
+    }
+
     if execute {
-        args.push("-x")
+        cmd_args.push("-x")
     }
 
     let output = process::Command::new("cargo")
-        .args(args.as_slice())
+        .args(cmd_args.as_slice())
         .output()
         .expect("failed to call with cargo-contract");
 

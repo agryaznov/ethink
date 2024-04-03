@@ -12,7 +12,7 @@ members = [
     "primitives/crypto",
     "frame/ethink",
 ]
-exclude = [ "dapp/contracts/flipper.ink" ]
+exclude = [ "dapp/contracts/flipper.ink", "dapp/contracts/erc20.ink" ]
 resolver = "2"
 
 [workspace.dependencies]
