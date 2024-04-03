@@ -200,7 +200,6 @@ pub mod pallet {
             // Increase nonce of the sender account
             System::<T>::inc_account_nonce(from);
             // Compose proper destination pallet call
-            // TODO add test for gas_limit
             let call = T::Contracts::build_call(to, value, data, gas_limit)
                 .ok_or(Error::<T>::TxNotSupported)?;
             // Make call
