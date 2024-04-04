@@ -43,7 +43,7 @@ async fn eth_sendRawTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
-    let output = call!(env, "get", None);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -114,7 +114,7 @@ async fn gas_limit_is_respected() {
     // Wait until tx fails (or timeout)
     let _ = &env.wait_for_event("system.ExtrinsicFailed", 2).await;
     // Check state
-    let output = call!(env, "get", None);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should stay flipped to `false` as tx should have failed with insuficcient gas
     assert!(!json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -123,7 +123,7 @@ async fn gas_limit_is_respected() {
 
     // Now let's set gas_limit to be half of the amount estimated
     // Retrieve gas estimation via cargo-contract dry-run
-    let output = call!(env, "flip", None);
+    let output = call!(env, "flip");
     let rs = Deserializer::from_slice(&output.stdout);
     let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
     let half_weight_consumed = serde_json::from_value::<Weight>(gas_consumed)
@@ -153,7 +153,7 @@ async fn gas_limit_is_respected() {
     // Wait until tx fails (or timeout)
     let _ = &env.wait_for_event("system.ExtrinsicFailed", 2).await;
     // Check state
-    let output = call!(env, "get", None);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should stay flipped to `false` as tx should have failed with insuficcient gas
     assert!(!json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -204,7 +204,7 @@ async fn eth_estimateGas() {
     // Spawn node and deploy contract
     let env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, Some("false"));
     // Retrieve gas estimation via cargo-contract dry-run
-    let output = call!(env, "flip", None, false);
+    let output = call!(env, "flip");
     let rs = Deserializer::from_slice(&output.stdout);
     let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
     let weight = serde_json::from_value::<Weight>(gas_consumed)
