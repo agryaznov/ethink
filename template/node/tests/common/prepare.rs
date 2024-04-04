@@ -24,6 +24,7 @@ pub async fn node_and_contract<R: subxt::Config>(
         node.url(Protocol::WS).as_str(),
         manifest_path,
         constructor_args,
+        signer,
     );
     // Look for contract address in the json output
     let rs = Deserializer::from_slice(&output.stdout);
