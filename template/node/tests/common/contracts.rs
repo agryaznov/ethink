@@ -27,10 +27,16 @@ impl Into<Vec<u8>> for ContractInput {
 }
 
 /// Deploy contract to the node exposed via `url`, and return the output
-pub fn deploy(url: &str, manifest_path: &str, args: Option<&str>) -> process::Output {
-    let surl_arg = format!("-s={ALITH_KEY}");
+pub fn deploy(
+    url: &str,
+    manifest_path: &str,
+    args: Option<&str>,
+    signer: Option<&str>,
+) -> process::Output {
+    let surl_arg = &format!("-s={}", signer.unwrap_or(ALITH_KEY));
     let manifest_arg = format!("--manifest-path={manifest_path}");
     let url_arg = format!("--url={}", url);
+    // TODO
     let mut args_arg = String::new();
 
     let mut cmd_args = vec![
@@ -61,12 +67,14 @@ pub fn call(
     msg: &str,
     args: Option<&str>,
     execute: bool,
+    signer: Option<&str>,
 ) -> process::Output {
-    let surl_arg = &format!("-s={ALITH_KEY}");
+    let surl_arg = &format!("-s={}", signer.unwrap_or(ALITH_KEY));
     let manifest_arg = &format!("--manifest-path={}", env.contract.manifest_path);
     let url_arg = &format!("--url={}", env.ws_url());
     let contract_arg = &format!("--contract={}", env.contract.address);
     let msg_arg = &format!("--message={msg}");
+    // TODO multi args like in encode() below
     let mut args_arg = String::new();
 
     let mut cmd_args = vec![
@@ -94,25 +102,33 @@ pub fn call(
         .output()
         .expect("failed to call with cargo-contract");
 
-    assert!(output.status.success());
+    assert!(output.status.success(), "err: {:#?}", &output);
 
     output
 }
 
 /// Encode input data for contract call
-pub fn encode(manifest_path: &str, msg: &str) -> ContractInput {
+pub fn encode(manifest_path: &str, msg: &str, args: Option<Vec<&str>>) -> ContractInput {
     let manifest_arg = &format!("--manifest-path={manifest_path}");
     let msg_arg = &format!("--message={msg}");
 
+    let mut cmd_args = vec!["contract", "encode", manifest_arg, msg_arg];
+
+    let args = args
+        .unwrap_or(vec![])
+        .iter()
+        .map(|a| format!("--args={a}"))
+        .collect::<Vec<_>>();
+    for s in &args {
+        cmd_args.push(s)
+    }
+
     let output = process::Command::new("cargo")
-        .arg("contract")
-        .arg("encode")
-        .arg(&manifest_arg)
-        .arg(&msg_arg)
+        .args(cmd_args.as_slice())
         .output()
         .expect("failed to encode with cargo-contract");
 
-    assert!(output.status.success());
+    assert!(output.status.success(), "err: {:#?}", &output);
 
     // parse stdout for the encoded data string
     let bytes = BufReader::new(output.stdout.as_slice())
