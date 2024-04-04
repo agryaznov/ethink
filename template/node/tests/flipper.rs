@@ -3,7 +3,7 @@
 
 mod common;
 
-use common::{contracts::ContractInput, eth::EthTxInput, *};
+use common::{eth::EthTxInput, consts::*, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
@@ -14,6 +14,8 @@ use serde_json::{value::Serializer, Deserializer};
 use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use ureq::json;
+
+pub const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
 
 #[tokio::test]
 async fn eth_sendRawTransaction() {

@@ -175,7 +175,7 @@ mod erc20 {
             let caller = self.env().caller();
             let allowance = self.allowance_impl(&from, &caller);
             if allowance < value {
-                return Err(Error::InsufficientAllowance)
+                return Err(Error::InsufficientAllowance);
             }
             self.transfer_from_to(&from, &to, value)?;
             self.allowances
@@ -199,7 +199,7 @@ mod erc20 {
         ) -> Result<()> {
             let from_balance = self.balance_of_impl(from);
             if from_balance < value {
-                return Err(Error::InsufficientBalance)
+                return Err(Error::InsufficientBalance);
             }
 
             self.balances.insert(from, &(from_balance - value));
@@ -218,10 +218,7 @@ mod erc20 {
     mod tests {
         use super::*;
 
-        use ink::primitives::{
-            Clear,
-            Hash,
-        };
+        use ink::primitives::{Clear, Hash};
 
         type Event = <Erc20 as ::ink::reflect::ContractEventBase>::Type;
 
@@ -322,8 +319,7 @@ mod erc20 {
                 Some(AccountId::from([0x01; 32])),
                 100,
             );
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
             // Alice owns all the tokens on contract instantiation
             assert_eq!(erc20.balance_of(accounts.alice), 100);
             // Bob does not owns tokens
@@ -335,8 +331,7 @@ mod erc20 {
             // Constructor works.
             let mut erc20 = Erc20::new(100);
             // Transfer event triggered during initial construction.
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
 
             assert_eq!(erc20.balance_of(accounts.bob), 0);
             // Alice transfers 10 tokens to Bob.
@@ -366,8 +361,7 @@ mod erc20 {
         fn invalid_transfer_should_fail() {
             // Constructor works.
             let mut erc20 = Erc20::new(100);
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
 
             assert_eq!(erc20.balance_of(accounts.bob), 0);
 
@@ -402,8 +396,7 @@ mod erc20 {
             // Constructor works.
             let mut erc20 = Erc20::new(100);
             // Transfer event triggered during initial construction.
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
 
             // Bob fails to transfer tokens owned by Alice.
             assert_eq!(
@@ -451,8 +444,7 @@ mod erc20 {
         #[ink::test]
         fn allowance_must_not_change_on_failed_transfer() {
             let mut erc20 = Erc20::new(100);
-            let accounts =
-                ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
+            let accounts = ink::env::test::default_accounts::<ink::env::DefaultEnvironment>();
 
             // Alice approves Bob for token transfers on her behalf.
             let alice_balance = erc20.balance_of(accounts.alice);
@@ -509,11 +501,7 @@ mod erc20 {
             T: scale::Encode,
         {
             use ink::{
-                env::hash::{
-                    Blake2x256,
-                    CryptoHash,
-                    HashOutput,
-                },
+                env::hash::{Blake2x256, CryptoHash, HashOutput},
                 primitives::Clear,
             };
 
@@ -523,10 +511,9 @@ mod erc20 {
             let len_encoded = encoded.len();
             if len_encoded <= len_result {
                 result.as_mut()[..len_encoded].copy_from_slice(&encoded);
-                return result
+                return result;
             }
-            let mut hash_output =
-                <<Blake2x256 as HashOutput>::Type as Default>::default();
+            let mut hash_output = <<Blake2x256 as HashOutput>::Type as Default>::default();
             <Blake2x256 as CryptoHash>::hash(&encoded, &mut hash_output);
             let copy_len = core::cmp::min(hash_output.len(), len_result);
             result.as_mut()[0..copy_len].copy_from_slice(&hash_output[0..copy_len]);
@@ -601,14 +588,9 @@ mod erc20 {
             let charlie_account = ink_e2e::account_id(ink_e2e::AccountKeyring::Charlie);
 
             let amount = 500_000_000u128;
-            let transfer_from =
-                build_message::<Erc20Ref>(contract_acc_id.clone()).call(|erc20| {
-                    erc20.transfer_from(
-                        bob_account.clone(),
-                        charlie_account.clone(),
-                        amount,
-                    )
-                });
+            let transfer_from = build_message::<Erc20Ref>(contract_acc_id.clone()).call(|erc20| {
+                erc20.transfer_from(bob_account.clone(), charlie_account.clone(), amount)
+            });
             let transfer_from_result = client
                 .call(&ink_e2e::charlie(), transfer_from, 0, None)
                 .await;
@@ -628,14 +610,9 @@ mod erc20 {
                 .expect("approve failed");
 
             // `transfer_from` the approved amount
-            let transfer_from =
-                build_message::<Erc20Ref>(contract_acc_id.clone()).call(|erc20| {
-                    erc20.transfer_from(
-                        bob_account.clone(),
-                        charlie_account.clone(),
-                        approved_value,
-                    )
-                });
+            let transfer_from = build_message::<Erc20Ref>(contract_acc_id.clone()).call(|erc20| {
+                erc20.transfer_from(bob_account.clone(), charlie_account.clone(), approved_value)
+            });
             let transfer_from_result = client
                 .call(&ink_e2e::charlie(), transfer_from, 0, None)
                 .await;
@@ -651,10 +628,8 @@ mod erc20 {
                 .await;
 
             // `transfer_from` again, this time exceeding the approved amount
-            let transfer_from =
-                build_message::<Erc20Ref>(contract_acc_id.clone()).call(|erc20| {
-                    erc20.transfer_from(bob_account.clone(), charlie_account.clone(), 1)
-                });
+            let transfer_from = build_message::<Erc20Ref>(contract_acc_id.clone())
+                .call(|erc20| erc20.transfer_from(bob_account.clone(), charlie_account.clone(), 1));
             let transfer_from_result = client
                 .call(&ink_e2e::charlie(), transfer_from, 0, None)
                 .await;

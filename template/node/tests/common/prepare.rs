@@ -1,5 +1,5 @@
 //! Prelude actions needed in most of the tests
-use crate::{node::*, *};
+use crate::common::{consts::*, node::*, *};
 use serde_json::Deserializer;
 use std::str::FromStr;
 
