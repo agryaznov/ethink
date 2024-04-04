@@ -33,14 +33,12 @@ impl Into<Vec<u8>> for ContractInput {
 pub fn deploy(
     url: &str,
     manifest_path: &str,
-    args: Option<&str>,
+    args: Option<Vec<&str>>,
     signer: Option<&str>,
 ) -> process::Output {
     let surl_arg = &format!("-s={}", signer.unwrap_or(ALITH_KEY));
     let manifest_arg = format!("--manifest-path={manifest_path}");
     let url_arg = format!("--url={}", url);
-    // TODO
-    let mut args_arg = String::new();
 
     let mut cmd_args = vec![
         "contract",
@@ -53,9 +51,13 @@ pub fn deploy(
         "--output-json",
     ];
 
-    if let Some(args) = args {
-        args_arg = format!("--args={args}");
-        cmd_args.push(&args_arg)
+    let args = args
+        .unwrap_or(vec![])
+        .iter()
+        .map(|a| format!("--args={a}"))
+        .collect::<Vec<_>>();
+    for s in &args {
+        cmd_args.push(s)
     }
 
     process::Command::new("cargo")
@@ -64,11 +66,11 @@ pub fn deploy(
         .expect("failed to instantiate with cargo-contract")
 }
 
-/// Call contract on the node exposed via `url`, and return the output
+/// Call contract deployed to env, and return the output
 pub fn call(
     env: &Env<PolkadotConfig>,
     msg: &str,
-    args: Option<&str>,
+    args: Option<Vec<&str>>,
     execute: bool,
     signer: Option<&str>,
 ) -> process::Output {
@@ -77,8 +79,6 @@ pub fn call(
     let url_arg = &format!("--url={}", env.ws_url());
     let contract_arg = &format!("--contract={}", env.contract.address);
     let msg_arg = &format!("--message={msg}");
-    // TODO multi args like in encode() below
-    let mut args_arg = String::new();
 
     let mut cmd_args = vec![
         "contract",
@@ -91,9 +91,13 @@ pub fn call(
         "--output-json",
     ];
 
-    if let Some(args) = args {
-        args_arg = format!("--args={args}");
-        cmd_args.push(&args_arg)
+    let args = args
+        .unwrap_or(vec![])
+        .iter()
+        .map(|a| format!("--args={a}"))
+        .collect::<Vec<_>>();
+    for s in &args {
+        cmd_args.push(s)
     }
 
     if execute {
