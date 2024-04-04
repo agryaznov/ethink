@@ -5,13 +5,13 @@ pub mod contracts;
 pub mod eth;
 pub mod prepare;
 
-pub const NODE_BIN: &'static str = env!("CARGO_BIN_EXE_ethink-node");
-pub const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
-pub const ERC20_PATH: &'static str = env!("ERC20_PATH");
-pub const ALITH_ADDRESS: &'static str = env!("ALITH_ADDRESS");
-pub const ALITH_KEY: &'static str = env!("ALITH_KEY");
-pub const BALTATHAR_ADDRESS: &'static str = env!("BALTATHAR_ADDRESS");
-pub const BALTATHAR_KEY: &'static str = env!("BALTATHAR_KEY");
+pub mod consts {
+    pub const NODE_BIN: &'static str = env!("CARGO_BIN_EXE_ethink-node");
+    pub const ALITH_ADDRESS: &'static str = env!("ALITH_ADDRESS");
+    pub const ALITH_KEY: &'static str = env!("ALITH_KEY");
+    pub const BALTATHAR_ADDRESS: &'static str = env!("BALTATHAR_ADDRESS");
+    pub const BALTATHAR_KEY: &'static str = env!("BALTATHAR_KEY");
+}
 
 use crate::AccountId20;
 use node::{Protocol, TestNodeProcess};

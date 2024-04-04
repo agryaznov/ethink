@@ -3,17 +3,16 @@
 
 mod common;
 
-use common::{contracts::ContractInput, eth::EthTxInput, *};
+use common::{*, consts::*};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
-use ethereum::{
-    EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
-};
-use serde_json::{value::Serializer, Deserializer};
-use sp_core::{ecdsa, Pair, U256};
+use ethereum::{LegacyTransaction, LegacyTransactionMessage, TransactionSignature};
+use serde_json::Deserializer;
+use sp_core::{ecdsa, U256};
 use sp_runtime::Serialize;
-use ureq::json;
+
+pub const ERC20_PATH: &'static str = env!("ERC20_PATH");
 
 #[tokio::test]
 async fn transfer_works() {

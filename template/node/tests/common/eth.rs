@@ -1,5 +1,5 @@
 use crate::{
-    ecdsa, ContractInput, EthTransaction, EthereumSignature, LegacyTransaction,
+    common::contracts::ContractInput, ecdsa, EthTransaction, EthereumSignature, LegacyTransaction,
     LegacyTransactionMessage, SubstrateWeight, TransactionSignature, Weight, U256,
 };
 
