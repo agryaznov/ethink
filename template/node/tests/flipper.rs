@@ -23,7 +23,7 @@ async fn eth_sendRawTransaction() {
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
         action: ethereum::TransactionAction::Call(env.contract_address().into()),
-        data: contracts::encode(FLIPPER_PATH, "flip", None),
+        data: encode!(FLIPPER_PATH, "flip"),
         ..Default::default()
     };
     let tx = eth::compose_and_sign_tx(input);
@@ -65,8 +65,7 @@ async fn eth_sendTransaction() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  // TODO encode
-                  "data": contracts::encode(FLIPPER_PATH, "flip", None),
+                  "data": encode!(FLIPPER_PATH, "flip"),
                   "gas": SubstrateWeight::max()
                  },
                  "latest"],
@@ -103,7 +102,7 @@ async fn gas_limit_is_respected() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": contracts::encode(FLIPPER_PATH, "flip", None)
+                  "data": encode!(FLIPPER_PATH, "flip")
                  },
                  "latest"],
       "id": 0
@@ -141,7 +140,7 @@ async fn gas_limit_is_respected() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": contracts::encode(FLIPPER_PATH, "flip", None),
+                  "data": encode!(FLIPPER_PATH, "flip"),
                   "gas": half_weight_consumed,
                  },
                  "latest"],
@@ -174,7 +173,7 @@ async fn eth_call() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": contracts::encode(FLIPPER_PATH, "get", None),
+                      "data": encode!(FLIPPER_PATH, "get"),
                       "gas": SubstrateWeight::max()
                   },
                   "latest"],
@@ -219,7 +218,7 @@ async fn eth_estimateGas() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": contracts::encode(FLIPPER_PATH, "flip", None)
+                      "data": encode!(FLIPPER_PATH, "flip")
                   },
                   "latest"],
        "id": 0

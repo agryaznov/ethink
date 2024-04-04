@@ -22,7 +22,7 @@ async fn transfer_works() {
         prepare_node_and_contract!(ERC20_PATH, Some("10_000"), BALTATHAR_KEY);
     // (ERC20 is deployed with 10_000 supply)
     // Make ETH RPC request (to transfer 2_000 to Alith)
-    let call_data = contracts::encode(ERC20_PATH, "transfer", Some(vec![ALITH_ADDRESS, "2_000"]));
+    let call_data = encode!(ERC20_PATH, "transfer", Some(vec![ALITH_ADDRESS, "2_000"]));
     let rs = rpc_rq!(env,
     {
       "jsonrpc": "2.0",
