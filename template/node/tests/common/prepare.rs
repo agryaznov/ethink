@@ -6,7 +6,7 @@ use std::str::FromStr;
 /// Spawn a node and deploy a contract to it
 pub async fn node_and_contract<R: subxt::Config>(
     manifest_path: &str,
-    constructor_args: Option<Vec<&str>>,
+    constructor_args: Vec<&str>,
     signer: Option<&str>,
 ) -> Env<R> {
     let mut builder = TestNodeProcess::<R>::build(NODE_BIN);

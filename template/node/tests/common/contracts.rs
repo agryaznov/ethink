@@ -33,7 +33,7 @@ impl Into<Vec<u8>> for ContractInput {
 pub fn deploy(
     url: &str,
     manifest_path: &str,
-    args: Option<Vec<&str>>,
+    args: Vec<&str>,
     signer: Option<&str>,
 ) -> process::Output {
     let surl_arg = &format!("-s={}", signer.unwrap_or(ALITH_KEY));
@@ -52,7 +52,6 @@ pub fn deploy(
     ];
 
     let args = args
-        .unwrap_or(vec![])
         .iter()
         .map(|a| format!("--args={a}"))
         .collect::<Vec<_>>();
@@ -70,7 +69,7 @@ pub fn deploy(
 pub fn call(
     env: &Env<PolkadotConfig>,
     msg: &str,
-    args: Option<Vec<&str>>,
+    args: Vec<&str>,
     execute: bool,
     signer: Option<&str>,
 ) -> process::Output {
@@ -92,7 +91,6 @@ pub fn call(
     ];
 
     let args = args
-        .unwrap_or(vec![])
         .iter()
         .map(|a| format!("--args={a}"))
         .collect::<Vec<_>>();
@@ -115,14 +113,13 @@ pub fn call(
 }
 
 /// Encode input data for contract call
-pub fn encode(manifest_path: &str, msg: &str, args: Option<Vec<&str>>) -> ContractInput {
+pub fn encode(manifest_path: &str, msg: &str, args: Vec<&str>) -> ContractInput {
     let manifest_arg = &format!("--manifest-path={manifest_path}");
     let msg_arg = &format!("--message={msg}");
 
     let mut cmd_args = vec!["contract", "encode", manifest_arg, msg_arg];
 
     let args = args
-        .unwrap_or(vec![])
         .iter()
         .map(|a| format!("--args={a}"))
         .collect::<Vec<_>>();
