@@ -76,6 +76,9 @@ macro_rules! make_rq {
 
 #[macro_export]
 macro_rules! call {
+    ($env:ident, $msg:literal) => {
+        contracts::call(&$env, $msg, None, false, None)
+    };
     ($env:ident, $msg:literal, $args:expr) => {
         contracts::call(&$env, $msg, $args, false, None)
     };
