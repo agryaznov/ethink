@@ -3,7 +3,7 @@
 
 mod common;
 
-use common::{*, consts::*};
+use common::{consts::*, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
@@ -42,7 +42,7 @@ async fn transfer_works() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
-    let output = call!(env, "balance_of", Some(ALITH_ADDRESS));
+    let output = call!(env, "balance_of", Some(vec![ALITH_ADDRESS]));
     let rs = Deserializer::from_slice(&output.stdout);
     // Alith balance should become 2_000
     assert_eq!(
