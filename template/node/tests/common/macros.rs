@@ -86,3 +86,13 @@ macro_rules! call {
         contracts::call(&$env, $msg, $args, $exec, $signer)
     };
 }
+
+#[macro_export]
+macro_rules! encode {
+    ($path:ident, $msg:literal) => {
+        contracts::encode($path, $msg, None)
+    };
+    ($path:ident, $msg:literal, $args:expr) => {
+        contracts::encode($path, $msg, $args)
+    };
+}
