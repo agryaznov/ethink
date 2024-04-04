@@ -3,7 +3,7 @@
 
 mod common;
 
-use common::{contracts::ContractInput, eth::EthTxInput, *};
+use common::{consts::*, eth::EthTxInput, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use ep_rpc::EthTransaction;
@@ -15,15 +15,18 @@ use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use ureq::json;
 
+pub const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
+
 #[tokio::test]
 async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
-    let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, Some("false"));
+    let mut env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(FLIPPER_PATH, Some(vec!["false"]));
     // (Flipper is deployed with `false` state)
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
         action: ethereum::TransactionAction::Call(env.contract_address().into()),
-        data: contracts::encode(FLIPPER_PATH, "flip"),
+        data: encode!(FLIPPER_PATH, "flip"),
         ..Default::default()
     };
     let tx = eth::compose_and_sign_tx(input);
@@ -43,7 +46,7 @@ async fn eth_sendRawTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
-    let output = contracts::call(&env, "get", None, false);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -55,7 +58,7 @@ async fn eth_sendRawTransaction() {
 async fn eth_sendTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
-        prepare_node_and_contract!(FLIPPER_PATH, Some("false"), BALTATHAR_KEY);
+        prepare_node_and_contract!(FLIPPER_PATH, Some(vec!["false"]), BALTATHAR_KEY);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request (to flip it to `true`)
     let rs = rpc_rq!(env,
@@ -65,7 +68,7 @@ async fn eth_sendTransaction() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": contracts::encode(FLIPPER_PATH, "flip"),
+                  "data": encode!(FLIPPER_PATH, "flip"),
                   "gas": SubstrateWeight::max()
                  },
                  "latest"],
@@ -79,7 +82,7 @@ async fn eth_sendTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
-    let output = contracts::call(&env, "get", None, false);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -91,7 +94,7 @@ async fn eth_sendTransaction() {
 async fn gas_limit_is_respected() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
-        prepare_node_and_contract!(FLIPPER_PATH, Some("false"), BALTATHAR_KEY);
+        prepare_node_and_contract!(FLIPPER_PATH, Some(vec!["false"]), BALTATHAR_KEY);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request (to flip it to `true`)
     // Insufficient gas_limit (None => 0)
@@ -102,7 +105,7 @@ async fn gas_limit_is_respected() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": contracts::encode(FLIPPER_PATH, "flip")
+                  "data": encode!(FLIPPER_PATH, "flip")
                  },
                  "latest"],
       "id": 0
@@ -114,7 +117,7 @@ async fn gas_limit_is_respected() {
     // Wait until tx fails (or timeout)
     let _ = &env.wait_for_event("system.ExtrinsicFailed", 2).await;
     // Check state
-    let output = contracts::call(&env, "get", None, false);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should stay flipped to `false` as tx should have failed with insuficcient gas
     assert!(!json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -123,7 +126,7 @@ async fn gas_limit_is_respected() {
 
     // Now let's set gas_limit to be half of the amount estimated
     // Retrieve gas estimation via cargo-contract dry-run
-    let output = contracts::call(&env, "flip", None, false);
+    let output = call!(env, "flip");
     let rs = Deserializer::from_slice(&output.stdout);
     let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
     let half_weight_consumed = serde_json::from_value::<Weight>(gas_consumed)
@@ -140,7 +143,7 @@ async fn gas_limit_is_respected() {
       "params": [{
                   "from": BALTATHAR_ADDRESS,
                   "to": &env.contract_address(),
-                  "data": contracts::encode(FLIPPER_PATH, "flip"),
+                  "data": encode!(FLIPPER_PATH, "flip"),
                   "gas": half_weight_consumed,
                  },
                  "latest"],
@@ -153,7 +156,7 @@ async fn gas_limit_is_respected() {
     // Wait until tx fails (or timeout)
     let _ = &env.wait_for_event("system.ExtrinsicFailed", 2).await;
     // Check state
-    let output = contracts::call(&env, "get", None, false);
+    let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should stay flipped to `false` as tx should have failed with insuficcient gas
     assert!(!json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
@@ -164,7 +167,8 @@ async fn gas_limit_is_respected() {
 #[tokio::test]
 async fn eth_call() {
     // Spawn node and deploy contract
-    let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, Some("false"));
+    let mut env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(FLIPPER_PATH, Some(vec!["false"]));
     // (Flipper is deployed with `false` state)
     // Make eth_call rpc request to get() flipper state
     let rq = json!({
@@ -173,7 +177,7 @@ async fn eth_call() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": contracts::encode(FLIPPER_PATH, "get"),
+                      "data": encode!(FLIPPER_PATH, "get"),
                       "gas": SubstrateWeight::max()
                   },
                   "latest"],
@@ -187,7 +191,7 @@ async fn eth_call() {
     let result = extract_result!(&json);
     assert_eq!(*result, "0x00000000080000");
     // Flip it via contract call
-    let _ = contracts::call(&env, "flip", None, true);
+    let _ = call!(env, "flip", None, true);
     // Wait until tx gets executed
     let _ = &env.wait_for_event("contracts.Called", 2).await;
     // Make eth_call rpc request again
@@ -202,9 +206,9 @@ async fn eth_call() {
 #[tokio::test]
 async fn eth_estimateGas() {
     // Spawn node and deploy contract
-    let env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, Some("false"));
+    let env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, Some(vec!["false"]));
     // Retrieve gas estimation via cargo-contract dry-run
-    let output = contracts::call(&env, "flip", None, false);
+    let output = call!(env, "flip");
     let rs = Deserializer::from_slice(&output.stdout);
     let gas_consumed = json_get!(rs["gas_consumed"]).to_owned();
     let weight = serde_json::from_value::<Weight>(gas_consumed)
@@ -218,7 +222,7 @@ async fn eth_estimateGas() {
        "params": [{
                       "from": ALITH_ADDRESS,
                       "to": &env.contract_address(),
-                      "data": contracts::encode(FLIPPER_PATH, "flip")
+                      "data": encode!(FLIPPER_PATH, "flip")
                   },
                   "latest"],
        "id": 0

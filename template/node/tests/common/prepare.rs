@@ -1,12 +1,12 @@
 //! Prelude actions needed in most of the tests
-use crate::{node::*, *};
+use crate::common::{consts::*, node::*, *};
 use serde_json::Deserializer;
 use std::str::FromStr;
 
 /// Spawn a node and deploy a contract to it
 pub async fn node_and_contract<R: subxt::Config>(
     manifest_path: &str,
-    constructor_args: Option<&str>,
+    constructor_args: Option<Vec<&str>>,
     signer: Option<&str>,
 ) -> Env<R> {
     let mut builder = TestNodeProcess::<R>::build(NODE_BIN);
@@ -24,6 +24,7 @@ pub async fn node_and_contract<R: subxt::Config>(
         node.url(Protocol::WS).as_str(),
         manifest_path,
         constructor_args,
+        signer,
     );
     // Look for contract address in the json output
     let rs = Deserializer::from_slice(&output.stdout);
