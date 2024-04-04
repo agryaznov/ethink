@@ -43,13 +43,7 @@ async fn transfer_works() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
-    let output = contracts::call(
-        &env,
-        "balance_of",
-        Some(ALITH_ADDRESS),
-        false,
-        Some(ALITH_KEY),
-    );
+    let output = call!(env, "balance_of", Some(ALITH_ADDRESS));
     let rs = Deserializer::from_slice(&output.stdout);
     // Alith balance should become 2_000
     assert_eq!(

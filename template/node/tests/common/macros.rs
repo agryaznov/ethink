@@ -73,3 +73,16 @@ macro_rules! make_rq {
         )
     };
 }
+
+#[macro_export]
+macro_rules! call {
+    ($env:ident, $msg:literal, $args:expr) => {
+        contracts::call(&$env, $msg, $args, false, None)
+    };
+    ($env:ident, $msg:literal, $args:expr, $exec:literal) => {
+        contracts::call(&$env, $msg, $args, $exec, None)
+    };
+    ($env:ident, $msg:literal, $args:expr, $exec:literal, $signer:expr) => {
+        contracts::call(&$env, $msg, $args, $exec, $signer)
+    };
+}
