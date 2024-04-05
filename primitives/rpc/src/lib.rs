@@ -1,4 +1,9 @@
 // SPDX-License-Identifier: Apache-2.0
+// This file was derived from Frontier (fp-rpc),
+// and modified to become part of Ethink.
+//
+// Copyright (c) (Frontier): 2020-2022 Parity Technologies (UK) Ltd.
+// Copyright (c) (Ethink):   2023-2024 Alexander Gryaznov.
 //
 // Licensed under the Apache License, Version 2.0 (the "License");
 // you may not use this file except in compliance with the License.

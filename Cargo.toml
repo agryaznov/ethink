@@ -1,4 +1,5 @@
 [workspace.package]
+authors = ["Alexander Gryaznov <hi@agryaznov.com>"]
 edition = "2021"
 
 [workspace]

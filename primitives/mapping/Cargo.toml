@@ -1,6 +1,6 @@
 [package]
 name = "ep-mapping"
-description = "ETH<>Polkadot SDK data types conversions"
+description = "ETH<>Polkadot SDK data types conversions."
 version = "0.1.0"
 edition.workspace = true
 

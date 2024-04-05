@@ -1,5 +1,14 @@
 // SPDX-License-Identifier: Apache-2.0
-// This file is part of ethink!.
+//
+// This file was derived from Frontier (pallet-ethereum),
+// and modified to become part of Ethink.
+//
+// Copyright (c) (Frontier): 2020-2022 Parity Technologies (UK) Ltd.
+// Copyright (c) (Ethink):   2023-2024 Alexander Gryaznov.
+//
+// Licensed under the Apache License, Version 2.0 (the "License");
+// you may not use this file except in compliance with the License.
+// You may obtain a copy of the License at
 //
 // 	http://www.apache.org/licenses/LICENSE-2.0
 //

@@ -226,5 +226,5 @@ mod erc20 {
             Ok(())
         }
     }
-
-    // Tests are removed as having them requires a fork of ink to use AccountId20
+}
+// Tests are removed as having them requires a fork of ink to use AccountId20
