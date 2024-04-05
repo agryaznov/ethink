@@ -6713,7 +6713,7 @@ version = "0.10.0-dev"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=336916#336916827f78a320fddbf1925984ec0a1f884376"
 dependencies = [
  "sc-allocator",
- "sp-maybe-compressed-blob 4.1.0-dev (git+https://github.com/paritytech/polkadot-sdk?rev=336916)",
+ "sp-maybe-compressed-blob",
  "sp-wasm-interface 14.0.0 (git+https://github.com/paritytech/polkadot-sdk?rev=336916)",
  "thiserror",
  "wasm-instrument 0.3.0",
@@ -8307,15 +8307,6 @@ dependencies = [
 [[package]]
 name = "sp-maybe-compressed-blob"
 version = "4.1.0-dev"
-source = "git+https://github.com/agryaznov/polkadot-sdk?branch=ethink#f81ec01da595106556e42566c8f7a86fc906d0e9"
-dependencies = [
- "thiserror",
- "zstd 0.12.4",
-]
-
-[[package]]
-name = "sp-maybe-compressed-blob"
-version = "4.1.0-dev"
 source = "git+https://github.com/paritytech/polkadot-sdk?rev=336916#336916827f78a320fddbf1925984ec0a1f884376"
 dependencies = [
  "thiserror",
@@ -9015,14 +9006,14 @@ dependencies = [
 [[package]]
 name = "substrate-wasm-builder"
 version = "5.0.0-dev"
-source = "git+https://github.com/agryaznov/polkadot-sdk?branch=ethink#f81ec01da595106556e42566c8f7a86fc906d0e9"
+source = "git+https://github.com/paritytech/polkadot-sdk?rev=336916#336916827f78a320fddbf1925984ec0a1f884376"
 dependencies = [
  "ansi_term",
  "build-helper",
  "cargo_metadata",
  "filetime",
  "parity-wasm",
- "sp-maybe-compressed-blob 4.1.0-dev (git+https://github.com/agryaznov/polkadot-sdk?branch=ethink)",
+ "sp-maybe-compressed-blob",
  "strum 0.24.1",
  "tempfile",
  "toml 0.7.8",
