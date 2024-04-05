@@ -18,67 +18,92 @@ resolver = "2"
 [workspace.dependencies]
 ethereum = { version = "0.14.0", default-features = false }
 ethereum-types = { version = "0.14.1", default-features = false }
-jsonrpsee = "0.16.2"
+futures = "0.3.28"
 hex = { version = "0.4.3", default-features = false, features = ["alloc"] }
 hex-literal = "0.4.1"
-scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
-scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
 impl-serde = { version = "0.4.0", default-features = false }
+jsonrpsee = "0.16.2"
 libsecp256k1 = { version = "0.7.1", default-features = false }
 log = { version = "0.4.19", default-features = false }
+rlp = { version = "0.5.2", default-features = false }
+scale-codec = { package = "parity-scale-codec", version = "3.6.4", default-features = false, features = ["derive"] }
+scale-info = { version = "2.9.0", default-features = false, features = ["derive"] }
 serde = { version = "1.0", default-features = false, features = ["derive", "alloc"] }
 serde_json = "1.0"
-rlp = { version = "0.5.2", default-features = false }
-futures = "0.3.28"
 
 # Substrate
-sp-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-core = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-io = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-blockchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-keystore = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-keyring = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-runtime = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-runtime-interface = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-state-machine = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-std = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-weights = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sp-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sp-session = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sp-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sp-version = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-sc-client-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sc-transaction-pool-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sc-network = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-sc-network-common = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-pallet-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-assets = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-balances = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-pallet-contracts = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-pallet-contracts-primitives = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-pallet-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-insecure-randomness-collective-flip = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-sudo = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-transaction-payment = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-pallet-utility = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-frame-executive = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
-frame-support = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-frame-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false}
-frame-system-rpc-runtime-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", default-features = false }
+sp-api = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-blockchain = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sp-core = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-io = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-keyring = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-keystore = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-offchain = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-runtime = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-runtime-interface = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-session = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-state-machine = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-std = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sp-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-version = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+sp-weights = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sc-basic-authorship = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-client-api = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-network = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sc-network-common = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+sc-offchain = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-service = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-telemetry = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+sc-transaction-pool-api = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+substrate-frame-rpc-system = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+frame-benchmarking-cli = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+frame-executive = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+frame-support = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+frame-system = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+frame-system-rpc-runtime-api = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-assets = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-aura = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-balances = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+pallet-contracts = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+pallet-contracts-primitives = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false}
+pallet-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-insecure-randomness-collective-flip = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-sudo = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-transaction-payment = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-transaction-payment-rpc = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+pallet-transaction-payment-rpc-runtime-api = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+pallet-utility = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0", default-features = false }
+
+# CLI-specific dependencies
+try-runtime-cli = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
 
 # Frontier
 fp-self-contained = { git = "https://github.com/agryaznov/frontier.git", branch = "ethink", default-features = false }
 
 # Local
+ep-crypto = { path = "primitives/crypto", default-features = false }
+ep-mapping = { path = "primitives/mapping", default-features = false }
+ep-rpc = { path = "primitives/rpc", default-features = false }
 ethink-rpc = { path = "client/rpc", default-features = false }
 ethink-rpc-core = { path = "client/rpc-core", default-features = false }
 ethink-runtime = { path = "template/runtime", default-features = false }
-ep-mapping = { path = "primitives/mapping", default-features = false }
-ep-rpc = { path = "primitives/rpc", default-features = false }
-ep-crypto = { path = "primitives/crypto", default-features = false }
 pallet-ethink = { path = "frame/ethink", default-features = false }
+
+# Build
+substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
+substrate-wasm-builder = { git = "https://github.com/paritytech/polkadot-sdk", tag = "polkadot-v1.1.0" }
