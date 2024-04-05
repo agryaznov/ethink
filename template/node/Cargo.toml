@@ -23,42 +23,42 @@ hex-literal.workspace = true
 
 sc-transaction-pool-api.workspace = true
 sc-client-api.workspace = true
-sc-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-executor = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-network = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-service = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-telemetry = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-transaction-pool = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-offchain = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-network = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-service = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-telemetry = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-offchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
 sp-core.workspace = true
 sp-keystore.workspace = true
 sp-runtime.workspace = true
 sp-io.workspace = true
-sp-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-consensus-aura = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-consensus = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-consensus-grandpa = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-timestamp = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-inherents = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sp-keyring = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sp-keyring = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
 frame-system.workspace = true
 pallet-transaction-payment.workspace = true
 
 # These dependencies are used for the node template's RPCs
 jsonrpsee = { workspace = true, features = ["server"] }
 sp-api.workspace = true
-sc-rpc = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-rpc-api = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
 sp-blockchain.workspace = true
-sp-block-builder = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-sc-basic-authorship = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-substrate-frame-rpc-system = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-pallet-transaction-payment-rpc = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-basic-authorship = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+substrate-frame-rpc-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+pallet-transaction-payment-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
 
 # These dependencies are used for runtime benchmarking
-frame-benchmarking = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
-frame-benchmarking-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+frame-benchmarking-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
 
 # Local Dependencies
 ethink-runtime.workspace = true
@@ -68,10 +68,10 @@ ep-mapping = { workspace = true, features = ["default"] }
 ep-crypto.workspace = true
 
 # CLI-specific dependencies
-try-runtime-cli = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink", optional = true }
+try-runtime-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916", optional = true }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/agryaznov/polkadot-sdk", branch = "ethink" }
+substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
 
 [dev-dependencies]
 # needed in e2e tests
