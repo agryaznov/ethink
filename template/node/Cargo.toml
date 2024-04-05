@@ -21,44 +21,45 @@ clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 hex-literal.workspace = true
 
-sc-transaction-pool-api.workspace = true
-sc-client-api.workspace = true
-sc-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-executor = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-network = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-service = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-telemetry = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-transaction-pool = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-offchain = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+# Substrate
+sp-consensus-aura = { workspace = true, features = ["default"] }
+sp-consensus-grandpa.workspace = true
 sp-core.workspace = true
+sp-inherents = { workspace = true, features = ["default"] }
+sp-io.workspace = true
+sp-keyring.workspace = true
 sp-keystore.workspace = true
 sp-runtime.workspace = true
-sp-io.workspace = true
-sp-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sp-consensus-aura = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-consensus = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-consensus-grandpa = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sp-timestamp = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sp-inherents = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sp-keyring = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sp-timestamp.workspace = true
+sc-cli.workspace = true
+sc-client-api.workspace = true
+sc-consensus-aura.workspace = true
+sc-consensus-grandpa.workspace = true
+sc-consensus.workspace = true
+sc-executor.workspace = true
+sc-network = { workspace = true, features = ["default"] }
+sc-offchain.workspace = true
+sc-service.workspace = true
+sc-telemetry.workspace = true
+sc-transaction-pool-api.workspace = true
+sc-transaction-pool.workspace = true
 frame-system.workspace = true
 pallet-transaction-payment.workspace = true
 
 # These dependencies are used for the node template's RPCs
 jsonrpsee = { workspace = true, features = ["server"] }
 sp-api.workspace = true
-sc-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-rpc-api = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sc-rpc.workspace = true
+sc-rpc-api.workspace = true
 sp-blockchain.workspace = true
-sp-block-builder = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-sc-basic-authorship = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-substrate-frame-rpc-system = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-pallet-transaction-payment-rpc = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+sp-block-builder.workspace = true
+sc-basic-authorship.workspace = true
+substrate-frame-rpc-system.workspace = true
+pallet-transaction-payment-rpc.workspace = true
 
 # These dependencies are used for runtime benchmarking
-frame-benchmarking = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
-frame-benchmarking-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+frame-benchmarking.workspace = true
+frame-benchmarking-cli.workspace = true
 
 # Local Dependencies
 ethink-runtime.workspace = true
@@ -68,22 +69,22 @@ ep-mapping = { workspace = true, features = ["default"] }
 ep-crypto.workspace = true
 
 # CLI-specific dependencies
-try-runtime-cli = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916", optional = true }
+try-runtime-cli = { workspace = true, optional = true }
 
 [build-dependencies]
-substrate-build-script-utils = { git = "https://github.com/paritytech/polkadot-sdk", rev = "336916" }
+substrate-build-script-utils.workspace = true
 
 [dev-dependencies]
 # needed in e2e tests
-ureq = { version = "2.9.6", features = ["json"] }
 tokio = { version = "1.36", features = ["rt", "macros"] }
+ureq = { version = "2.9.6", features = ["json"] }
 serde.workspace = true
 serde_json.workspace = true
 subxt = "0.29.0"
-log.workspace = true
-sp-weights.workspace = true
-hex.workspace = true
 ethereum.workspace = true
+sp-weights.workspace = true
+log.workspace = true
+hex.workspace = true
 
 [features]
 default = []
