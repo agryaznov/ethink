@@ -2006,7 +2006,7 @@ dependencies = [
 
 [[package]]
 name = "ep-rpc"
-version = "0.0.1"
+version = "0.1.0"
 dependencies = [
  "ethereum",
  "sp-api",
@@ -2082,7 +2082,7 @@ dependencies = [
 
 [[package]]
 name = "ethink-node"
-version = "4.0.0-dev"
+version = "0.1.0"
 dependencies = [
  "clap",
  "ep-crypto",

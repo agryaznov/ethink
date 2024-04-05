@@ -1,7 +1,9 @@
 // SPDX-License-Identifier: GPL-3.0-or-later WITH Classpath-exception-2.0
-// This file is part of Frontier.
+// This file was derived from Frontier (fc-rpc-core),
+// and modified to become part of Ethink.
 //
-// Copyright (c) 2015-2022 Parity Technologies (UK) Ltd.
+// Copyright (c) (Frontier): 2020-2022 Parity Technologies (UK) Ltd.
+// Copyright (c) (Ethink):   2023-2024 Alexander Gryaznov.
 //
 // This program is free software: you can redistribute it and/or modify
 // it under the terms of the GNU General Public License as published by

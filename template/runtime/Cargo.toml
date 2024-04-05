@@ -1,10 +1,9 @@
 [package]
 name = "ethink-runtime"
 version = "0.1.0"
-authors = ["Alexander Gryaznov <hi@agryaznov.com>"]
+authors.workspace = true
 edition.workspace = true
-license = "Unlicense"
-repository = "https://github.com/agryaznov/ethink"
+license = "Apache-2.0"
 build = "build.rs"
 publish = false
 

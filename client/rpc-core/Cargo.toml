@@ -2,7 +2,7 @@
 name = "ethink-rpc-core"
 version = "0.1.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
-description = "RPC traits of Ethereum."
+description = "RPC traits of Ethereum. This is a simplified fork of fc-rpc-core."
 edition.workspace = true
 
 [package.metadata.docs.rs]

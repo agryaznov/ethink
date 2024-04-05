@@ -1,13 +1,11 @@
 [package]
 name = "ethink-node"
-version = "4.0.0-dev"
-description = "A fresh FRAME-based Substrate node, ready for hacking."
-authors = ["Substrate DevHub <https://github.com/substrate-developer-hub>"]
-homepage = "https://substrate.io/"
+version = "0.1.0"
+description = "ethink! node (based on substrate-node-template)."
+authors.workspace = true
 edition.workspace = true
-license = "MIT-0"
+license = "Apache 2.0"
 publish = false
-repository = "https://github.com/substrate-developer-hub/substrate-node-template/"
 build = "build.rs"
 
 [package.metadata.docs.rs]
