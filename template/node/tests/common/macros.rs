@@ -71,6 +71,10 @@ macro_rules! rpc_rq {
 /// Prepare node and contract for testing env
 #[macro_export]
 macro_rules! prepare_node_and_contract {
+    ( $manifest:ident ) => {
+        prepare::node_and_contract($manifest, vec![], None).await
+    };
+
     ( $manifest:ident, $args:expr ) => {
         prepare::node_and_contract($manifest, $args, None).await
     };
@@ -95,7 +99,7 @@ macro_rules! make_rq {
 #[macro_export]
 macro_rules! call {
     ($env:ident, $msg:literal) => {
-        contracts::call(&$env, $msg, None, false, None)
+        contracts::call(&$env, $msg, vec![], false, None)
     };
     ($env:ident, $msg:literal, $args:expr) => {
         contracts::call(&$env, $msg, $args, false, None)
@@ -111,7 +115,7 @@ macro_rules! call {
 #[macro_export]
 macro_rules! encode {
     ($path:ident, $msg:literal) => {
-        contracts::encode($path, $msg, None)
+        contracts::encode($path, $msg, vec![])
     };
     ($path:ident, $msg:literal, $args:expr) => {
         contracts::encode($path, $msg, $args)

@@ -1,8 +1,21 @@
 #![cfg_attr(not(feature = "std"), no_std, no_main)]
 
-#[ink::contract]
+#[ink::contract(env = EthinkEnvironment)]
 mod erc20 {
     use ink::storage::Mapping;
+
+    // Use custom environmanent with Ethereum-flavored Accountid
+    pub struct EthinkEnvironment;
+
+    impl ink_env::Environment for EthinkEnvironment {
+        const MAX_EVENT_TOPICS: usize = 3;
+        type AccountId = [u8; 20];
+        type Balance = u128;
+        type Hash = [u8; 32];
+        type Timestamp = u64;
+        type BlockNumber = u32;
+        type ChainExtension = ::ink::env::NoChainExtension;
+    }
 
     /// A simple ERC-20 contract.
     #[ink(storage)]

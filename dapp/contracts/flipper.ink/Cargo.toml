@@ -1,11 +1,13 @@
 [package]
 name = "flipper"
-version = "0.1.0"
+version = "4.4.0"
 authors = ["[your_name] <[your_email]>"]
 edition = "2021"
 
 [dependencies]
-ink = { git = "https://github.com/agryaznov/ink", branch = "ethink", default-features = false }
+ink = { version = "4.3.0", default-features = false }
+ink_env = { version = "4.3.0", default-features = false }
+
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
 
@@ -22,5 +24,3 @@ std = [
     "scale/std",
     "scale-info/std",
 ]
-ink-as-dependency = []
-e2e-tests = []
