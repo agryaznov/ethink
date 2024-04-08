@@ -45,6 +45,15 @@ macro_rules! ensure_no_err {
 }
 
 #[macro_export]
+macro_rules! ensure_err {
+    ( &$j:ident, $err:literal ) => {
+        if $j["error"].as_object().is_none() {
+            panic!($err)
+        }
+    };
+}
+
+#[macro_export]
 macro_rules! extract_result {
     ( &$j:ident ) => {
         &$j["result"]
