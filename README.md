@@ -1,8 +1,5 @@
 > [!WARNING]
-> This is a **Proof Of Concept**. It works, but not (*yet*) intended for production use!!
-
-> [!NOTE]
-> The project was renamed from its working title Polkamask for the reasons explained in the [comment on Polkassembly](https://polkadot.polkassembly.io/referenda/408#FDeIFMmzOtrbHjWyHpUF). Crates still have `polkamask` suffix in names, those are to be renamed in the future updates.
+> This is an **Early Prototype**. It works, but not (*yet*) intended for production use!!
 
 <div align="center">
     <img src=".images/ink+mm.png" alt="ink! + MetaMask logo" />
@@ -46,6 +43,20 @@ Also import add the *well-known* development accounts:
 > It is **highly recommended** to use a separate MetaMask instance for this (e.g. in a dedicated <a href="https://support.mozilla.org/en-US/kb/profiles-where-firefox-stores-user-data" target="_blank">browser profile</a>), not to mix the development accounts (whose private keys **are compromised** by design) with your real money-holding accounts. 
 
 **That's it!** You should right away be able to communicate with the Duck 🦆 chain using your MetaMask. Let's see it in action, as described in the following section. 
+
+## End-to-end Tests 
+
+_ethink!_ comes with e2e integration tests, grouped into test suites:
+
++ [flipper](/template/node/tests/flipper.rs): basic tests for the RPC methods;  
++ [erc20](/template/node/tests/.rs): ERC20 contract tests.
++ _(more to be added later)_
+
+Use this command to run the tests (at the project root): 
+
+```bash
+cargo test --test *
+```
 
 ## Demo 🧐
 
@@ -222,7 +233,7 @@ Now check the state again with *cargo-contract*, and...
 > Whoa, what a long way isn't it? But let's put the details off for now and just enjoy the moment!  
 > The design technicalities are to be explained in the ethink! docs, stay tuned!
 
-## Useful Stuff 
+## Useful Links 
 
-- The [table](docs/mapping.md) with all RPC methods needed and their description.
+- The [table](docs/mapping.md) with all Ethereum RPC methods needed along with their description and implementation status.
 - Collection of *curl* composed [request templates](docs/rpc_requests.md) to Ethereum RPC exposed by ethink! node. 

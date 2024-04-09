@@ -1,4 +1,4 @@
-# Frontier: how balance transfer works
+# Frontier: how balance transfer works `outdated`
 
 Sending `1050 🥚` from Alith (`0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac`) to Dorothy (`0x773539d4Ac0e786233D90A233654ccEE26a613D9`):
 
