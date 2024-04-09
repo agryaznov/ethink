@@ -8,11 +8,6 @@ where
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     C::Api: ETHRuntimeRPC<B>,
 {
-    pub fn accounts(&self) -> RpcResult<Vec<H160>> {
-        // TODO: extract accounts list from the "ethi" keystore
-        Ok(vec![H160::zero()])
-    }
-
     pub fn author(&self) -> RpcResult<H160> {
         Ok(H160::zero())
     }
@@ -61,10 +56,6 @@ where
         Ok(H256::zero())
     }
 
-    pub fn syncing(&self) -> RpcResult<SyncStatus> {
-        Ok(SyncStatus::None)
-    }
-
     pub async fn transaction_count(
         &self,
         address: H160,
@@ -78,5 +69,18 @@ where
             .map_err(|err| rpc_err!("fetch runtime account nounce failed: {:?}", err))?;
 
         Ok(nonce)
+    }
+
+    // This relates to node and not to chain state,
+    // just keeping it here now as it's too little for a separate module
+    pub fn accounts(&self) -> RpcResult<Vec<H160>> {
+        // TODO: extract accounts list from the "ethi" keystore
+        Ok(vec![H160::zero()])
+    }
+
+    // This relates to node and not to chain state,
+    // just keeping it here now as it's too little for a separate module
+    pub fn syncing(&self) -> RpcResult<SyncStatus> {
+        Ok(SyncStatus::None)
     }
 }
