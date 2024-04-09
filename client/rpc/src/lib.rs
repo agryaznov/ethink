@@ -19,12 +19,13 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-// ETH RPC methods grouped according to mapping table
-mod group1;
-mod group2;
-mod group3;
-mod group4;
-mod group5;
+// Ethereum RPC methods grouped according to mapping table
+// (see /docs/mapping.md)
+mod blocks;
+mod calls;
+mod misc;
+mod state;
+mod transactions;
 
 // We keep custom types here and not in rpc-core,
 // for we might later switch to fc-rpc-core.
