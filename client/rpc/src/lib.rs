@@ -26,12 +26,9 @@ mod group3;
 mod group4;
 mod group5;
 
-// auxilinary utils
-mod signer;
-
-// block mapping
-// TODO think for a proper crate for this
-mod block;
+// We keep custom types here and not in rpc-core,
+// for we might later switch to fc-rpc-core.
+mod types;
 
 use ep_rpc::ETHRuntimeRPC;
 use ethereum::TransactionV2 as EthTransaction;

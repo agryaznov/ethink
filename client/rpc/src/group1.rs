@@ -1,4 +1,4 @@
-use crate::{signer::EthereumSigner, CallRequest, *};
+use crate::{types::EthereumSigner, CallRequest, *};
 use ep_crypto::AccountId20;
 use ethereum::{LegacyTransaction, LegacyTransactionMessage};
 

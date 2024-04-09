@@ -1,5 +1,5 @@
 use super::*;
-use crate::block::{EthereumBlock, SubstrateBlock};
+use crate::types::{EthereumBlock, SubstrateBlock};
 
 impl<B, C, P> EthRPC<B, C, P>
 where
