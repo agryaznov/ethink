@@ -27,6 +27,10 @@ pub async fn node_and_contract<R: subxt::Config>(
     constructor_args: Vec<&str>,
     signer: Option<&str>,
 ) -> Env<R> {
+
+    // TODO refactor this so that it builds it only once for all tests
+    let _output = contracts::build(manifest_path);
+
     let mut builder = TestNodeProcess::<R>::build(NODE_BIN);
     let node = if let Some(key) = signer {
         builder.with_signer(key)

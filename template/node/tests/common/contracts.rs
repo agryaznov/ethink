@@ -47,6 +47,25 @@ impl Into<Vec<u8>> for ContractInput {
     }
 }
 
+/// Build contract
+pub fn build(
+    manifest_path: &str,
+) -> process::Output {
+    let manifest_arg = format!("--manifest-path={manifest_path}");
+
+    let cmd_args = vec![
+        "contract",
+        "build",
+        &manifest_arg,
+        "--output-json",
+    ];
+
+    process::Command::new("cargo")
+        .args(cmd_args.as_slice())
+        .output()
+        .expect("failed to build with cargo-contract")
+}
+
 /// Deploy contract to the node exposed via `url`, and return the output
 pub fn deploy(
     url: &str,
