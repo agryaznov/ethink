@@ -1,4 +1,4 @@
-## Project Goals
+## Project Goals `outdated`
 
 - PoC stage target is to be able to interact with a deployed ink! example contract through MetaMask.
 - Prototype stage target is to provide means for making the same thing possible with any ink! contract (which would still require some work to be done by Dapp developer).
