@@ -16,20 +16,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Prelude actions needed in most of the tests
+//! Prelude actions performed in most of the tests
 use crate::common::{consts::*, node::*, *};
 use serde_json::Deserializer;
-use std::str::FromStr;
+use std::{str::FromStr, sync::Once};
 
 /// Spawn a node and deploy a contract to it
 pub async fn node_and_contract<R: subxt::Config>(
+    once: &Once,
     manifest_path: &str,
     constructor_args: Vec<&str>,
     signer: Option<&str>,
 ) -> Env<R> {
-
-    // TODO refactor this so that it builds it only once for all tests
-    let _output = contracts::build(manifest_path);
+    // Build contract (this is done just done once per test suite run)
+    once.call_once(|| {
+        contracts::build(manifest_path);
+    });
 
     let mut builder = TestNodeProcess::<R>::build(NODE_BIN);
     let node = if let Some(key) = signer {
