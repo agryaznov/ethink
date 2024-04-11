@@ -31,14 +31,17 @@ use ethereum::{
 use serde_json::Deserializer;
 use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
+use std::sync::Once;
 
-pub const ERC20_PATH: &'static str = env!("ERC20_PATH");
+const ERC20_PATH: &'static str = env!("ERC20_PATH");
+// Sync primitive to build contract only once per test suite run
+static ONCE: Once = Once::new();
 
 #[tokio::test]
 async fn transfer_works() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
-        prepare_node_and_contract!(ERC20_PATH, vec!["10_000"], BALTATHAR_KEY);
+        prepare_node_and_contract!(ONCE, ERC20_PATH, vec!["10_000"], BALTATHAR_KEY);
     // (ERC20 is deployed with 10_000 supply)
     // Make ETH RPC request (to transfer 2_000 to Alith)
     let call_data = encode!(ERC20_PATH, "transfer", vec![ALITH_ADDRESS, "2_000"]);
@@ -78,7 +81,7 @@ async fn transfer_works() {
 async fn allowances_work() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
-        prepare_node_and_contract!(ERC20_PATH, vec!["10_000"], BALTATHAR_KEY);
+        prepare_node_and_contract!(ONCE, ERC20_PATH, vec!["10_000"], BALTATHAR_KEY);
     // (ERC20 is deployed with 10_000 supply)
     // Make ETH RPC request (to unauthorized transfer 2_000 to Alith)
     let input = EthTxInput {

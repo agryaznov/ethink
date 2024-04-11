@@ -80,16 +80,16 @@ macro_rules! rpc_rq {
 /// Prepare node and contract for testing env
 #[macro_export]
 macro_rules! prepare_node_and_contract {
-    ( $manifest:ident ) => {
-        prepare::node_and_contract($manifest, vec![], None).await
+    ( $once:ident, $manifest:ident ) => {
+        prepare::node_and_contract(&$once, $manifest, vec![], None).await
     };
 
-    ( $manifest:ident, $args:expr ) => {
-        prepare::node_and_contract($manifest, $args, None).await
+    ( $once:ident, $manifest:ident, $args:expr ) => {
+        prepare::node_and_contract(&$once, $manifest, $args, None).await
     };
 
-    ( $manifest:ident, $args:expr, $signer:ident ) => {
-        prepare::node_and_contract($manifest, $args, Some($signer)).await
+    ( $once:ident, $manifest:ident, $args:expr, $signer:ident ) => {
+        prepare::node_and_contract(&$once, $manifest, $args, Some($signer)).await
     };
 }
 
