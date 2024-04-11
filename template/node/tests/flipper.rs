@@ -31,14 +31,18 @@ use ethereum::{
 use serde_json::{value::Serializer, Deserializer};
 use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
+use std::sync::Once;
 use ureq::json;
 
-pub const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
+const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
+// Sync primitive to build contract only once per test suite run
+static ONCE: Once = Once::new();
 
 #[tokio::test]
 async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
-    let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, vec!["false"]);
+    let mut env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
     // (Flipper is deployed with `false` state)
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
@@ -75,7 +79,7 @@ async fn eth_sendRawTransaction() {
 async fn eth_sendTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
-        prepare_node_and_contract!(FLIPPER_PATH, vec!["false"], BALTATHAR_KEY);
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"], BALTATHAR_KEY);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request (to flip it to `true`)
     let rs = rpc_rq!(env,
@@ -111,7 +115,7 @@ async fn eth_sendTransaction() {
 async fn gas_limit_is_respected() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
-        prepare_node_and_contract!(FLIPPER_PATH, vec!["false"], BALTATHAR_KEY);
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"], BALTATHAR_KEY);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request (to flip it to `true`)
     // Insufficient gas_limit (None => 0)
@@ -184,7 +188,8 @@ async fn gas_limit_is_respected() {
 #[tokio::test]
 async fn eth_call() {
     // Spawn node and deploy contract
-    let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, vec!["false"]);
+    let mut env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
     // (Flipper is deployed with `false` state)
     // Make eth_call rpc request to get() flipper state
     let rq = json!({
@@ -222,7 +227,7 @@ async fn eth_call() {
 #[tokio::test]
 async fn eth_estimateGas() {
     // Spawn node and deploy contract
-    let env: Env<PolkadotConfig> = prepare_node_and_contract!(FLIPPER_PATH, vec!["false"]);
+    let env: Env<PolkadotConfig> = prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
     // Retrieve gas estimation via cargo-contract dry-run
     let output = call!(env, "flip");
     let rs = Deserializer::from_slice(&output.stdout);

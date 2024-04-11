@@ -48,17 +48,10 @@ impl Into<Vec<u8>> for ContractInput {
 }
 
 /// Build contract
-pub fn build(
-    manifest_path: &str,
-) -> process::Output {
+pub fn build(manifest_path: &str) -> process::Output {
     let manifest_arg = format!("--manifest-path={manifest_path}");
 
-    let cmd_args = vec![
-        "contract",
-        "build",
-        &manifest_arg,
-        "--output-json",
-    ];
+    let cmd_args = vec!["contract", "build", &manifest_arg, "--output-json"];
 
     process::Command::new("cargo")
         .args(cmd_args.as_slice())
