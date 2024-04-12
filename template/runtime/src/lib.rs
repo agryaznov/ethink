@@ -805,7 +805,7 @@ impl_runtime_apis! {
         }
     }
 
-    impl pallet_ethink::ETHRuntimeRPC<Block> for Runtime {
+    impl pallet_ethink::EthinkAPI<Block> for Runtime {
         fn chain_id() -> u64 {
             CHAIN_ID
         }

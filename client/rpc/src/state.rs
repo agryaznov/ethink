@@ -1,12 +1,12 @@
 use super::*;
-use pallet_ethink::ETHRuntimeRPC;
+use pallet_ethink::EthinkAPI;
 use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
-    C::Api: ETHRuntimeRPC<B>,
+    C::Api: EthinkAPI<B>,
 {
     pub fn author(&self) -> RpcResult<H160> {
         Ok(H160::zero())

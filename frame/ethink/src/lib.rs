@@ -314,7 +314,7 @@ use sp_std::vec::Vec;
 
 sp_api::decl_runtime_apis! {
     /// Runtime-exposed API necessary for ETH-compatibility layer.
-    pub trait ETHRuntimeRPC {
+    pub trait EthinkAPI {
         /// Return runtime-defined CHAIN_ID.
         fn chain_id() -> u64;
 
