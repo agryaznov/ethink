@@ -7,10 +7,10 @@
 
 use std::sync::Arc;
 
-use ep_rpc::ETHRuntimeRPC;
 use ethink_rpc::{EthApiServer, EthRPC};
 use ethink_runtime::{opaque::Block, AccountId, Balance, Nonce};
 use jsonrpsee::RpcModule;
+use pallet_ethink::ETHRuntimeRPC;
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;

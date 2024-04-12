@@ -62,7 +62,7 @@ frame-benchmarking-cli.workspace = true
 # Local Dependencies
 ethink-runtime.workspace = true
 ethink-rpc.workspace = true
-ep-rpc = { workspace = true, features = ["default"] }
+pallet-ethink = { workspace = true, features = ["default"] }
 ep-mapping = { workspace = true, features = ["default"] }
 ep-crypto.workspace = true
 

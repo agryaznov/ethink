@@ -24,7 +24,7 @@ mod common;
 use common::{consts::*, eth::EthTxInput, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
-use ep_rpc::EthTransaction;
+use pallet_ethink::EthTransaction;
 use ethereum::{
     EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
 };

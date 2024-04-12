@@ -15,7 +15,7 @@ futures.workspace = true
 
 # ethink
 ethink-rpc-core.workspace = true
-ep-rpc = { workspace = true, features = ["default"] }
+pallet-ethink = { workspace = true, features = ["default"] }
 ep-crypto = { workspace = true, features = ["default"] }
 
 # Substrate

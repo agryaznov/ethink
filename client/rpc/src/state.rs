@@ -1,5 +1,5 @@
 use super::*;
-use ep_rpc::ETHRuntimeRPC;
+use pallet_ethink::ETHRuntimeRPC;
 use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> EthRPC<B, C, P>
