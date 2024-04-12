@@ -39,7 +39,7 @@ use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
 use sp_core::{H160, H256, U256};
 use sp_runtime::{
-    traits::{DispatchInfoOf, Dispatchable},
+    traits::{Block as BlockT, DispatchInfoOf, Dispatchable},
     transaction_validity::{
         InvalidTransaction, TransactionValidity, TransactionValidityError, ValidTransactionBuilder,
     },
@@ -308,6 +308,43 @@ where
 pub enum ReturnValue {
     Bytes(Vec<u8>),
     Hash(H160),
+}
+
+use sp_std::vec::Vec;
+
+sp_api::decl_runtime_apis! {
+    /// Runtime-exposed API necessary for ETH-compatibility layer.
+    pub trait ETHRuntimeRPC {
+        /// Return runtime-defined CHAIN_ID.
+        fn chain_id() -> u64;
+
+        /// Return account balance.
+        fn account_free_balance(address: H160) -> U256;
+
+        /// Return account nonce.
+        fn nonce(address: H160) -> U256;
+
+        /// Call contract (without extrinsic submission)
+        fn call(
+            from: H160,
+            to: H160,
+            data: Vec<u8>,
+            value: U256,
+            gas_limit: U256,
+        ) -> Result<Vec<u8>, sp_runtime::DispatchError>;
+
+        /// Estimate gas needed for a contract call
+        fn gas_estimate(
+            from: H160,
+            to: H160,
+            data: Vec<u8>,
+            value: U256,
+            gas_limit: U256,
+        ) -> Result<U256, sp_runtime::DispatchError>;
+
+        /// Wrap Ethereum transaction into an extrinsic
+        fn build_extrinsic(from: EthTransaction) -> <Block as BlockT>::Extrinsic;
+    }
 }
 
 // TODO tests

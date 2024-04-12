@@ -49,8 +49,7 @@ use sp_version::RuntimeVersion;
 // ETH RPC support
 use ep_crypto::EthereumSignature;
 use ep_mapping::SubstrateWeight;
-use ep_rpc::EthTransaction;
-use pallet_ethink;
+use pallet_ethink::EthTransaction;
 
 // A few exports that help ease life for downstream crates.
 pub use frame_support::{
@@ -806,7 +805,7 @@ impl_runtime_apis! {
         }
     }
 
-    impl ep_rpc::ETHRuntimeRPC<Block> for Runtime {
+    impl pallet_ethink::ETHRuntimeRPC<Block> for Runtime {
         fn chain_id() -> u64 {
             CHAIN_ID
         }

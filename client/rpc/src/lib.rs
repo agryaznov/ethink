@@ -31,12 +31,12 @@ mod transactions;
 // for we might later switch to fc-rpc-core.
 mod types;
 
-use ep_rpc::ETHRuntimeRPC;
 use ethereum::TransactionV2 as EthTransaction;
 use ethereum_types::{H160, H256, H64, U256, U64};
 use ethink_rpc_core::types::*;
 use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
+use pallet_ethink::ETHRuntimeRPC;
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::{HeaderT, ProvideRuntimeApi};
