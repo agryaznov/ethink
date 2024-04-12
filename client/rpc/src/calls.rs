@@ -7,7 +7,7 @@ where
     B: BlockT<Hash = sp_core::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
-    C::Api: ETHRuntimeRPC<B>,
+    C::Api: EthinkAPI<B>,
 {
     pub async fn send_raw_transaction(&self, bytes: Bytes) -> RpcResult<H256> {
         let hash = self.client.info().best_hash;

@@ -24,10 +24,10 @@ mod common;
 use common::{consts::*, eth::EthTxInput, *};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
-use ep_rpc::EthTransaction;
 use ethereum::{
     EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
 };
+use pallet_ethink::EthTransaction;
 use serde_json::{value::Serializer, Deserializer};
 use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;

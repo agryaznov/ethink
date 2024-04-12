@@ -6,13 +6,14 @@ description = "Ethereum RPC compatibility aid for pallet-contracts. This crate i
 edition.workspace = true
 
 [dependencies]
-ethereum.workspace = true
+ethereum = { workspace = true, features = ["with-codec"] }
 ethereum-types.workspace = true
 scale-codec.workspace = true
 scale-info.workspace = true
 # Substrate
 frame-support.workspace = true
 frame-system.workspace = true
+sp-api.workspace = true
 sp-io.workspace = true
 sp-runtime.workspace = true
 sp-std.workspace = true

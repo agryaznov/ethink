@@ -2005,17 +2005,6 @@ dependencies = [
 ]
 
 [[package]]
-name = "ep-rpc"
-version = "0.1.0"
-dependencies = [
- "ethereum",
- "sp-api",
- "sp-core 21.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
- "sp-runtime 24.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
- "sp-std 8.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
-]
-
-[[package]]
 name = "equivalent"
 version = "1.0.1"
 source = "registry+https://github.com/rust-lang/crates.io-index"
@@ -2087,7 +2076,6 @@ dependencies = [
  "clap",
  "ep-crypto",
  "ep-mapping",
- "ep-rpc",
  "ethereum",
  "ethink-rpc",
  "ethink-runtime",
@@ -2099,6 +2087,7 @@ dependencies = [
  "hex-literal",
  "jsonrpsee",
  "log",
+ "pallet-ethink",
  "pallet-transaction-payment",
  "pallet-transaction-payment-rpc",
  "sc-basic-authorship",
@@ -2144,7 +2133,6 @@ name = "ethink-rpc"
 version = "0.1.0"
 dependencies = [
  "ep-crypto",
- "ep-rpc",
  "ethereum",
  "ethereum-types",
  "ethink-rpc-core",
@@ -2153,6 +2141,7 @@ dependencies = [
  "jsonrpsee",
  "log",
  "pallet-balances",
+ "pallet-ethink",
  "sc-client-api",
  "sc-network",
  "sc-network-common",
@@ -2183,7 +2172,6 @@ version = "0.1.0"
 dependencies = [
  "ep-crypto",
  "ep-mapping",
- "ep-rpc",
  "fp-self-contained",
  "frame-executive",
  "frame-support",
@@ -5029,6 +5017,7 @@ dependencies = [
  "parity-scale-codec",
  "rlp",
  "scale-info",
+ "sp-api",
  "sp-core 21.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
  "sp-io 23.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
  "sp-runtime 24.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",

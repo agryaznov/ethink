@@ -7,10 +7,10 @@
 
 use std::sync::Arc;
 
-use ep_rpc::ETHRuntimeRPC;
 use ethink_rpc::{EthApiServer, EthRPC};
 use ethink_runtime::{opaque::Block, AccountId, Balance, Nonce};
 use jsonrpsee::RpcModule;
+use pallet_ethink::EthinkAPI;
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
@@ -46,7 +46,7 @@ where
     C::Api: substrate_frame_rpc_system::AccountNonceApi<Block, AccountId, Nonce>,
     C::Api: pallet_transaction_payment_rpc::TransactionPaymentRuntimeApi<Block, Balance>,
     C::Api: BlockBuilder<Block>,
-    C::Api: ETHRuntimeRPC<Block>,
+    C::Api: EthinkAPI<Block>,
     P: TransactionPool<Block = Block> + 'static,
 {
     use pallet_transaction_payment_rpc::{TransactionPayment, TransactionPaymentApiServer};

@@ -9,7 +9,6 @@ members = [
 	"template/node",
 	"template/runtime",
     "primitives/mapping",
-    "primitives/rpc",
     "primitives/crypto",
     "frame/ethink",
 ]
