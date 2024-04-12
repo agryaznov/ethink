@@ -5,7 +5,7 @@ impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = ethereum_types::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
-    C::Api: ETHRuntimeRPC<B>,
+    C::Api: EthinkAPI<B>,
 {
     pub async fn block_by_hash(&self, hash: H256, _full: bool) -> RpcResult<Option<RichBlock>> {
         Ok(self

@@ -36,7 +36,7 @@ use ethereum_types::{H160, H256, H64, U256, U64};
 use ethink_rpc_core::types::*;
 use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
-use pallet_ethink::ETHRuntimeRPC;
+use pallet_ethink::EthinkAPI;
 use sc_client_api::BlockBackend;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::{HeaderT, ProvideRuntimeApi};
@@ -95,7 +95,7 @@ where
     B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
-    C::Api: ETHRuntimeRPC<B>,
+    C::Api: EthinkAPI<B>,
 {
     pub fn new(client: Arc<C>, pool: Arc<P>, keystore: Arc<dyn Keystore>) -> Self {
         Self {
@@ -112,7 +112,7 @@ where
     B: BlockT<Hash = sp_core::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
-    C::Api: ETHRuntimeRPC<B>,
+    C::Api: EthinkAPI<B>,
 {
     async fn compose_extrinsic_and_submit(
         &self,
@@ -141,7 +141,7 @@ where
     B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
-    C::Api: ETHRuntimeRPC<B>,
+    C::Api: EthinkAPI<B>,
 {
     // ########################################################################
     // Group 5: Mocked
