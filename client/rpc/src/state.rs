@@ -1,4 +1,5 @@
 use super::*;
+use ep_crypto::AccountId20;
 use pallet_ethink::EthinkAPI;
 use sp_runtime::traits::UniqueSaturatedInto;
 
@@ -72,10 +73,17 @@ where
     }
 
     // This relates to node and not to chain state,
-    // just keeping it here now as it's too little for a separate module
+    // just keeping it here for now as it's too little for a separate module
     pub fn accounts(&self) -> RpcResult<Vec<H160>> {
-        // TODO: extract accounts list from the "ethi" keystore
-        Ok(vec![H160::zero()])
+        // Get signing accounts from the "ethi" keystore
+        let accounts = self
+            .keystore
+            .ecdsa_public_keys(ETHINK_KEYTYPE_ID)
+            .iter()
+            .map(|k| H160::from(AccountId20::from(*k)))
+            .collect::<Vec<_>>();
+
+        Ok(accounts)
     }
 
     // This relates to node and not to chain state,

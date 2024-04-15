@@ -280,5 +280,5 @@ async fn eth_accounts() {
         .iter()
         .map(|v| v.as_str().expect("Can't parse output as array of strings!"))
         .collect::<Vec<_>>();
-    assert_eq!(accounts_returned, vec![BALTATHAR_ADDRESS]);
+    assert_eq!(accounts_returned, vec![BALTATHAR_ADDRESS.to_lowercase()]);
 }
