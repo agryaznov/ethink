@@ -256,3 +256,29 @@ async fn eth_estimateGas() {
     let weight_str_returned = extract_result!(&json);
     assert_eq!(weight_str_returned, &weight_str_expected);
 }
+
+#[tokio::test]
+async fn eth_accounts() {
+    // Spawn node with Baltathar key in keystore
+    // (we don't need a contract deployment here, but so far this is the only test as such,
+    // hence we use the same helper with a contract deployed)
+    let env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"], BALTATHAR_KEY);
+    // Make ETH rpc request
+    let rq = json!({
+       "jsonrpc": "2.0",
+       "method": "eth_accounts",
+       "params": [],
+       "id": 0
+    });
+    let rs = rpc_rq!(env, rq);
+    // Handle response
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    // Should return vec with Baltathar address
+    let accounts_returned = extract_result!(&json, as_array)
+        .iter()
+        .map(|v| v.as_str().expect("Can't parse output as array of strings!"))
+        .collect::<Vec<_>>();
+    assert_eq!(accounts_returned, vec![BALTATHAR_ADDRESS]);
+}

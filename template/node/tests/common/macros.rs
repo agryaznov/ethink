@@ -55,10 +55,15 @@ macro_rules! ensure_err {
 
 #[macro_export]
 macro_rules! extract_result {
+    // by default try to extract as str
     ( &$j:ident ) => {
         &$j["result"]
             .as_str()
             .expect("RPC returned no result string")
+    };
+    // if specified, try to extract as asked type
+    ( &$j:ident, $as:ident ) => {
+        &$j["result"].$as().expect("RPC returned no result string")
     };
 }
 

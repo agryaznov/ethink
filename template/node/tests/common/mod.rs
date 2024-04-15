@@ -39,7 +39,7 @@ struct Contract {
     pub address: AccountId20,
 }
 
-// Testing environment, consisting of a node with a deployed cont   qract
+// Testing environment, consisting of a node with a deployed contract
 pub struct Env<R: subxt::Config> {
     pub node: TestNodeProcess<R>,
     contract: Contract,
@@ -101,7 +101,6 @@ impl<R: subxt::Config> Env<R> {
 // Default set of commonly used types by Substrate runtimes.
 pub enum SubstrateConfig {}
 
-// // TODO
 impl subxt::Config for SubstrateConfig {
     type Index = u32;
     type Hash = sp_core::H256;

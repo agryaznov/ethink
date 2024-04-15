@@ -147,7 +147,7 @@ where
                 .arg("insert")
                 .arg("--dev")
                 .arg(&base_path_arg)
-                // TODO
+                // TODO parametrize
                 .arg("--key-type=ethi")
                 .arg("--scheme=ecdsa")
                 .arg(&surl_arg)
