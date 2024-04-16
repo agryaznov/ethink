@@ -417,7 +417,6 @@ fn calling_user_account_transfers_balance() {
         let _ = test_utils::set_balance(&ALITH, init_balance);
 
         let input = EthTxInput {
-            signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
             action: ethereum::TransactionAction::Call(BALTATHAR.into()),
             data: vec![].into(),
             value: transfer_balance,
@@ -433,5 +432,26 @@ fn calling_user_account_transfers_balance() {
 
         assert_eq!(alith_balance, init_balance - transfer_balance);
         assert_eq!(baltathar_balance, transfer_balance);
+    });
+}
+
+#[test]
+fn transaction_increments_nonce() {
+    ExtBuilder::default().build().execute_with(|| {
+        let _ = test_utils::set_balance(&ALITH, 10_000_000);
+
+        let input = EthTxInput {
+            action: ethereum::TransactionAction::Call(BALTATHAR.into()),
+            data: vec![].into(),
+            ..Default::default()
+        };
+        let eth_tx = compose_and_sign_tx(input);
+
+        let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
+        assert_ok!(Ethink::transact(origin, eth_tx));
+
+        let nonce: u64 = System::account_nonce(ALITH).into();
+
+        assert_eq!(nonce, 1);
     });
 }
