@@ -63,7 +63,7 @@ pub enum RawOrigin {
 impl<A: From<H160>> Into<frame_system::RawOrigin<A>> for RawOrigin {
     fn into(self) -> frame_system::RawOrigin<A> {
         let Self::EthTransaction(acc) = self;
-        // Signature was already checked in check_self_contained()
+        // Signature was already checked upon checking UncheckedExtrinsic, via check_self_contained()
         frame_system::RawOrigin::<A>::Signed(acc.into())
     }
 }
@@ -194,12 +194,6 @@ pub mod pallet {
                 ensure_eth_transaction(origin)?.into();
             // We received Ethereum transaction,
             // need to route it either as a contract call or just a balance transfer
-            // determinant for this is pallet_contracts' ContractInfo storage:
-            // if it has the destination AccountId among its keys,
-            // then it's a contract call. For now we going to do this via
-            // pallet_contracts::code_hash()
-            // TODO This could possibly be optimized later with another method which uses
-            // StorageMap::contains_key() instead of StorageMap::get() under the hood.
             let from = origin.clone();
             let from = from.as_signed().ok_or(Error::<T>::BadEthSignature)?;
             let (to, value, data, gas_limit) =
@@ -214,6 +208,7 @@ pub mod pallet {
             // Make call
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
+                println!("Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
             // Deposit Event
