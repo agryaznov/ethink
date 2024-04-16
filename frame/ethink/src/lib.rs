@@ -200,7 +200,7 @@ pub mod pallet {
                 Self::unpack_eth_tx(&tx).ok_or(Error::<T>::TxNotSupported)?;
             // CREATE is not supported
             let to = to.ok_or(Error::<T>::TxNotSupported)?;
-            // Increase nonce of the sender account
+            // Increment nonce of the sender account
             System::<T>::inc_account_nonce(from);
             // Compose proper destination pallet call
             let call = T::Contracts::build_call(to, value, data, gas_limit)
@@ -208,7 +208,6 @@ pub mod pallet {
             // Make call
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
-                println!("Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
             })?;
             // Deposit Event
