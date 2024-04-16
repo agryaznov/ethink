@@ -37,15 +37,6 @@ const ERC20_PATH: &'static str = env!("ERC20_PATH");
 // Sync primitive to build contract only once per test suite run
 static ONCE: Once = Once::new();
 
-#[test]
-fn print_addresses() {
-    use std::str::FromStr;
-
-    let a = AccountId20::from_str(BALTATHAR_ADDRESS).unwrap().0;
-    println!("B: {:?}", &a);
-    panic!()
-}
-
 #[tokio::test]
 async fn transfer_works() {
     // Spawn node and deploy contract
