@@ -28,6 +28,8 @@
 #![allow(clippy::comparison_chain, clippy::large_enum_variant)]
 
 #[cfg(all(feature = "std", test))]
+mod mock;
+#[cfg(all(feature = "std", test))]
 mod tests;
 
 use frame_support::{
@@ -63,7 +65,7 @@ pub enum RawOrigin {
 impl<A: From<H160>> Into<frame_system::RawOrigin<A>> for RawOrigin {
     fn into(self) -> frame_system::RawOrigin<A> {
         let Self::EthTransaction(acc) = self;
-        // Signature was already checked in check_self_contained()
+        // Signature was already checked upon checking UncheckedExtrinsic, via check_self_contained()
         frame_system::RawOrigin::<A>::Signed(acc.into())
     }
 }
@@ -194,19 +196,13 @@ pub mod pallet {
                 ensure_eth_transaction(origin)?.into();
             // We received Ethereum transaction,
             // need to route it either as a contract call or just a balance transfer
-            // determinant for this is pallet_contracts' ContractInfo storage:
-            // if it has the destination AccountId among its keys,
-            // then it's a contract call. For now we going to do this via
-            // pallet_contracts::code_hash()
-            // TODO This could possibly be optimized later with another method which uses
-            // StorageMap::contains_key() instead of StorageMap::get() under the hood.
             let from = origin.clone();
             let from = from.as_signed().ok_or(Error::<T>::BadEthSignature)?;
             let (to, value, data, gas_limit) =
                 Self::unpack_eth_tx(&tx).ok_or(Error::<T>::TxNotSupported)?;
             // CREATE is not supported
             let to = to.ok_or(Error::<T>::TxNotSupported)?;
-            // Increase nonce of the sender account
+            // Increment nonce of the sender account
             System::<T>::inc_account_nonce(from);
             // Compose proper destination pallet call
             let call = T::Contracts::build_call(to, value, data, gas_limit)
