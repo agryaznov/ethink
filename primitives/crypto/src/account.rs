@@ -28,6 +28,7 @@ use sp_io::hashing::keccak_256;
 /// A fully Ethereum-compatible `AccountId`.
 /// Conforms to H160 address and ECDSA key standards.
 /// Alternative to H256->H160 mapping.
+// TODO add new(), make inner private
 #[derive(
     Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Encode, Decode, MaxEncodedLen, TypeInfo,
 )]

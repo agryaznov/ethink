@@ -5006,6 +5006,8 @@ dependencies = [
 name = "pallet-ethink"
 version = "0.1.0"
 dependencies = [
+ "ep-crypto",
+ "ep-mapping",
  "ethereum",
  "ethereum-types",
  "frame-support",
@@ -5014,6 +5016,12 @@ dependencies = [
  "libsecp256k1",
  "log",
  "pallet-balances",
+ "pallet-contracts",
+ "pallet-contracts-primitives",
+ "pallet-insecure-randomness-collective-flip",
+ "pallet-timestamp",
+ "pallet-transaction-payment",
+ "pallet-utility",
  "parity-scale-codec",
  "rlp",
  "scale-info",
@@ -5166,6 +5174,7 @@ name = "pallet-utility"
 version = "4.0.0-dev"
 source = "git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0#f60318f68687e601c47de5ad5ca88e2c3f8139a7"
 dependencies = [
+ "frame-benchmarking",
  "frame-support",
  "frame-system",
  "parity-scale-codec",
