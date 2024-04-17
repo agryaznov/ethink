@@ -4,6 +4,8 @@ use crate::{self as pallet_ethink, Pallet};
 use ep_crypto::{AccountId20, EthereumSignature};
 use ep_mapping::{SubstrateWeight, Weight};
 use frame_support::{assert_err, assert_ok};
+use pallet_contracts::{CollectEvents, DebugInfo};
+use pallet_contracts_primitives::Code;
 use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::BuildStorage;
 
@@ -21,6 +23,8 @@ mod test_utils {
 
 #[derive(Default)]
 pub struct ExtBuilder;
+
+pub const GAS_LIMIT: Weight = Weight::from_parts(100_000_000_000, 3 * 1024 * 1024);
 
 impl ExtBuilder {
     pub fn build(self) -> sp_io::TestExternalities {
@@ -153,6 +157,50 @@ fn calling_user_account_transfers_balance() {
     });
 }
 
+const CONTRACT_CODE: &str = r#"
+(module
+	(import "env" "memory" (memory 1 1))
+	(func (export "deploy"))
+	(func (export "call"))
+)
+"#;
+
+#[test]
+fn calling_contract_account_executes_it() {
+    let wasm = wat::parse_str(CONTRACT_CODE).unwrap();
+
+    ExtBuilder::default().build().execute_with(|| {
+        let _ = test_utils::set_balance(&ALITH, 10_000_000);
+        // Instantiate  contract
+        let contract_addr = Contracts::bare_instantiate(
+            ALITH,
+            0,
+            GAS_LIMIT,
+            None,
+            Code::Upload(wasm),
+            vec![],
+            vec![],
+            DebugInfo::Skip,
+            CollectEvents::Skip,
+        )
+        .result
+        .expect("Failed to instantiate contract")
+        .account_id;
+
+        // Compose request
+        let input = EthTxInput {
+            action: ethereum::TransactionAction::Call(contract_addr.into()),
+            data: vec![].into(),
+            ..Default::default()
+        };
+        let eth_tx = compose_and_sign_tx(input);
+        let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
+
+        // Call contract
+        assert_ok!(Ethink::transact(origin, eth_tx));
+    });
+}
+
 #[test]
 fn transaction_increments_nonce() {
     ExtBuilder::default().build().execute_with(|| {
@@ -173,5 +221,3 @@ fn transaction_increments_nonce() {
         assert_eq!(nonce, 1);
     });
 }
-
-// TODO calling_contract_works()
