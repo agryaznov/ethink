@@ -31,7 +31,7 @@ pub const BALTATHAR: AccountId20 = AccountId20([
 ]);
 pub const BALTATHAR_KEY: &'static str = env!("BALTATHAR_KEY");
 
-pub const EXISTENTIAL_DEPOSIT: u64 = 1_000;
+pub const ED: u64 = 1_000;
 /// We allow for 2 seconds of compute with a 6 second average block time, with maximum proof size.
 const MAXIMUM_BLOCK_WEIGHT: Weight =
     Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_mul(2), u64::MAX);
@@ -133,7 +133,7 @@ impl pallet_balances::Config for Test {
     type Balance = u64;
     type RuntimeEvent = RuntimeEvent;
     type DustRemoval = ();
-    type ExistentialDeposit = ConstU64<EXISTENTIAL_DEPOSIT>;
+    type ExistentialDeposit = ConstU64<ED>;
     type AccountStore = System;
     type WeightInfo = ();
     type FreezeIdentifier = ();
