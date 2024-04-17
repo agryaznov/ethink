@@ -223,7 +223,7 @@ const CONTRACTS_EVENTS: pallet_contracts::CollectEvents =
 // Unit = the base number of indivisible units for balances
 const UNIT: Balance = 1_000_000_000_000;
 const MILLIUNIT: Balance = 1_000_000_000;
-pub const EXISTENTIAL_DEPOSIT: Balance = MILLIUNIT;
+pub const ED: Balance = MILLIUNIT;
 
 const fn deposit(items: u32, bytes: u32) -> Balance {
     (items as Balance * UNIT + (bytes as Balance) * (5 * MILLIUNIT / 100)) / 10
@@ -374,7 +374,7 @@ impl pallet_balances::Config for Runtime {
     /// The ubiquitous event type.
     type RuntimeEvent = RuntimeEvent;
     type DustRemoval = ();
-    type ExistentialDeposit = ConstU128<EXISTENTIAL_DEPOSIT>;
+    type ExistentialDeposit = ConstU128<ED>;
     type AccountStore = System;
     type WeightInfo = pallet_balances::weights::SubstrateWeight<Runtime>;
     type FreezeIdentifier = ();
@@ -889,6 +889,9 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             }
             .into()
         } else {
+            // NOTE basically pallet-contracts can do this for us, as its call() extrinsic
+            // handles the call made to user account in a similar fashion.
+            // However, we keep this logic here not to rely on particular executor pallet too much.
             pallet_balances::Call::<Runtime>::transfer_allow_death { dest, value }.into()
         })
     }

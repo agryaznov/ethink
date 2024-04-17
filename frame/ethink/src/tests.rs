@@ -157,11 +157,27 @@ fn calling_user_account_transfers_balance() {
     });
 }
 
+// This is a simple Wasm contract which when called terminates itself,
+// sending all its balance to Baltathar
 const CONTRACT_CODE: &str = r#"
 (module
+	(import "seal0" "seal_terminate" (func $seal_terminate (param i32 i32)))
 	(import "env" "memory" (memory 1 1))
+
+    ;; beneficiary address of Baltathar
+	(data (i32.const 0)
+        "\3c\d0\a7\05\a2\dc\65\e5\b1\e1"
+        "\20\58\96\ba\a2\be\8a\07\c6\e0"
+	)
+
 	(func (export "deploy"))
-	(func (export "call"))
+	(func (export "call")
+    	(call $seal_terminate
+			(i32.const 0)	;; Pointer to beneficiary address
+			(i32.const 20)	;; Length of beneficiary address
+		)
+		(unreachable) ;; seal_terminate never returns
+    )
 )
 "#;
 
@@ -171,7 +187,7 @@ fn calling_contract_account_executes_it() {
 
     ExtBuilder::default().build().execute_with(|| {
         let _ = test_utils::set_balance(&ALITH, 10_000_000);
-        // Instantiate  contract
+        // Instantiate contract and deposit balance to it
         let contract_addr = Contracts::bare_instantiate(
             ALITH,
             0,
@@ -187,7 +203,7 @@ fn calling_contract_account_executes_it() {
         .expect("Failed to instantiate contract")
         .account_id;
 
-        // Compose request
+        // Compose transaction
         let input = EthTxInput {
             action: ethereum::TransactionAction::Call(contract_addr.into()),
             data: vec![].into(),
@@ -195,9 +211,16 @@ fn calling_contract_account_executes_it() {
         };
         let eth_tx = compose_and_sign_tx(input);
         let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
-
+        // Ensure Baltathar has no balance before the call
+        assert_eq!(test_utils::get_balance(&BALTATHAR), 0);
         // Call contract
         assert_ok!(Ethink::transact(origin, eth_tx));
+        // As the result of the call,
+        // our contract should terminate and send its balance to Baltathar
+        assert!(Contracts::code_hash(&contract_addr.into()).is_none());
+        // The only balance the contract had was existentional deposit,
+        // which is now trasferred to Baltathar
+        assert_eq!(test_utils::get_balance(&BALTATHAR), ED);
     });
 }
 

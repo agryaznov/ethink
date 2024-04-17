@@ -5,7 +5,7 @@ use crate::{
     cli::{Cli, Subcommand},
     service,
 };
-use ethink_runtime::{Block, EXISTENTIAL_DEPOSIT};
+use ethink_runtime::{Block, ED};
 use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
@@ -179,7 +179,7 @@ pub fn run() -> sc_cli::Result<()> {
                             Box::new(TransferKeepAliveBuilder::new(
                                 client.clone(),
                                 get_account_id_from_seed::<sp_core::ecdsa::Public>("Alice"),
-                                EXISTENTIAL_DEPOSIT,
+                                ED,
                             )),
                         ]);
 
