@@ -342,5 +342,3 @@ sp_api::decl_runtime_apis! {
         fn build_extrinsic(from: EthTransaction) -> <Block as BlockT>::Extrinsic;
     }
 }
-
-// TODO tests
