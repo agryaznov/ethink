@@ -23,12 +23,8 @@ mod common;
 
 use common::{consts::*, *};
 use ep_crypto::AccountId20;
-use ep_eth::EthTxInput;
+use ep_eth::{EnvelopedEncodable, EthTxInput, TransactionAction};
 use ep_mapping::SubstrateWeight;
-// TODO
-use ethereum::{
-    EnvelopedEncodable,
-};
 use serde_json::Deserializer;
 use sp_core::{ecdsa, Pair};
 use std::sync::Once;
@@ -86,7 +82,7 @@ async fn allowances_work() {
     // Make ETH RPC request (to unauthorized transfer 2_000 to Alith)
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
-        action: ethereum::TransactionAction::Call(env.contract_address().into()),
+        action: TransactionAction::Call(env.contract_address().into()),
         data: encode!(
             ERC20_PATH,
             "transfer_from",

@@ -79,7 +79,6 @@ ureq = { version = "2.9.6", features = ["json"] }
 serde.workspace = true
 serde_json.workspace = true
 subxt = "0.29.0"
-ethereum.workspace = true
 sp-weights.workspace = true
 log.workspace = true
 hex.workspace = true

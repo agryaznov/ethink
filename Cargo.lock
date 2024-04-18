@@ -2089,7 +2089,6 @@ dependencies = [
  "ep-crypto",
  "ep-eth",
  "ep-mapping",
- "ethereum",
  "ethink-rpc",
  "ethink-runtime",
  "frame-benchmarking",
