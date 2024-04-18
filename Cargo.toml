@@ -10,7 +10,7 @@ members = [
 	"template/runtime",
     "primitives/mapping",
     "primitives/crypto",
-    "frame/ethink",
+    "frame/ethink", "primitives/eth",
 ]
 exclude = [ "dapp/contracts/flipper.ink", "dapp/contracts/erc20.ink" ]
 resolver = "2"
@@ -97,6 +97,7 @@ fp-self-contained = { git = "https://github.com/agryaznov/frontier.git", branch 
 
 # Local
 ep-crypto = { path = "primitives/crypto", default-features = false }
+ep-eth = { path = "primitives/eth", default-features = false }
 ep-mapping = { path = "primitives/mapping", default-features = false }
 ep-rpc = { path = "primitives/rpc", default-features = false }
 ethink-rpc = { path = "client/rpc", default-features = false }

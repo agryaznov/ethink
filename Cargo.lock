@@ -1997,6 +1997,16 @@ dependencies = [
 ]
 
 [[package]]
+name = "ep-eth"
+version = "0.1.0"
+dependencies = [
+ "ep-crypto",
+ "ep-mapping",
+ "ethereum",
+ "sp-core 21.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
+]
+
+[[package]]
 name = "ep-mapping"
 version = "0.1.0"
 dependencies = [
@@ -5013,6 +5023,7 @@ name = "pallet-ethink"
 version = "0.1.0"
 dependencies = [
  "ep-crypto",
+ "ep-eth",
  "ep-mapping",
  "ethereum",
  "ethereum-types",
