@@ -21,15 +21,12 @@
 
 mod common;
 
-use common::{consts::*, eth::EthTxInput, *};
-use ep_crypto::{AccountId20, EthereumSignature};
+use common::{consts::*, *};
+use ep_crypto::AccountId20;
+use ep_eth::{compose_and_sign_tx, EthTxInput, EnvelopedEncodable, TransactionAction};
 use ep_mapping::{SubstrateWeight, Weight};
-use ethereum::{
-    EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
-};
-use pallet_ethink::EthTransaction;
 use serde_json::{value::Serializer, Deserializer};
-use sp_core::{ecdsa, Pair, U256};
+use sp_core::{ecdsa, Pair};
 use sp_runtime::Serialize;
 use std::sync::Once;
 use ureq::json;
@@ -46,11 +43,11 @@ async fn eth_sendRawTransaction() {
     // (Flipper is deployed with `false` state)
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
-        action: ethereum::TransactionAction::Call(env.contract_address().into()),
+        action: TransactionAction::Call(env.contract_address().into()),
         data: encode!(FLIPPER_PATH, "flip"),
         ..Default::default()
     };
-    let tx = eth::compose_and_sign_tx(input);
+    let tx = compose_and_sign_tx(input);
     let tx_hex = format!("0x{:x}", &tx.encode());
     // Make ETH RPC request (to switch flipper to `true`)
     let rs = rpc_rq!(env,

@@ -21,16 +21,12 @@
 
 mod common;
 
-use common::{consts::*, eth::EthTxInput, *};
-use ep_crypto::{AccountId20, EthereumSignature};
-use ep_mapping::{SubstrateWeight, Weight};
-use ethereum::{
-    EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
-};
-use pallet_ethink::EthTransaction;
+use common::{consts::*, *};
+use ep_crypto::AccountId20;
+use ep_eth::{EnvelopedEncodable, EthTxInput, TransactionAction};
+use ep_mapping::SubstrateWeight;
 use serde_json::Deserializer;
-use sp_core::{ecdsa, Pair, U256};
-use sp_runtime::Serialize;
+use sp_core::{ecdsa, Pair};
 use std::sync::Once;
 
 const ERC20_PATH: &'static str = env!("ERC20_PATH");
@@ -86,7 +82,7 @@ async fn allowances_work() {
     // Make ETH RPC request (to unauthorized transfer 2_000 to Alith)
     let input = EthTxInput {
         signer: ecdsa::Pair::from_string(ALITH_KEY, None).unwrap(),
-        action: ethereum::TransactionAction::Call(env.contract_address().into()),
+        action: TransactionAction::Call(env.contract_address().into()),
         data: encode!(
             ERC20_PATH,
             "transfer_from",
@@ -94,7 +90,7 @@ async fn allowances_work() {
         ),
         ..Default::default()
     };
-    let tx = eth::compose_and_sign_tx(input);
+    let tx = ep_eth::compose_and_sign_tx(input);
     let tx_hex = format!("0x{:x}", &tx.clone().encode());
     let rs = rpc_rq!(env,
     {

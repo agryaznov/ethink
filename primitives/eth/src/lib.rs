@@ -1,30 +1,42 @@
-// SPDX-License-Identifier: Apache-2.0
-//
-// This file is part of Ethink.
-//
-// Copyright (c) 2023-2024 Alexander Gryaznov.
-//
-// Licensed under the Apache License, Version 2.0 (the "License");
-// you may not use this file except in compliance with the License.
-// You may obtain a copy of the License at
-//
-// 	http://www.apache.org/licenses/LICENSE-2.0
-//
-// Unless required by applicable law or agreed to in writing, software
-// distributed under the License is distributed on an "AS IS" BASIS,
-// WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
-// See the License for the specific language governing permissions and
-// limitations under the License.
+use ep_crypto::EthereumSignature;
+use ep_mapping::{SubstrateWeight, Weight};
+use serde::{Serialize, Serializer};
+use sp_core::{ecdsa, Pair, U256};
 
-use crate::{
-    common::contracts::ContractInput, ecdsa, EthTransaction, EthereumSignature, LegacyTransaction,
-    LegacyTransactionMessage, SubstrateWeight, TransactionSignature, Weight, U256,
-};
+pub use ethereum::{TransactionAction, LegacyTransaction, LegacyTransactionMessage, TransactionV2 as EthTransaction, EnvelopedEncodable};
 
-use sp_core::crypto::Pair;
+// TODO: merge with
+// TODO: move ethereum-types re-exports here, and use from here in dep crates
 
 #[derive(Clone)]
-/// Ethereum transaction input, use for transaciton building in tests
+pub struct ContractInput(Vec<u8>);
+
+impl ContractInput {
+    pub fn new(b: Vec<u8>) -> Self {
+        Self(b)
+    }
+}
+
+impl From<Vec<u8>> for ContractInput {
+    fn from(v: Vec<u8>) -> Self {
+        Self(v)
+    }
+}
+
+impl Into<Vec<u8>> for ContractInput {
+    fn into(self) -> Vec<u8> {
+        self.0
+    }
+}
+
+impl Serialize for ContractInput {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        format!("0x{}", hex::encode(&self.0)).serialize(serializer)
+    }
+}
+
+#[derive(Clone)]
+/// Ethereum transaction input, used for transaciton building in tests
 pub struct EthTxInput {
     pub nonce: u64,
     pub gas_price: u64,
@@ -74,7 +86,7 @@ impl From<EthTxInput> for LegacyTransactionMessage {
 pub fn compose_and_sign_tx(i: EthTxInput) -> EthTransaction {
     let msg: LegacyTransactionMessage = i.clone().into();
     let sig = EthereumSignature::new(i.signer.sign_prehashed(&msg.hash().into()));
-    let sig: Option<TransactionSignature> = sig.into();
+    let sig: Option<ethereum::TransactionSignature> = sig.into();
     let signature = sig.expect("signer generated no signature");
 
     EthTransaction::Legacy(LegacyTransaction {
