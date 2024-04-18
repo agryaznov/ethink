@@ -1,0 +1,22 @@
+[package]
+name = "ep-eth"
+version = "0.1.0"
+license = "Apache-2.0"
+description = ""
+authors.workspace = true
+edition.workspace = true
+
+[dependencies]
+sp-core.workspace = true
+ethereum = { workspace = true, features = ["with-codec"] }
+
+# Ethink
+ep-mapping = { workspace = true }
+ep-crypto = { workspace = true }
+
+[features]
+default = ["std"]
+std = [
+    "ep-mapping/std",
+    "ep-crypto/std"
+]
