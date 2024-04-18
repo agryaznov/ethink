@@ -20,7 +20,6 @@ pub mod node;
 #[macro_use]
 pub mod macros;
 pub mod contracts;
-pub mod eth;
 pub mod prepare;
 
 pub mod consts {

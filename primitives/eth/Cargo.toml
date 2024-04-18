@@ -2,17 +2,19 @@
 name = "ep-eth"
 version = "0.1.0"
 license = "Apache-2.0"
-description = ""
+description = "Ethereum primitives for ethink!"
 authors.workspace = true
 edition.workspace = true
 
 [dependencies]
 sp-core.workspace = true
 ethereum = { workspace = true, features = ["with-codec"] }
+serde.workspace = true
+hex.workspace = true
 
 # Ethink
-ep-mapping = { workspace = true }
-ep-crypto = { workspace = true }
+ep-mapping.workspace = true
+ep-crypto.workspace = true
 
 [features]
 default = ["std"]
