@@ -1,17 +1,21 @@
 use ep_crypto::EthereumSignature;
 use ep_mapping::{SubstrateWeight, Weight};
-use sp_core::{U256, ecdsa, Pair};
+use serde::{Serialize, Serializer};
+use sp_core::{ecdsa, Pair, U256};
 
-pub use ethereum::{
-    TransactionV2 as EthTransaction,
-    LegacyTransaction,
-    LegacyTransactionMessage,
-};
+pub use ethereum::{LegacyTransaction, LegacyTransactionMessage, TransactionV2 as EthTransaction};
 
-// TODO: move ethereum-types re-exports here
+// TODO: merge with
+// TODO: move ethereum-types re-exports here, and use from here in dep crates
 
 #[derive(Clone)]
 pub struct ContractInput(Vec<u8>);
+
+impl ContractInput {
+    pub fn new(b: Vec<u8>) -> Self {
+        Self(b)
+    }
+}
 
 impl From<Vec<u8>> for ContractInput {
     fn from(v: Vec<u8>) -> Self {
@@ -22,6 +26,12 @@ impl From<Vec<u8>> for ContractInput {
 impl Into<Vec<u8>> for ContractInput {
     fn into(self) -> Vec<u8> {
         self.0
+    }
+}
+
+impl Serialize for ContractInput {
+    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
+        format!("0x{}", hex::encode(&self.0)).serialize(serializer)
     }
 }
 

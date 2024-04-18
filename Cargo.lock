@@ -2003,6 +2003,8 @@ dependencies = [
  "ep-crypto",
  "ep-mapping",
  "ethereum",
+ "hex",
+ "serde",
  "sp-core 21.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
 ]
 
@@ -2085,6 +2087,7 @@ version = "0.1.0"
 dependencies = [
  "clap",
  "ep-crypto",
+ "ep-eth",
  "ep-mapping",
  "ethereum",
  "ethink-rpc",

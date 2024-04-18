@@ -83,6 +83,7 @@ ethereum.workspace = true
 sp-weights.workspace = true
 log.workspace = true
 hex.workspace = true
+ep-eth.workspace = true
 
 [features]
 default = []

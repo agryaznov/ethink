@@ -21,16 +21,16 @@
 
 mod common;
 
-use common::{consts::*, eth::EthTxInput, *};
-use ep_crypto::{AccountId20, EthereumSignature};
-use ep_mapping::{SubstrateWeight, Weight};
+use common::{consts::*, *};
+use ep_crypto::AccountId20;
+use ep_eth::EthTxInput;
+use ep_mapping::SubstrateWeight;
+// TODO
 use ethereum::{
-    EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionSignature,
+    EnvelopedEncodable,
 };
-use pallet_ethink::EthTransaction;
 use serde_json::Deserializer;
-use sp_core::{ecdsa, Pair, U256};
-use sp_runtime::Serialize;
+use sp_core::{ecdsa, Pair};
 use std::sync::Once;
 
 const ERC20_PATH: &'static str = env!("ERC20_PATH");
@@ -94,7 +94,7 @@ async fn allowances_work() {
         ),
         ..Default::default()
     };
-    let tx = eth::compose_and_sign_tx(input);
+    let tx = ep_eth::compose_and_sign_tx(input);
     let tx_hex = format!("0x{:x}", &tx.clone().encode());
     let rs = rpc_rq!(env,
     {

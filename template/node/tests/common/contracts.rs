@@ -16,36 +16,12 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-use crate::{
-    common::{consts::*, *},
-    Serialize,
-};
-use serde::Serializer;
+use crate::common::{consts::*, *};
+use ep_eth::ContractInput;
 use std::{
     io::{BufRead, BufReader},
     process,
 };
-
-#[derive(Clone)]
-pub struct ContractInput(Vec<u8>);
-
-impl Serialize for ContractInput {
-    fn serialize<S: Serializer>(&self, serializer: S) -> Result<S::Ok, S::Error> {
-        format!("0x{}", hex::encode(&self.0)).serialize(serializer)
-    }
-}
-
-impl From<Vec<u8>> for ContractInput {
-    fn from(v: Vec<u8>) -> Self {
-        Self(v)
-    }
-}
-
-impl Into<Vec<u8>> for ContractInput {
-    fn into(self) -> Vec<u8> {
-        self.0
-    }
-}
 
 /// Build contract
 pub fn build(manifest_path: &str) -> process::Output {
@@ -176,5 +152,5 @@ pub fn encode(manifest_path: &str, msg: &str, args: Vec<&str>) -> ContractInput 
         .expect("can't find encoded data string in cargo-contract stdout")
         .expect("can't deserialize encoded data from cargo-contract stdout");
 
-    ContractInput(bytes)
+    ContractInput::new(bytes)
 }
