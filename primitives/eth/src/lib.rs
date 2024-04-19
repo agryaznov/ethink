@@ -3,7 +3,10 @@ use ep_mapping::{SubstrateWeight, Weight};
 use serde::{Serialize, Serializer};
 use sp_core::{ecdsa, Pair, U256};
 
-pub use ethereum::{TransactionAction, LegacyTransaction, LegacyTransactionMessage, TransactionV2 as EthTransaction, EnvelopedEncodable};
+pub use ethereum::{
+    EnvelopedEncodable, LegacyTransaction, LegacyTransactionMessage, TransactionAction,
+    TransactionV2 as EthTransaction,
+};
 
 // TODO: merge with
 // TODO: move ethereum-types re-exports here, and use from here in dep crates
