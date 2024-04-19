@@ -19,6 +19,9 @@ ep-crypto.workspace = true
 [features]
 default = ["std"]
 std = [
+	"hex/std",
+	"sp-core/std",
+	"serde/std",
     "ep-mapping/std",
-    "ep-crypto/std"
+    "ep-crypto/std",
 ]
