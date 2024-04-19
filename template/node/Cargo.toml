@@ -46,11 +46,11 @@ pallet-transaction-payment.workspace = true
 
 # These dependencies are used for the node template's RPCs
 jsonrpsee = { workspace = true, features = ["server"] }
-sp-api.workspace = true
 sc-rpc.workspace = true
 sc-rpc-api.workspace = true
 sp-blockchain.workspace = true
 sp-block-builder.workspace = true
+sp-api = { workspace = true, features = ["default"] }
 sc-basic-authorship.workspace = true
 substrate-frame-rpc-system.workspace = true
 pallet-transaction-payment-rpc.workspace = true
@@ -60,11 +60,11 @@ frame-benchmarking.workspace = true
 frame-benchmarking-cli.workspace = true
 
 # Local Dependencies
-ethink-runtime.workspace = true
 ethink-rpc.workspace = true
+ethink-runtime = { workspace = true, features = ["default"] }
 pallet-ethink = { workspace = true, features = ["default"] }
 ep-mapping = { workspace = true, features = ["default"] }
-ep-crypto.workspace = true
+ep-crypto = { workspace = true, features = ["default"] }
 
 # CLI-specific dependencies
 try-runtime-cli = { workspace = true, optional = true }
@@ -82,7 +82,7 @@ subxt = "0.29.0"
 sp-weights.workspace = true
 log.workspace = true
 hex.workspace = true
-ep-eth.workspace = true
+ep-eth = { workspace = true, features = ["default"] }
 
 [features]
 default = []

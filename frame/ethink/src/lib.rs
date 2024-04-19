@@ -32,6 +32,7 @@ mod mock;
 #[cfg(all(feature = "std", test))]
 mod tests;
 
+pub use ep_eth::{EthTransaction, LegacyTransactionMessage, Receipt, TransactionAction};
 use frame_support::{
     dispatch::{DispatchInfo, PostDispatchInfo},
     traits::fungible::{Inspect, Mutate},
@@ -48,11 +49,6 @@ use sp_runtime::{
     DispatchError, RuntimeDebug,
 };
 use sp_std::{marker::PhantomData, prelude::*};
-
-pub use ethereum::{
-    AccessListItem, BlockV2 as Block, LegacyTransactionMessage, Log, ReceiptV3 as Receipt,
-    TransactionAction, TransactionV2 as EthTransaction,
-};
 
 pub type BalanceOf<T> =
     <<T as Config>::Currency as Inspect<<T as frame_system::Config>::AccountId>>::Balance;
@@ -266,9 +262,7 @@ where
                 sig[0..32].copy_from_slice(&t.signature.r()[..]);
                 sig[32..64].copy_from_slice(&t.signature.s()[..]);
                 sig[64] = t.signature.standard_v();
-                msg.copy_from_slice(
-                    &ethereum::LegacyTransactionMessage::from(t.clone()).hash()[..],
-                );
+                msg.copy_from_slice(&LegacyTransactionMessage::from(t.clone()).hash()[..]);
             }
             // We only support Legacy. EIP2930 and EIP1559 are not supported
             _ => {
