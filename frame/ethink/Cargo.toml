@@ -6,7 +6,7 @@ description = "Ethereum RPC compatibility aid for pallet-contracts. This crate i
 edition.workspace = true
 
 [dependencies]
-ethereum = { workspace = true, features = ["with-codec"] }
+ep-eth.workspace = true
 ethereum-types.workspace = true
 scale-codec.workspace = true
 scale-info.workspace = true
@@ -33,7 +33,6 @@ pallet-utility = { workspace = true, features = ["default"] }
 pallet-timestamp = { workspace = true, features = ["default"] }
 pallet-transaction-payment = { workspace = true, features = ["default"] }
 pallet-insecure-randomness-collective-flip = { workspace = true, features = ["default"] }
-ep-crypto = { workspace = true, features = ["default"] }
 ep-mapping = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
 sp-core = { workspace = true, features = ["default"] }
@@ -51,6 +50,9 @@ std = [
 	"sp-io/std",
 	"sp-runtime/std",
 	"sp-std/std",
+	# ethink
+	"ep-eth/std",
+
 ]
 runtime-benchmarks = [
 	"frame-support/runtime-benchmarks",

@@ -22,8 +22,7 @@
 mod common;
 
 use common::{consts::*, *};
-use ep_crypto::AccountId20;
-use ep_eth::{EnvelopedEncodable, EthTxInput, TransactionAction};
+use ep_eth::{AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
 use ep_mapping::SubstrateWeight;
 use serde_json::Deserializer;
 use sp_core::{ecdsa, Pair};

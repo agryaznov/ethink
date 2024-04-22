@@ -1,8 +1,7 @@
 use crate::{mock::*, System};
 
 use crate::{self as pallet_ethink, Pallet};
-use ep_crypto::AccountId20;
-use ep_eth::{compose_and_sign_tx, EthTxInput};
+use ep_eth::{compose_and_sign_tx, AccountId20, EthTxInput, TransactionAction};
 use ep_mapping::Weight;
 use frame_support::{assert_err, assert_ok};
 use pallet_contracts::{CollectEvents, DebugInfo};
@@ -56,7 +55,7 @@ fn calling_user_account_transfers_balance() {
         let _ = test_utils::set_balance(&ALITH, init_balance);
 
         let input = EthTxInput {
-            action: ethereum::TransactionAction::Call(BALTATHAR.into()),
+            action: TransactionAction::Call(BALTATHAR.into()),
             data: vec![].into(),
             value: transfer_balance,
             ..Default::default()
@@ -122,7 +121,7 @@ fn calling_contract_account_executes_it() {
 
         // Compose transaction
         let input = EthTxInput {
-            action: ethereum::TransactionAction::Call(contract_addr.into()),
+            action: TransactionAction::Call(contract_addr.into()),
             data: vec![].into(),
             ..Default::default()
         };
@@ -147,7 +146,7 @@ fn transaction_increments_nonce() {
         let _ = test_utils::set_balance(&ALITH, 10_000_000);
 
         let input = EthTxInput {
-            action: ethereum::TransactionAction::Call(BALTATHAR.into()),
+            action: TransactionAction::Call(BALTATHAR.into()),
             data: vec![].into(),
             ..Default::default()
         };

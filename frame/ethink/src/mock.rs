@@ -1,7 +1,7 @@
 //! Mocked rutnime for tests
 
 use crate::{self as pallet_ethink, Config};
-use ep_crypto::AccountId20;
+use ep_eth::AccountId20;
 use ep_mapping::{SubstrateWeight, Weight};
 use frame_support::{
     dispatch::DispatchClass,
