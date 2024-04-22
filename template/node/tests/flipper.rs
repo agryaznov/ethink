@@ -22,7 +22,7 @@
 mod common;
 
 use common::{consts::*, *};
-use ep_eth::{AccountId20, compose_and_sign_tx, EnvelopedEncodable, EthTxInput, TransactionAction};
+use ep_eth::{compose_and_sign_tx, AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
 use ep_mapping::{SubstrateWeight, Weight};
 use serde_json::{value::Serializer, Deserializer};
 use sp_core::{ecdsa, Pair};

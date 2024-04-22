@@ -31,7 +31,7 @@ mod transactions;
 // for we might later switch to fc-rpc-core.
 mod types;
 
-use ethereum::TransactionV2 as EthTransaction;
+use ep_eth::EthTransaction;
 use ethereum_types::{H160, H256, H64, U256, U64};
 use ethink_rpc_core::types::*;
 use futures::future::TryFutureExt;

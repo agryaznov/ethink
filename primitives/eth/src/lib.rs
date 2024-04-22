@@ -12,5 +12,5 @@ pub use ep_crypto::{AccountId20, EthereumSignature};
 pub use ethereum::{
     AccessListItem, BlockV2 as Block, EnvelopedEncodable, LegacyTransaction,
     LegacyTransactionMessage, Log, ReceiptV3 as Receipt, TransactionAction,
-    TransactionV2 as EthTransaction,
+    TransactionV2 as EthTransaction, EnvelopedDecodable, TransactionSignature,
 };

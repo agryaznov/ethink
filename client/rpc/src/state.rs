@@ -1,5 +1,5 @@
 use super::*;
-use ep_crypto::AccountId20;
+use ep_eth::AccountId20;
 use pallet_ethink::EthinkAPI;
 use sp_runtime::traits::UniqueSaturatedInto;
 

@@ -1,6 +1,5 @@
 use crate::{types::EthereumSigner, CallRequest, *};
-use ep_crypto::AccountId20;
-use ethereum::{LegacyTransaction, LegacyTransactionMessage};
+use ep_eth::{AccountId20, LegacyTransaction, LegacyTransactionMessage, EnvelopedDecodable};
 
 impl<B, C, P> EthRPC<B, C, P>
 where
@@ -17,7 +16,7 @@ where
             return Err(rpc_err!("transaction data is empty"));
         }
 
-        let tx: EthTransaction = ethereum::EnvelopedDecodable::decode(slice)
+        let tx: EthTransaction = EnvelopedDecodable::decode(slice)
             .map_err(|_| rpc_err!("decode transaction failed"))?;
 
         self.compose_extrinsic_and_submit(hash, tx).await
