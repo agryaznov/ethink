@@ -7,7 +7,7 @@ mod input;
 #[cfg(any(feature = "std", test))]
 pub use input::{compose_and_sign_tx, ContractInput, EthTxInput};
 
-pub use ep_crypto::AccountId20;
+pub use ep_crypto::{AccountId20, EthereumSignature};
 
 pub use ethereum::{
     AccessListItem, BlockV2 as Block, EnvelopedEncodable, LegacyTransaction,
