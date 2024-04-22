@@ -5025,7 +5025,6 @@ dependencies = [
 name = "pallet-ethink"
 version = "0.1.0"
 dependencies = [
- "ep-crypto",
  "ep-eth",
  "ep-mapping",
  "ethereum-types",
