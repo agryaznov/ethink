@@ -7,21 +7,48 @@ authors.workspace = true
 edition.workspace = true
 
 [dependencies]
-sp-core.workspace = true
+impl-serde.workspace = true
+libsecp256k1.workspace = true
+log.workspace = true
+scale-codec.workspace = true
+scale-info.workspace = true
 ethereum = { workspace = true, features = ["with-codec"] }
-serde.workspace = true
+serde = { workspace = true, optional = true }
 hex.workspace = true
+ethereum-types.workspace = true
+
+# Substrate
+sp-core.workspace = true
+sp-io.workspace = true
+sp-runtime.workspace = true
+sp-runtime-interface.workspace = true
+sp-std.workspace = true
 
 # Ethink
 ep-mapping.workspace = true
-ep-crypto.workspace = true
 
 [features]
 default = ["std"]
 std = [
 	"hex/std",
-	"sp-core/std",
 	"serde/std",
+	"impl-serde/std",
+	"libsecp256k1/std",
+	"log/std",
+	"scale-codec/std",
+	"scale-info/std",
+	"impl-serde/std",
+	# Substrate
+	"sp-core/std",
+	"sp-io/std",
+	"sp-runtime/std",
+	"sp-runtime-interface/std",
+	"sp-std/std",
+    # Ethink
     "ep-mapping/std",
-    "ep-crypto/std",
+]
+serde = [
+	"scale-info/serde",
+	"sp-core/serde",
+	"sp-runtime/serde",
 ]

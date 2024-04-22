@@ -1,5 +1,4 @@
-use crate::{EthTransaction, LegacyTransaction, LegacyTransactionMessage};
-use ep_crypto::EthereumSignature;
+use crate::{EthTransaction, EthereumSignature, LegacyTransaction, LegacyTransactionMessage};
 use ep_mapping::{SubstrateWeight, Weight};
 use serde::{Serialize, Serializer};
 use sp_core::{ecdsa, Pair, U256};
