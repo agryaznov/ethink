@@ -1978,9 +1978,10 @@ source = "registry+https://github.com/rust-lang/crates.io-index"
 checksum = "e48c92028aaa870e83d51c64e5d4e0b6981b360c522198c23959f219a4e1b15b"
 
 [[package]]
-name = "ep-crypto"
+name = "ep-eth"
 version = "0.1.0"
 dependencies = [
+ "ep-mapping",
  "ethereum",
  "ethereum-types",
  "hex",
@@ -1995,18 +1996,6 @@ dependencies = [
  "sp-runtime 24.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
  "sp-runtime-interface 17.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
  "sp-std 8.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
-]
-
-[[package]]
-name = "ep-eth"
-version = "0.1.0"
-dependencies = [
- "ep-crypto",
- "ep-mapping",
- "ethereum",
- "hex",
- "serde",
- "sp-core 21.0.0 (git+https://github.com/paritytech/polkadot-sdk?tag=polkadot-v1.1.0)",
 ]
 
 [[package]]

@@ -9,7 +9,6 @@ members = [
 	"template/node",
 	"template/runtime",
     "primitives/mapping",
-    "primitives/crypto",
     "frame/ethink", "primitives/eth",
 ]
 exclude = [ "dapp/contracts/flipper.ink", "dapp/contracts/erc20.ink" ]
