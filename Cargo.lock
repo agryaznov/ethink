@@ -2087,7 +2087,6 @@ name = "ethink-node"
 version = "0.1.0"
 dependencies = [
  "clap",
- "ep-crypto",
  "ep-eth",
  "ep-mapping",
  "ethink-rpc",
