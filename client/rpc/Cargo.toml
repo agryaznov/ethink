@@ -7,7 +7,6 @@ edition.workspace = true
 
 [dependencies]
 ethereum-types.workspace = true
-ethereum.workspace = true
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
 hex.workspace = true
 log.workspace = true
@@ -16,7 +15,7 @@ futures.workspace = true
 # ethink
 ethink-rpc-core.workspace = true
 pallet-ethink = { workspace = true, features = ["default"] }
-ep-crypto = { workspace = true, features = ["default"] }
+ep-eth = { workspace = true, features = ["default"] }
 
 # Substrate
 sp-io = { workspace = true, default-features = false }

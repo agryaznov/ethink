@@ -2144,8 +2144,7 @@ dependencies = [
 name = "ethink-rpc"
 version = "0.1.0"
 dependencies = [
- "ep-crypto",
- "ethereum",
+ "ep-eth",
  "ethereum-types",
  "ethink-rpc-core",
  "futures",
@@ -2182,7 +2181,7 @@ dependencies = [
 name = "ethink-runtime"
 version = "0.1.0"
 dependencies = [
- "ep-crypto",
+ "ep-eth",
  "ep-mapping",
  "fp-self-contained",
  "frame-executive",
