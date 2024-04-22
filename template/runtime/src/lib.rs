@@ -47,7 +47,7 @@ use sp_std::prelude::*;
 use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 // ETH RPC support
-use ep_crypto::EthereumSignature;
+use ep_eth::EthereumSignature;
 use ep_mapping::SubstrateWeight;
 use pallet_ethink::EthTransaction;
 

@@ -49,7 +49,7 @@ pallet-transaction-payment-rpc-runtime-api.workspace = true
 log.workspace = true
 
 # ethink
-ep-crypto.workspace = true
+ep-eth.workspace = true
 ep-mapping.workspace = true
 pallet-ethink.workspace = true
 fp-self-contained = { workspace = true, features = ["serde"] }
@@ -90,7 +90,7 @@ std = [
 	"pallet-contracts-primitives/std",
 	"pallet-assets/std",
 	"substrate-wasm-builder",
-	"ep-crypto/std",
 	"fp-self-contained/std",
+	"ep-eth/std",
 	"ep-mapping/std",
 ]
