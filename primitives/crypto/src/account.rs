@@ -21,7 +21,6 @@
 use ethereum_types::{H160, H256};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
 use scale_info::TypeInfo;
-
 use sp_core::ecdsa;
 use sp_io::hashing::keccak_256;
 
@@ -130,7 +129,7 @@ impl From<ecdsa::Public> for AccountId20 {
 
 #[cfg(test)]
 mod tests {
-    use super::{account::*, signing::*};
+    use crate::{signing::EthereumSigner, AccountId20};
     use sp_core::{ecdsa, Pair, H160, H256};
     use sp_io::hashing::keccak_256;
     use sp_runtime::traits::IdentifyAccount;

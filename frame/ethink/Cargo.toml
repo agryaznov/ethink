@@ -33,7 +33,6 @@ pallet-utility = { workspace = true, features = ["default"] }
 pallet-timestamp = { workspace = true, features = ["default"] }
 pallet-transaction-payment = { workspace = true, features = ["default"] }
 pallet-insecure-randomness-collective-flip = { workspace = true, features = ["default"] }
-ep-crypto = { workspace = true, features = ["default"] }
 ep-mapping = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
 sp-core = { workspace = true, features = ["default"] }

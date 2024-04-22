@@ -1,8 +1,7 @@
 use crate::{mock::*, System};
 
 use crate::{self as pallet_ethink, Pallet};
-use ep_crypto::AccountId20;
-use ep_eth::{compose_and_sign_tx, EthTxInput, TransactionAction};
+use ep_eth::{compose_and_sign_tx, AccountId20, EthTxInput, TransactionAction};
 use ep_mapping::Weight;
 use frame_support::{assert_err, assert_ok};
 use pallet_contracts::{CollectEvents, DebugInfo};
