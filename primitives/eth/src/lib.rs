@@ -3,7 +3,6 @@
 mod account;
 mod signing;
 
-// TODO: move ethereum-types re-exports here, and use from here in dep crates
 #[cfg(any(feature = "std", test))]
 mod input;
 
