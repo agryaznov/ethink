@@ -3,7 +3,6 @@
 mod account;
 mod signing;
 
-// TODO: merge this crate with ep-crypto
 // TODO: move ethereum-types re-exports here, and use from here in dep crates
 #[cfg(any(feature = "std", test))]
 mod input;
@@ -19,3 +18,5 @@ pub use ethereum::{
     LegacyTransactionMessage, Log, ReceiptV3 as Receipt, TransactionAction, TransactionSignature,
     TransactionV2 as EthTransaction,
 };
+
+pub use ethereum_types::{H160, H256, H64, U256, U64};

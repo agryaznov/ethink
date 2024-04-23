@@ -1,6 +1,8 @@
 //! We keep custom types here and not in rpc-core,
 //! for we might later switch to fc-rpc-core.
-use ep_eth::{AccountId20, EthereumSignature, LegacyTransactionMessage, TransactionSignature};
+use ep_eth::{
+    AccountId20, EthereumSignature, LegacyTransactionMessage, TransactionSignature, H256, U256,
+};
 
 // Substrate
 use sp_core::ecdsa;
@@ -8,7 +10,6 @@ use sp_keystore::KeystorePtr;
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
 
 use crate::ETHINK_KEYTYPE_ID;
-use ethereum_types::{H256, U256};
 use ethink_rpc_core::types::Header as EthHeader;
 
 pub use ethink_rpc_core::types::Block as EthereumBlock;

@@ -31,8 +31,7 @@ mod transactions;
 // for we might later switch to fc-rpc-core.
 mod types;
 
-use ep_eth::EthTransaction;
-use ethereum_types::{H160, H256, H64, U256, U64};
+use ep_eth::{EthTransaction, H160, H256, H64, U256, U64};
 use ethink_rpc_core::types::*;
 use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
@@ -137,7 +136,7 @@ where
 #[async_trait]
 impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
-    B: BlockT<Hash = ethereum_types::H256>,
+    B: BlockT<Hash = ep_eth::H256>,
     B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,

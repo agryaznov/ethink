@@ -4,7 +4,7 @@ use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> EthRPC<B, C, P>
 where
-    B: BlockT<Hash = ethereum_types::H256>,
+    B: BlockT<Hash = ep_eth::H256>,
     B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
 {
