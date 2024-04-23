@@ -3,7 +3,7 @@ use crate::types::{EthereumBlock, SubstrateBlock};
 
 impl<B, C, P> EthRPC<B, C, P>
 where
-    B: BlockT<Hash = ethereum_types::H256>,
+    B: BlockT<Hash = ep_eth::H256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     C::Api: EthinkAPI<B>,
 {
