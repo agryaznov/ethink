@@ -6,7 +6,6 @@ description = "Ethereum RPC compatibility layer for pallet-contracts. This crate
 edition.workspace = true
 
 [dependencies]
-ethereum-types.workspace = true
 jsonrpsee = { workspace = true, features = ["server", "macros"] }
 hex.workspace = true
 log.workspace = true

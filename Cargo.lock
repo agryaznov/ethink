@@ -2134,7 +2134,6 @@ name = "ethink-rpc"
 version = "0.1.0"
 dependencies = [
  "ep-eth",
- "ethereum-types",
  "ethink-rpc-core",
  "futures",
  "hex",
@@ -5014,7 +5013,6 @@ version = "0.1.0"
 dependencies = [
  "ep-eth",
  "ep-mapping",
- "ethereum-types",
  "frame-support",
  "frame-system",
  "hex",
