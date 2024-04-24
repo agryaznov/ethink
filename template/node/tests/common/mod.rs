@@ -31,8 +31,8 @@ pub mod consts {
 }
 
 use crate::AccountId20;
-use node::{Protocol, TestNodeProcess};
 use futures::StreamExt;
+use node::{Protocol, TestNodeProcess};
 
 #[derive(Clone)]
 pub struct Contract {
@@ -105,18 +105,19 @@ impl<R: subxt::Config> Env<R> {
     /// Wait until a block with the given number gets finalized,
     pub async fn wait_for_block_number(&mut self, number: u64) {
         let blocks_sub = &mut self
-                .node
-                .client()
-                .blocks()
-                .subscribe_finalized()
-                .await
-                .expect("can't subscribe to finalized blocks");
+            .node
+            .client()
+            .blocks()
+            .subscribe_finalized()
+            .await
+            .expect("can't subscribe to finalized blocks");
 
         while let Some(block) = blocks_sub.next().await {
             let block = block.expect("can't get next finalized block");
-            if block.number().into()  == number { break }
+            if block.number().into() == number {
+                break;
+            }
         }
-
     }
 }
 

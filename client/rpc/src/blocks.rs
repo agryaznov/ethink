@@ -8,7 +8,7 @@ where
     C::Api: EthinkAPI<B>,
 {
     /// Fetch Substrate block hash by its number
-    fn substrate_block_hash_by_number(&self, number: BlockNumber) -> RpcResult<B::Hash> {
+    fn substrate_block_hash_by_number(&self, number: BlockNumber) -> RpcResult<Option<B::Hash>> {
         Ok(match number {
             BlockNumber::Num(num) => {
                 // block num in Substrate db is u32
@@ -26,8 +26,7 @@ where
             BlockNumber::Latest | BlockNumber::Pending => Some(self.client.info().best_hash),
             BlockNumber::Safe | BlockNumber::Finalized => Some(self.client.info().finalized_hash),
             BlockNumber::Hash { hash, .. } => Some(hash.into()),
-        }
-        .unwrap_or(self.client.info().best_hash))
+        })
     }
 
     /// Fetch Substrate block by its hash
@@ -37,8 +36,6 @@ where
             .map_err(|err| rpc_err!("Failed fetching block: {:?}", err))
             .map(|r| r.map(SubstrateBlock::new))
     }
-
-    // TODO: e2e tests for this group
 
     /// Fetch Substrate block by its hash and convert it to RichBlock.
     pub async fn block_by_hash(&self, hash: H256, _full: bool) -> RpcResult<Option<RichBlock>> {
@@ -51,8 +48,13 @@ where
         number: BlockNumber,
         _full: bool,
     ) -> RpcResult<Option<RichBlock>> {
-        let hash = self.substrate_block_hash_by_number(number)?;
-        Ok(self.substrate_block_by_hash(hash)?.map(RichBlock::from))
+        Ok(
+            if let Some(hash) = self.substrate_block_hash_by_number(number)? {
+                self.substrate_block_by_hash(hash)?.map(RichBlock::from)
+            } else {
+                None
+            },
+        )
     }
 
     /// Get number of transactions in a block fetched by its hash
@@ -67,10 +69,13 @@ where
         &self,
         number: BlockNumber,
     ) -> RpcResult<Option<U256>> {
-        let hash = self.substrate_block_hash_by_number(number)?;
-
-        Ok(self
-            .substrate_block_by_hash(hash)?
-            .map(|b| b.extrinsic_count()))
+        Ok(
+            if let Some(hash) = self.substrate_block_hash_by_number(number)? {
+                self.substrate_block_by_hash(hash)?
+                    .map(|b| b.extrinsic_count())
+            } else {
+                None
+            },
+        )
     }
 }
