@@ -80,9 +80,9 @@ pub fn call(
     signer: Option<&str>,
 ) -> process::Output {
     let surl_arg = &format!("-s={}", signer.unwrap_or(ALITH_KEY));
-    let manifest_arg = &format!("--manifest-path={}", env.contract.manifest_path);
+    let manifest_arg = &format!("--manifest-path={}", env.contract_manifest_path());
     let url_arg = &format!("--url={}", env.ws_url());
-    let contract_arg = &format!("--contract={}", env.contract.address);
+    let contract_arg = &format!("--contract={}", env.contract_address());
     let msg_arg = &format!("--message={msg}");
 
     let mut cmd_args = vec![
