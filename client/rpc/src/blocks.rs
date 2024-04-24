@@ -57,14 +57,14 @@ where
         )
     }
 
-    /// Get number of transactions in a block fetched by its hash
+    /// Get number of transactions in a block fetched by its hash.
     pub async fn block_transaction_count_by_hash(&self, hash: H256) -> RpcResult<Option<U256>> {
         Ok(self
             .substrate_block_by_hash(hash)?
             .map(|b| b.extrinsic_count()))
     }
 
-    /// Get number of transactions in a block fetched by its number
+    /// Get number of transactions in a block fetched by its number.
     pub async fn block_transaction_count_by_number(
         &self,
         number: BlockNumber,
