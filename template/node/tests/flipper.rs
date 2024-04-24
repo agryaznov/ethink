@@ -25,7 +25,7 @@ use common::{consts::*, *};
 use ep_eth::{compose_and_sign_tx, AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
 use ep_mapping::{SubstrateWeight, Weight};
 use serde_json::{value::Serializer, Deserializer};
-use sp_core::{ecdsa, Pair};
+use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use std::sync::Once;
 use ureq::json;
@@ -277,4 +277,62 @@ async fn eth_accounts() {
         .map(|v| v.as_str().expect("Can't parse output as array of strings!"))
         .collect::<Vec<_>>();
     assert_eq!(accounts_returned, vec![BALTATHAR_ADDRESS.to_lowercase()]);
+}
+
+#[tokio::test]
+async fn eth_getBlockTransactionCountByNumber() {
+    // Spawn node
+    let mut env: Env<PolkadotConfig> = prepare_node!(BALTATHAR_KEY);
+    // Make ETH RPC request to make up some extrinsic,
+    // e.g. let's send some balance to ALITH
+    let rs = rpc_rq!(env,
+    {
+      "jsonrpc": "2.0",
+      "method": "eth_sendTransaction",
+      "params": [{
+                  "from": BALTATHAR_ADDRESS,
+                  "to": ALITH_ADDRESS,
+                  "value": "17500",
+                  "gas": SubstrateWeight::max()
+                 },
+                 "latest"],
+      "id": 0
+    });
+    // Handle response
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    let _tx_hash = extract_result!(&json);
+
+    // Wait until 1 block is finalized
+    let _ = &env.wait_for_block_number(1).await;
+
+    // Request tx_count for block n, and assert_eq it to m
+    let check_tx_count = |n: usize, m: Option<u64>| {
+        // Make ETH PRC request to check tx count in block n
+        let rs = rpc_rq!(env,
+        {
+          "jsonrpc": "2.0",
+          "method": "eth_getBlockTransactionCountByNumber",
+          "params": [n],
+          "id": n + 1,
+        });
+        // Handle response
+        let json = to_json_val!(rs);
+        ensure_no_err!(&json);
+        let tx_count_returned = json["result"].to_owned();
+        let tx_count = m.map(U256::from);
+        let tx_count_expected = tx_count.serialize(Serializer).unwrap().to_owned();
+        assert_eq!(tx_count_returned, tx_count_expected);
+    };
+
+    // Test cases for several blocks
+    let cases = [
+        (0, Some(0)), // no tx in genesis block
+        (1, Some(2)), // 1 timestamp.set + 1 our tx
+        (100, None),  // a future block, hence None
+    ];
+
+    for (n, m) in cases {
+        check_tx_count(n, m)
+    }
 }

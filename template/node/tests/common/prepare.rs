@@ -33,16 +33,7 @@ pub async fn node_and_contract<R: subxt::Config>(
         contracts::build(manifest_path);
     });
 
-    let mut builder = TestNodeProcess::<R>::build(NODE_BIN);
-    let node = if let Some(key) = signer {
-        builder.with_signer(key)
-    } else {
-        &mut builder
-    }
-    .spawn()
-    .await
-    .unwrap_or_else(|err| ::core::panic!("Error spawning ethink-node: {:?}", err));
-
+    let node = spawn_node(signer).await;
     // deploy contract
     let output = contracts::deploy(
         node.url(Protocol::WS).as_str(),
@@ -52,11 +43,35 @@ pub async fn node_and_contract<R: subxt::Config>(
     );
     // Look for contract address in the json output
     let rs = Deserializer::from_slice(&output.stdout);
-    let contract_address = json_get!(rs["contract"])
+    let address = json_get!(rs["contract"])
         .as_str()
         .map(AccountId20::from_str)
         .expect("contract address not returned")
         .expect("can't decode contract address");
 
-    Env::new(node, manifest_path.to_string(), contract_address)
+    let manifest_path = manifest_path.to_string();
+    let contract = Contract {
+        manifest_path,
+        address,
+    };
+
+    Env::new(node, Some(contract))
+}
+
+pub async fn node<R: subxt::Config>(signer: Option<&str>) -> Env<R> {
+    let node = spawn_node(signer).await;
+
+    Env::new(node, None)
+}
+
+async fn spawn_node<R: subxt::Config>(signer: Option<&str>) -> TestNodeProcess<R> {
+    let mut builder = TestNodeProcess::<R>::build(NODE_BIN);
+    if let Some(key) = signer {
+        builder.with_signer(key)
+    } else {
+        &mut builder
+    }
+    .spawn()
+    .await
+    .unwrap_or_else(|err| ::core::panic!("Error spawning ethink-node: {:?}", err))
 }

@@ -19,7 +19,7 @@ where
             .client
             .runtime_api()
             .account_free_balance(hash, address)
-            .map_err(|err| rpc_err!("Fetching runtime CHAIN_ID failed: {:?}", err))?
+            .map_err(|err| rpc_err!("Fetching runtime account balance failed: {:?}", err))?
             .into())
     }
 
@@ -29,7 +29,7 @@ where
             self.client
                 .runtime_api()
                 .chain_id(hash)
-                .map_err(|err| rpc_err!("Fetching runtime CHAIN_ID failed: {:?}", err))?
+                .map_err(|err| rpc_err!("Fetching runtime chain_id failed: {:?}", err))?
                 .into(),
         ))
     }
@@ -67,7 +67,7 @@ where
             .client
             .runtime_api()
             .nonce(hash, address)
-            .map_err(|err| rpc_err!("fetch runtime account nounce failed: {:?}", err))?;
+            .map_err(|err| rpc_err!("Fetching runtime account nounce failed: {:?}", err))?;
 
         Ok(nonce)
     }

@@ -31,31 +31,39 @@ pub mod consts {
 }
 
 use crate::AccountId20;
+use futures::StreamExt;
 use node::{Protocol, TestNodeProcess};
 
-struct Contract {
+#[derive(Clone)]
+pub struct Contract {
     pub manifest_path: String,
     pub address: AccountId20,
 }
 
-// Testing environment, consisting of a node with a deployed contract
+// Testing environment, consisting of a node with a possibly deployed contract
 pub struct Env<R: subxt::Config> {
     pub node: TestNodeProcess<R>,
-    contract: Contract,
+    contract: Option<Contract>,
 }
 
 impl<R: subxt::Config> Env<R> {
-    pub fn new(node: TestNodeProcess<R>, manifest_path: String, address: AccountId20) -> Self {
-        let contract = Contract {
-            manifest_path,
-            address,
-        };
-
+    pub fn new(node: TestNodeProcess<R>, contract: Option<Contract>) -> Self {
         Env { node, contract }
     }
 
     pub fn contract_address(&self) -> AccountId20 {
-        self.contract.address
+        self.contract
+            .as_ref()
+            .expect("env does not have a contract deployed!")
+            .address
+    }
+
+    pub fn contract_manifest_path(&self) -> String {
+        self.contract
+            .as_ref()
+            .expect("env does not have a contract deployed!")
+            .manifest_path
+            .to_owned()
     }
 
     pub fn ws_url(&self) -> String {
@@ -69,8 +77,6 @@ impl<R: subxt::Config> Env<R> {
     /// Wait until a specified event is emitted in a finalized block,
     /// but no longer than `timeout` number of blocks.
     pub async fn wait_for_event(&mut self, fullname: &str, timeout: usize) {
-        use futures::StreamExt;
-
         if let Some((pallet, variant)) = fullname.rsplit_once(".") {
             let blocks_sub = &mut self
                 .node
@@ -92,6 +98,24 @@ impl<R: subxt::Config> Env<R> {
                 }) {
                     break;
                 }
+            }
+        }
+    }
+
+    /// Wait until a block with the given number gets finalized,
+    pub async fn wait_for_block_number(&mut self, number: u64) {
+        let blocks_sub = &mut self
+            .node
+            .client()
+            .blocks()
+            .subscribe_finalized()
+            .await
+            .expect("can't subscribe to finalized blocks");
+
+        while let Some(block) = blocks_sub.next().await {
+            let block = block.expect("can't get next finalized block");
+            if block.number().into() == number {
+                break;
             }
         }
     }
