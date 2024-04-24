@@ -9,16 +9,27 @@ use sp_core::ecdsa;
 use sp_keystore::KeystorePtr;
 use sp_runtime::traits::{Block as BlockT, Header, UniqueSaturatedInto};
 
-use crate::ETHINK_KEYTYPE_ID;
+use crate::{BTreeMap, ETHINK_KEYTYPE_ID};
 use ethink_rpc_core::types::Header as EthHeader;
 
-pub use ethink_rpc_core::types::Block as EthereumBlock;
+pub use ethink_rpc_core::types::{Block as EthereumBlock, RichBlock};
+pub use sp_runtime::generic::SignedBlock;
 
 /// Substrate block, convertible to Ethereum block
-pub struct SubstrateBlock<B>(pub B);
+pub struct SubstrateBlock<B>(B);
 
-impl<B: BlockT<Hash = H256>> From<SubstrateBlock<B>> for EthereumBlock {
-    // Generate dumb ETH block with empty tx list,
+impl<B: BlockT> SubstrateBlock<B> {
+    pub fn new(b: SignedBlock<B>) -> Self {
+        Self(b.block)
+    }
+
+    pub fn extrinsic_count(&self) -> U256 {
+        self.0.extrinsics().iter().count().into()
+    }
+}
+
+impl<B: BlockT<Hash = H256>> From<SubstrateBlock<B>> for RichBlock {
+    // Generate dumb EthBlock with empty tx list,
     // from the given substrate block
     fn from(b: SubstrateBlock<B>) -> Self {
         let h = b.0.header();
@@ -34,9 +45,14 @@ impl<B: BlockT<Hash = H256>> From<SubstrateBlock<B>> for EthereumBlock {
             ..Default::default()
         };
 
-        Self {
+        let eth_block = EthereumBlock {
             header,
             ..Default::default()
+        };
+
+        RichBlock {
+            inner: eth_block,
+            extra_info: BTreeMap::new(),
         }
     }
 }
