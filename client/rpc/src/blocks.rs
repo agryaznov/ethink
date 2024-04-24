@@ -11,7 +11,7 @@ where
     fn substrate_block_hash_by_number(&self, number: BlockNumber) -> RpcResult<B::Hash> {
         Ok(match number {
             BlockNumber::Num(num) => {
-                // block num in substrate db is u32
+                // block num in Substrate db is u32
                 // https://github.com/paritytech/polkadot-sdk/blob/73c2bca9cdb17f1fdc2afd7aed826d0c55b8640a/substrate/client/rpc/src/chain/mod.rs#L75
                 let number = <NumberFor<B>>::try_from(num)
                     .map_err(|_| rpc_err!("Error converting block number: {:?}", num))?;

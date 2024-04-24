@@ -98,6 +98,18 @@ macro_rules! prepare_node_and_contract {
     };
 }
 
+/// Prepare node  for testing env
+#[macro_export]
+macro_rules! prepare_node {
+    ( ) => {
+        prepare::node(None).await
+    };
+
+    ( $signer:ident ) => {
+        prepare::node(Some($signer)).await
+    };
+}
+
 #[macro_export]
 macro_rules! make_rq {
     ($env:ident, $rq:tt) => {
