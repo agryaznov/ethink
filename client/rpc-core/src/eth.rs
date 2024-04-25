@@ -39,7 +39,7 @@ pub trait EthApi {
     #[method(name = "eth_protocolVersion")]
     fn protocol_version(&self) -> RpcResult<u64>;
 
-    /// Returns an object with data about the sync status or false. (wtf?)
+    /// Returns an object with data about the node's syncing status.
     #[method(name = "eth_syncing")]
     async fn syncing(&self) -> RpcResult<SyncStatus>;
 

@@ -86,7 +86,7 @@ pub struct EthRPC<B: BlockT, C, P> {
     client: Arc<C>,
     pool: Arc<P>,
     keystore: Arc<dyn Keystore>,
-	sync: Arc<SyncingService<B>>,
+    sync: Arc<SyncingService<B>>,
     _phantom: PhantomData<B>,
 }
 
@@ -98,7 +98,12 @@ where
     P: TransactionPool<Block = B> + 'static,
     C::Api: EthinkAPI<B>,
 {
-    pub fn new(client: Arc<C>, pool: Arc<P>, keystore: Arc<dyn Keystore>, 	sync: Arc<SyncingService<B>>) -> Self {
+    pub fn new(
+        client: Arc<C>,
+        pool: Arc<P>,
+        keystore: Arc<dyn Keystore>,
+        sync: Arc<SyncingService<B>>,
+    ) -> Self {
         Self {
             client,
             pool,
