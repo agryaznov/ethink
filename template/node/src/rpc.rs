@@ -17,6 +17,7 @@ use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_keystore::Keystore;
+use sc_network_sync::SyncingService;
 
 pub use sc_rpc_api::DenyUnsafe;
 
@@ -30,6 +31,8 @@ pub struct FullDeps<C, P> {
     pub deny_unsafe: DenyUnsafe,
     /// ECDSA keypair for Eth tx signing
     pub keystore: Arc<dyn Keystore>,
+    /// Network syncing service
+    pub sync: Arc<SyncingService<Block>>,
 }
 
 /// Instantiate all full RPC extensions.
@@ -58,13 +61,14 @@ where
         pool,
         deny_unsafe,
         keystore,
+        sync,
     } = deps;
 
     module.merge(System::new(client.clone(), pool.clone(), deny_unsafe).into_rpc())?;
     module.merge(TransactionPayment::new(client.clone()).into_rpc())?;
 
     // Eth RPC
-    module.merge(EthRPC::new(client.clone(), pool, keystore).into_rpc())?;
+    module.merge(EthRPC::new(client.clone(), pool, keystore, sync).into_rpc())?;
 
     // Extend this RPC with a custom API by using the following syntax.
     // `YourRpcStruct` should have a reference to a client, which is needed

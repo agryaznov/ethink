@@ -223,12 +223,14 @@ pub fn new_full(config: Configuration) -> Result<TaskManager, ServiceError> {
         let client = client.clone();
         let pool = transaction_pool.clone();
         let keystore = keystore_container.keystore();
+        let sync = sync_service.clone();
 
         Box::new(move |deny_unsafe, _| {
             let deps = crate::rpc::FullDeps {
                 client: client.clone(),
                 pool: pool.clone(),
                 keystore: keystore.clone(),
+                sync: sync.clone(),
                 deny_unsafe,
             };
             crate::rpc::create_full(deps).map_err(Into::into)
