@@ -1,11 +1,14 @@
 use super::*;
 use ep_eth::AccountId20;
 use pallet_ethink::EthinkAPI;
+use sc_network::SyncState;
 use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT,
+    B::Header: HeaderT,
+    <<B as BlockT>::Header as HeaderT>::Number: Into<U256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     C::Api: EthinkAPI<B>,
 {
@@ -86,9 +89,25 @@ where
         Ok(accounts)
     }
 
+    // TODO put to client
     // This relates to node and not to chain state,
     // just keeping it here now as it's too little for a separate module
-    pub fn syncing(&self) -> RpcResult<SyncStatus> {
-        Ok(SyncStatus::None)
+    pub async fn syncing(&self) -> RpcResult<SyncStatus> {
+   		match self.sync.status().await {
+            Ok(s) => {
+                let current_block = match s.state {
+                   SyncState::<<B::Header as HeaderT>::Number>::Idle => return Ok(SyncStatus::None),
+                   SyncState::<<B::Header as HeaderT>::Number>::Downloading{target} | SyncState::<<B::Header as HeaderT>::Number>::Importing{target} => target.into(),
+                };
+              Ok(SyncStatus::Info(SyncInfo {
+				starting_block: U256::zero(),
+				current_block,
+				highest_block: s.best_seen_block.map(Into::into).unwrap_or(current_block),
+				warp_chunks_amount: None,
+				warp_chunks_processed: None,
+			}))},
+            Err(e) =>
+                return Err(rpc_err!("Failed getting syncyncing status: {:?}", e))
+        }
     }
 }

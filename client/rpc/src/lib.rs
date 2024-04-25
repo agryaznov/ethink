@@ -37,6 +37,7 @@ use futures::future::TryFutureExt;
 use jsonrpsee::core::{async_trait, RpcResult};
 use pallet_ethink::EthinkAPI;
 use sc_client_api::BlockBackend;
+use sc_network_sync::SyncingService;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::{HeaderT, ProvideRuntimeApi};
 use sp_blockchain::HeaderBackend;
@@ -85,6 +86,7 @@ pub struct EthRPC<B: BlockT, C, P> {
     client: Arc<C>,
     pool: Arc<P>,
     keystore: Arc<dyn Keystore>,
+	sync: Arc<SyncingService<B>>,
     _phantom: PhantomData<B>,
 }
 
@@ -96,11 +98,12 @@ where
     P: TransactionPool<Block = B> + 'static,
     C::Api: EthinkAPI<B>,
 {
-    pub fn new(client: Arc<C>, pool: Arc<P>, keystore: Arc<dyn Keystore>) -> Self {
+    pub fn new(client: Arc<C>, pool: Arc<P>, keystore: Arc<dyn Keystore>, 	sync: Arc<SyncingService<B>>) -> Self {
         Self {
             client,
             pool,
             keystore,
+            sync,
             _phantom: PhantomData::default(),
         }
     }
@@ -253,8 +256,8 @@ where
         self.storage_at(address, index, number).await
     }
 
-    fn syncing(&self) -> RpcResult<SyncStatus> {
-        self.syncing()
+    async fn syncing(&self) -> RpcResult<SyncStatus> {
+        self.syncing().await
     }
 
     async fn transaction_count(
