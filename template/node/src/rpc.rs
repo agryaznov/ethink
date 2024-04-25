@@ -12,12 +12,12 @@ use ethink_runtime::{opaque::Block, AccountId, Balance, Nonce};
 use jsonrpsee::RpcModule;
 use pallet_ethink::EthinkAPI;
 use sc_client_api::BlockBackend;
+use sc_network_sync::SyncingService;
 use sc_transaction_pool_api::TransactionPool;
 use sp_api::ProvideRuntimeApi;
 use sp_block_builder::BlockBuilder;
 use sp_blockchain::{Error as BlockChainError, HeaderBackend, HeaderMetadata};
 use sp_keystore::Keystore;
-use sc_network_sync::SyncingService;
 
 pub use sc_rpc_api::DenyUnsafe;
 
