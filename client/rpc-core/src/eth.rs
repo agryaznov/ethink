@@ -19,7 +19,7 @@
 // You should have received a copy of the GNU General Public License
 // along with this program. If not, see <https://www.gnu.org/licenses/>.
 
-//! Eth rpc interface.
+//! Ethereum RPC interface.
 
 use ethereum_types::{H160, H256, H64, U256, U64};
 use jsonrpsee::{core::RpcResult, proc_macros::rpc};
@@ -27,7 +27,7 @@ use std::collections::BTreeMap;
 
 use crate::types::*;
 
-/// Eth rpc interface.
+/// Ethereum RPC interface.
 #[rpc(server)]
 #[async_trait]
 pub trait EthApi {

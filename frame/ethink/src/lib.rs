@@ -20,7 +20,7 @@
 
 //! # ethink pallet
 //!
-//! The ethink pallet works as a proxy in front of `pallet-contracts` for the transactions
+//! The ethink pallet works as a proxy in front of `pallet_contracts` for the transactions
 //! coming from the Ethereum RPC.
 
 // `no_std` when compiling to WebAssembly
@@ -183,7 +183,7 @@ pub mod pallet {
         T::Contracts: Executor<T::RuntimeCall>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
-        /// Transact a call coming from ETH RPC
+        /// Transact a call coming from Ethereum RPC
         #[pallet::call_index(0)]
         // TODO weight
         #[pallet::weight(42)]
