@@ -81,7 +81,8 @@ macro_rules! rpc_err {
     };
 }
 
-/// Eth RPC implementation.
+/// Ethereum RPC interface implementation.
+/// See [ethink_rpc_core::EthApiServer] for the interface specifications.
 pub struct EthRPC<B: BlockT, C, P> {
     client: Arc<C>,
     pool: Arc<P>,
