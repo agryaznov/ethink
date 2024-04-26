@@ -20,7 +20,7 @@ Run tests:
 cargo test
 ```
 
-Inject a well-known keypair of [Baltathar](docs/ethink-book/src/developer/known-accounts.md) into ethink! node's keystore:  
+Inject a well-known keypair of [Baltathar](docs/ethink-book/src/developer/known-accounts.md) into *ethink!* node's keystore:  
 <mark>*(This step is needed only of you want to sign transactions on the node side)*</mark>  
 
 ```bash
@@ -28,7 +28,7 @@ cargo run -- key insert --dev --key-type "ethi" -d tmp --scheme ecdsa
 ```
 
 
-Start the ethink! development node: 
+Start the *ethink!* development node: 
 
 ```bash
 cargo run -- --dev
