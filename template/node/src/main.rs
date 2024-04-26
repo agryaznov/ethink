@@ -1,4 +1,4 @@
-//! Substrate Node Template CLI library.
+//! Substrate Node Template equipped with Ethereum RPC compatibility layer.
 #![warn(missing_docs)]
 
 mod chain_spec;

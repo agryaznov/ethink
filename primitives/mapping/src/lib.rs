@@ -1,3 +1,4 @@
+//! Types convertible to Ethereum data types
 #![cfg_attr(not(feature = "std"), no_std)]
 
 mod weight;
