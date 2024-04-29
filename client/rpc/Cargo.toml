@@ -1,6 +1,6 @@
 [package]
 name = "ethink-rpc"
-version = "0.1.0"
+version = "0.2.0"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Ethereum RPC compatibility layer for pallet-contracts. This crate is derived from fc-rpc."
 edition.workspace = true
