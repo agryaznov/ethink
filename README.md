@@ -82,7 +82,7 @@ To install it, run:
 cargo install mdbook
 ```
 
-Then build and open the book
+Then build and open the book:
 
 ```bash
 cd docs/ethink-book
