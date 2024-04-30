@@ -25,11 +25,9 @@ use sp_runtime::{
 pub const ALITH: AccountId20 = AccountId20([
     242, 79, 243, 169, 207, 4, 199, 29, 188, 148, 208, 181, 102, 247, 162, 123, 148, 86, 108, 172,
 ]);
-pub const ALITH_KEY: &'static str = env!("ALITH_KEY");
 pub const BALTATHAR: AccountId20 = AccountId20([
     60, 208, 167, 5, 162, 220, 101, 229, 177, 225, 32, 88, 150, 186, 162, 190, 138, 7, 198, 224,
 ]);
-pub const BALTATHAR_KEY: &'static str = env!("BALTATHAR_KEY");
 
 pub const ED: u64 = 1_000;
 /// We allow for 2 seconds of compute with a 6 second average block time, with maximum proof size.
