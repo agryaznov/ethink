@@ -5,3 +5,4 @@ tmp/
 bin/
 target
 .projectile
+.cargo
