@@ -28,7 +28,10 @@ use serde_json::Deserializer;
 use sp_core::{ecdsa, Pair};
 use std::sync::Once;
 
-const ERC20_PATH: &'static str = env!("ERC20_PATH");
+const ERC20_PATH: &'static str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../dapp/contracts/erc20.ink/Cargo.toml"
+);
 // Sync primitive to build contract only once per test suite run
 static ONCE: Once = Once::new();
 

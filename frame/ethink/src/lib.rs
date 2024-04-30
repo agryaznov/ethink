@@ -185,7 +185,7 @@ pub mod pallet {
     {
         /// Transact a call coming from Ethereum RPC
         #[pallet::call_index(0)]
-        // TODO weight
+        // TODO benchmarks for weight
         #[pallet::weight(42)]
         pub fn transact(origin: OriginFor<T>, tx: EthTransaction) -> DispatchResult {
             let origin: frame_system::RawOrigin<T::AccountId> =
