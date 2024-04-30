@@ -23,11 +23,14 @@ pub mod contracts;
 pub mod prepare;
 
 pub mod consts {
+    // Well-known accounts taken from Moonbeam
     pub const NODE_BIN: &'static str = env!("CARGO_BIN_EXE_ethink-node");
-    pub const ALITH_ADDRESS: &'static str = env!("ALITH_ADDRESS");
-    pub const ALITH_KEY: &'static str = env!("ALITH_KEY");
-    pub const BALTATHAR_ADDRESS: &'static str = env!("BALTATHAR_ADDRESS");
-    pub const BALTATHAR_KEY: &'static str = env!("BALTATHAR_KEY");
+    pub const ALITH_ADDRESS: &'static str = "0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac";
+    pub const ALITH_KEY: &'static str =
+        "0x5fb92d6e98884f76de468fa3f6278f8807c48bebc13595d45af5bdc4da702133";
+    pub const BALTATHAR_ADDRESS: &'static str = "0x3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0";
+    pub const BALTATHAR_KEY: &'static str =
+        "0x8075991ce870b93a8870eca0c0f91913d12f47948ca0fd25b49c6fa7cdbeee8b";
 }
 
 use crate::AccountId20;

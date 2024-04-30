@@ -30,7 +30,10 @@ use sp_runtime::Serialize;
 use std::sync::Once;
 use ureq::json;
 
-const FLIPPER_PATH: &'static str = env!("FLIPPER_PATH");
+const FLIPPER_PATH: &'static str = concat!(
+    env!("CARGO_MANIFEST_DIR"),
+    "/../../dapp/contracts/flipper.ink/Cargo.toml"
+);
 // Sync primitive to build contract only once per test suite run
 static ONCE: Once = Once::new();
 
