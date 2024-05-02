@@ -100,9 +100,9 @@ impl EthereumSignature {
     }
 }
 
-impl Into<Option<TransactionSignature>> for EthereumSignature {
-    fn into(self) -> Option<TransactionSignature> {
-        let (v, r, s) = self.to_vrs(None);
+impl From<EthereumSignature> for Option<TransactionSignature> {
+    fn from(s: EthereumSignature) -> Self {
+        let (v, r, s) = s.to_vrs(None);
 
         TransactionSignature::new(v, r, s)
     }
