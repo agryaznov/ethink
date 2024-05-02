@@ -58,9 +58,9 @@ pub enum RawOrigin {
     EthTransaction(H160),
 }
 
-impl<A: From<H160>> Into<frame_system::RawOrigin<A>> for RawOrigin {
-    fn into(self) -> frame_system::RawOrigin<A> {
-        let Self::EthTransaction(acc) = self;
+impl<A: From<H160>> From<RawOrigin> for frame_system::RawOrigin<A> {
+    fn from(s: RawOrigin) -> Self {
+        let RawOrigin::EthTransaction(acc) = s;
         // Signature was already checked upon checking UncheckedExtrinsic, via check_self_contained()
         frame_system::RawOrigin::<A>::Signed(acc.into())
     }

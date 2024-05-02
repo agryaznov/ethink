@@ -18,9 +18,9 @@ impl From<U256> for SubstrateWeight {
     }
 }
 
-impl Into<U256> for SubstrateWeight {
-    fn into(self) -> U256 {
-        U256([self.0.ref_time(), self.0.proof_size(), 0, 0])
+impl From<SubstrateWeight> for U256 {
+    fn from(s: SubstrateWeight) -> Self {
+        U256([s.0.ref_time(), s.0.proof_size(), 0, 0])
     }
 }
 
@@ -30,9 +30,9 @@ impl From<Weight> for SubstrateWeight {
     }
 }
 
-impl Into<Weight> for SubstrateWeight {
-    fn into(self) -> Weight {
-        self.0
+impl From<SubstrateWeight> for Weight {
+    fn from(s: SubstrateWeight) -> Self {
+        s.0
     }
 }
 /// For serialization, we encode Weight as [U256],

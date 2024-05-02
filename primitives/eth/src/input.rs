@@ -18,9 +18,9 @@ impl From<Vec<u8>> for ContractInput {
     }
 }
 
-impl Into<Vec<u8>> for ContractInput {
-    fn into(self) -> Vec<u8> {
-        self.0
+impl From<ContractInput> for Vec<u8> {
+    fn from(s: ContractInput) -> Self {
+        s.0
     }
 }
 
