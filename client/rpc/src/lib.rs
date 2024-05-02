@@ -110,7 +110,7 @@ where
             pool,
             keystore,
             sync,
-            _phantom: PhantomData::default(),
+            _phantom: PhantomData,
         }
     }
 }
