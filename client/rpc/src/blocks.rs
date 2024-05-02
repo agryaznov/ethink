@@ -25,7 +25,7 @@ where
                 .map_err(|err| rpc_err!("Failed fetching earliest block: {:?}", err))?,
             BlockNumber::Latest | BlockNumber::Pending => Some(self.client.info().best_hash),
             BlockNumber::Safe | BlockNumber::Finalized => Some(self.client.info().finalized_hash),
-            BlockNumber::Hash { hash, .. } => Some(hash.into()),
+            BlockNumber::Hash { hash, .. } => Some(hash),
         })
     }
 
