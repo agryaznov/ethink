@@ -36,9 +36,9 @@ impl<B: BlockT<Hash = H256>> From<SubstrateBlock<B>> for RichBlock {
 
         let header = EthHeader {
             hash: (h.hash()).into(),
-            parent_hash: (*h.parent_hash()).into(),
-            state_root: (*h.state_root()).into(),
-            transactions_root: (*h.extrinsics_root()).into(),
+            parent_hash: *h.parent_hash(),
+            state_root: *h.state_root(),
+            transactions_root: *h.extrinsics_root(),
             number: Some(U256::from(
                 UniqueSaturatedInto::<u128>::unique_saturated_into(*h.number()),
             )),
@@ -89,7 +89,7 @@ impl TryFrom<(KeystorePtr, AccountId20)> for EthereumSigner {
         let pub_key = *keystore
             .ecdsa_public_keys(ETHINK_KEYTYPE_ID)
             .iter()
-            .find(|&pk| AccountId20::from(pk.clone()) == val.1)
+            .find(|&pk| AccountId20::from(*pk) == val.1)
             .ok_or("No key for signer in keystore".to_string())?;
 
         Ok(EthereumSigner { keystore, pub_key })

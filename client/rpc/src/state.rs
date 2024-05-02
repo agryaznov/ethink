@@ -21,12 +21,10 @@ where
 
     pub async fn balance(&self, address: H160, _number: Option<BlockNumber>) -> RpcResult<U256> {
         let hash = self.client.info().best_hash;
-        Ok(self
-            .client
+        self.client
             .runtime_api()
             .account_free_balance(hash, address)
-            .map_err(|err| rpc_err!("Fetching runtime account balance failed: {:?}", err))?
-            .into())
+            .map_err(|err| rpc_err!("Fetching runtime account balance failed: {:?}", err))
     }
 
     // TODO implement
@@ -120,7 +118,7 @@ where
                     warp_chunks_processed: None,
                 }))
             }
-            Err(e) => return Err(rpc_err!("Failed getting syncyncing status: {:?}", e)),
+            Err(e) => Err(rpc_err!("Failed getting syncyncing status: {:?}", e)),
         }
     }
 }
