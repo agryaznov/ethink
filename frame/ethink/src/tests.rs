@@ -4,8 +4,7 @@ use crate::{self as pallet_ethink, Pallet};
 use ep_eth::{compose_and_sign_tx, AccountId20, EthTxInput, TransactionAction};
 use ep_mapping::Weight;
 use frame_support::{assert_err, assert_ok};
-use pallet_contracts::{CollectEvents, DebugInfo};
-use pallet_contracts_primitives::Code;
+use pallet_contracts::{Code, CollectEvents, DebugInfo};
 use sp_runtime::BuildStorage;
 
 mod test_utils {
