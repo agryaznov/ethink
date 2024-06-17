@@ -124,11 +124,9 @@ impl<R: subxt::Config> Env<R> {
     }
 }
 
-// Default set of commonly used types by Substrate runtimes.
-pub enum SubstrateConfig {}
+pub enum PolkadotConfig {}
 
-impl subxt::Config for SubstrateConfig {
-    type Index = u32;
+impl subxt::Config for PolkadotConfig {
     type Hash = sp_core::H256;
     type Hasher = subxt::config::substrate::BlakeTwo256;
     type AccountId = subxt::config::substrate::AccountId32;
@@ -137,10 +135,5 @@ impl subxt::Config for SubstrateConfig {
         subxt::config::substrate::SubstrateHeader<u32, subxt::config::substrate::BlakeTwo256>;
     type Signature = sp_runtime::MultiSignature;
     type ExtrinsicParams = subxt::config::substrate::SubstrateExtrinsicParams<Self>;
+    type AssetId = u32;
 }
-
-/// Default set of commonly used types by Polkadot nodes.
-pub type PolkadotConfig = subxt::config::WithExtrinsicParams<
-    SubstrateConfig,
-    subxt::config::polkadot::PolkadotExtrinsicParams<SubstrateConfig>,
->;
