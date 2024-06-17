@@ -44,7 +44,6 @@ use sp_blockchain::HeaderBackend;
 use sp_core::crypto::KeyTypeId;
 use sp_keystore::Keystore;
 use sp_runtime::{
-    generic::BlockId,
     traits::{Block as BlockT, NumberFor, PhantomData},
     transaction_validity::TransactionSource,
 };
@@ -135,7 +134,7 @@ where
             .map_err(|_| rpc_err!("cannot access runtime api"))?;
         // Submit extrinsic to pool
         self.pool
-            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
+            .submit_one(hash, TransactionSource::Local, extrinsic)
             .map_ok(move |_| tx_hash)
             .map_err(rpc_err)
             .await
