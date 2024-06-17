@@ -135,7 +135,7 @@ where
             .map_err(|_| rpc_err!("cannot access runtime api"))?;
         // Submit extrinsic to pool
         self.pool
-            .submit_one(&BlockId::Hash(hash), TransactionSource::Local, extrinsic)
+            .submit_one(hash.into(), TransactionSource::Local, extrinsic)
             .map_ok(move |_| tx_hash)
             .map_err(rpc_err)
             .await
