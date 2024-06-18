@@ -44,7 +44,7 @@ use sp_blockchain::HeaderBackend;
 use sp_core::crypto::KeyTypeId;
 use sp_keystore::Keystore;
 use sp_runtime::{
-    traits::{Block as BlockT, NumberFor, PhantomData},
+    traits::{Block as BlockT, Header as HeaderT, NumberFor, PhantomData},
     transaction_validity::TransactionSource,
 };
 use std::{collections::BTreeMap, sync::Arc};

@@ -373,7 +373,6 @@ impl pallet_balances::Config for Runtime {
     type MaxFreezes = ();
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
-    type MaxHolds = MaxHolds;
 }
 
 impl pallet_transaction_payment::Config for Runtime {
