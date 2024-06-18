@@ -68,9 +68,6 @@ pallet-ethink = { workspace = true, features = ["default"] }
 ep-mapping = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
 
-# CLI-specific dependencies
-try-runtime-cli = { workspace = true, optional = true }
-
 [build-dependencies]
 substrate-build-script-utils.workspace = true
 
@@ -101,5 +98,4 @@ try-runtime = [
 	"frame-system/try-runtime",
 	"pallet-transaction-payment/try-runtime",
 	"sp-runtime/try-runtime",
-	"try-runtime-cli/try-runtime",
 ]
