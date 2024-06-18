@@ -62,8 +62,7 @@ pub fn development_config() -> Result<ChainSpec, String> {
             // Initial PoA authorities
             vec![authority_keys_from_seed("Alice")],
             // Ethereum chain ID
-            42u64,
-            false,
+            42,
         ))
         .build())
 }
@@ -93,7 +92,6 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
                 authority_keys_from_seed("Bob"),
             ],
             42,
-            false,
         ))
         .build())
 }
@@ -105,19 +103,14 @@ fn testnet_genesis(
     root: AccountId,
     endowed_accounts: Vec<AccountId>,
     initial_authorities: Vec<(AuraId, GrandpaId)>,
-    chain_id: u64,
-    enable_manual_seal: bool,
+    _chain_id: u64,
 ) -> serde_json::Value {
     serde_json::json!({
         "sudo": { "key": Some(root) },
         "balances": {
             "balances": endowed_accounts.iter().cloned().map(|k| (k, 1u64 << 60)).collect::<Vec<_>>(),
         },
-        "parachainInfo": {
-            "parachainId": chain_id,
-        },
         "aura": { "authorities": initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>() },
         "grandpa": { "authorities": initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect::<Vec<_>>() },
-        "manualSeal": { "enable": enable_manual_seal }
     })
 }
