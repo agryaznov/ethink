@@ -27,7 +27,6 @@ wat = "1"
 # Substrate
 pallet-balances = { workspace = true, features = ["default"] }
 pallet-contracts = { workspace = true, features = ["default"] }
-pallet-contracts-primitives = { workspace = true, features = ["default"] }
 pallet-utility = { workspace = true, features = ["default"] }
 pallet-timestamp = { workspace = true, features = ["default"] }
 pallet-transaction-payment = { workspace = true, features = ["default"] }

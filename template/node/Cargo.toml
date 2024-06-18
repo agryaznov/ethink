@@ -18,6 +18,7 @@ name = "ethink-node"
 clap = { version = "4.4.2", features = ["derive"] }
 futures = { version = "0.3.21", features = ["thread-pool"]}
 hex-literal.workspace = true
+serde_json = { workspace = true, features = ["arbitrary_precision"] }
 
 # Substrate
 sp-consensus-aura = { workspace = true, features = ["default"] }
@@ -79,7 +80,7 @@ tokio = { version = "1.36", features = ["rt", "macros"] }
 ureq = { version = "2.9.6", features = ["json"] }
 serde.workspace = true
 serde_json.workspace = true
-subxt = "0.29.0"
+subxt = "0.37.0"
 sp-weights.workspace = true
 log.workspace = true
 hex.workspace = true

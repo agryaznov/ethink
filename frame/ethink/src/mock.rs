@@ -4,6 +4,7 @@ use crate::{self as pallet_ethink, Config};
 use ep_eth::AccountId20;
 use ep_mapping::{SubstrateWeight, Weight};
 use frame_support::{
+    derive_impl,
     dispatch::DispatchClass,
     parameter_types,
     traits::{ConstBool, Everything},
@@ -12,7 +13,10 @@ use frame_support::{
         IdentityFee,
     },
 };
-use frame_system::limits::{BlockLength, BlockWeights};
+use frame_system::{
+    limits::{BlockLength, BlockWeights},
+    EnsureSigned,
+};
 use pallet_contracts::Schedule;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_core::{ConstU32, ConstU64, ConstU8, H160, H256, U256};
@@ -96,29 +100,23 @@ parameter_types! {
     pub const SS58Prefix: u8 = 42;
 }
 
+#[derive_impl(frame_system::config_preludes::TestDefaultConfig)]
 impl frame_system::Config for Test {
     type BaseCallFilter = frame_support::traits::Everything;
     type BlockWeights = RuntimeBlockWeights;
     type BlockLength = ();
     type DbWeight = ();
-    type RuntimeOrigin = RuntimeOrigin;
     type Nonce = u64;
     type Hash = H256;
     type RuntimeCall = RuntimeCall;
-    type Hashing = BlakeTwo256;
     type AccountId = AccountId20;
     type Lookup = IdentityLookup<Self::AccountId>;
     type Block = Block;
-    type RuntimeEvent = RuntimeEvent;
     type BlockHashCount = ConstU64<250>;
     type Version = ();
-    type PalletInfo = PalletInfo;
     type AccountData = pallet_balances::AccountData<u64>;
-    type OnNewAccount = ();
-    type OnKilledAccount = ();
     type SystemWeightInfo = ();
     type SS58Prefix = ();
-    type OnSetCode = ();
     type MaxConsumers = frame_support::traits::ConstU32<16>;
 }
 
@@ -138,7 +136,6 @@ impl pallet_balances::Config for Test {
     type MaxFreezes = ();
     type RuntimeHoldReason = RuntimeHoldReason;
     type RuntimeFreezeReason = RuntimeFreezeReason;
-    type MaxHolds = ConstU32<1>;
 }
 
 impl pallet_timestamp::Config for Test {
@@ -193,6 +190,10 @@ impl pallet_contracts::Config for Test {
     type CodeHashLockupDepositPercent = CodeHashLockupDepositPercent;
     type Debug = ();
     type Environment = ();
+    type UploadOrigin = EnsureSigned<Self::AccountId>;
+    type InstantiateOrigin = EnsureSigned<Self::AccountId>;
+    type ApiVersion = ();
+    type Xcm = ();
 }
 
 impl Config for Test {
@@ -216,7 +217,7 @@ parameter_types! {
 // TODO this was just copied from runtime
 pub struct ContractsExecutor;
 
-use pallet_contracts_primitives::ContractExecResult;
+use pallet_contracts::ContractExecResult;
 
 impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
     type ExecResult = ContractExecResult<u64, EventRecord>;

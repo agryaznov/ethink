@@ -122,6 +122,7 @@ pub fn run() -> sc_cli::Result<()> {
                 Ok((cmd.run(client, backend, Some(aux_revert)), task_manager))
             })
         }
+        #[cfg(feature = "runtime-benchmarks")]
         Some(Subcommand::Benchmark(cmd)) => {
             let runner = cli.create_runner(cmd)?;
 
@@ -149,7 +150,6 @@ pub fn run() -> sc_cli::Result<()> {
                         "Storage benchmarking can be enabled with `--features runtime-benchmarks`."
                             .into(),
                     ),
-                    #[cfg(feature = "runtime-benchmarks")]
                     BenchmarkCmd::Storage(cmd) => {
                         let PartialComponents {
                             client, backend, ..
@@ -190,6 +190,12 @@ pub fn run() -> sc_cli::Result<()> {
                     }
                 }
             })
+        }
+        #[cfg(not(feature = "runtime-benchmarks"))]
+        Some(Subcommand::Benchmark(_)) => {
+            Err("Benchmarking wasn't enabled when building the node. \
+			You can enable it with `--features runtime-benchmarks`."
+                .into())
         }
         #[cfg(feature = "try-runtime")]
         Some(Subcommand::TryRuntime) => Err(try_runtime_cli::DEPRECATION_NOTICE.into()),

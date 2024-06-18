@@ -2,7 +2,7 @@
 use super::*;
 use ep_eth::AccountId20;
 use pallet_ethink::EthinkAPI;
-use sc_network::SyncState;
+use sc_network_sync::SyncState;
 use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> EthRPC<B, C, P>

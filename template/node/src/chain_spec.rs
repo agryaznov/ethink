@@ -3,7 +3,7 @@ use ethink_runtime::{
     SudoConfig, SystemConfig, WASM_BINARY,
 };
 use hex_literal::hex;
-use sc_service::ChainType;
+use sc_service::{ChainType, Properties};
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_consensus_grandpa::AuthorityId as GrandpaId;
 use sp_core::{Pair, Public};
@@ -37,127 +37,80 @@ pub fn authority_keys_from_seed(s: &str) -> (AuraId, GrandpaId) {
     (get_from_seed::<AuraId>(s), get_from_seed::<GrandpaId>(s))
 }
 
+fn properties() -> Properties {
+    let mut properties = Properties::new();
+    properties.insert("tokenDecimals".into(), 18.into());
+    properties
+}
+
 pub fn development_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
-    Ok(ChainSpec::from_genesis(
-        // Name
-        "Development",
-        // ID
-        "dev",
-        ChainType::Development,
-        move || {
-            testnet_genesis(
-                wasm_binary,
-                // Initial PoA authorities
-                vec![authority_keys_from_seed("Alice")],
-                // Sudo account
+    Ok(ChainSpec::builder(wasm_binary, Default::default())
+        .with_name("Development")
+        .with_id("dev")
+        .with_chain_type(ChainType::Development)
+        .with_properties(properties())
+        .with_genesis_config_patch(testnet_genesis(
+            // Sudo account (Alith)
+            AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")),
+            // Pre-funded accounts
+            vec![
                 AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")), // Alith
-                // Pre-funded accounts
-                vec![
-                    AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")), // Alith
-                    AccountId::from(hex!("3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0")), // Baltathar
-                ],
-                true,
-            )
-        },
-        // Bootnodes
-        vec![],
-        // Telemetry
-        None,
-        // Protocol ID
-        None,
-        None,
-        // Properties
-        None,
-        // Extensions
-        None,
-    ))
+                AccountId::from(hex!("3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0")), // Baltathar
+            ],
+            // Initial PoA authorities
+            vec![authority_keys_from_seed("Alice")],
+            // Ethereum chain ID
+            42,
+        ))
+        .build())
 }
 
 pub fn local_testnet_config() -> Result<ChainSpec, String> {
     let wasm_binary = WASM_BINARY.ok_or_else(|| "Development wasm not available".to_string())?;
 
-    Ok(ChainSpec::from_genesis(
-        // Name
-        "Local Testnet",
-        // ID
-        "local_testnet",
-        ChainType::Local,
-        move || {
-            testnet_genesis(
-                wasm_binary,
-                // Initial PoA authorities
-                vec![
-                    authority_keys_from_seed("Alice"),
-                    authority_keys_from_seed("Bob"),
-                ],
-                // Sudo account
+    Ok(ChainSpec::builder(wasm_binary, Default::default())
+        .with_name("Local Testnet")
+        .with_id("local_testnet")
+        .with_chain_type(ChainType::Local)
+        .with_properties(properties())
+        .with_genesis_config_patch(testnet_genesis(
+            // Sudo account (Alith)
+            AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")),
+            // Pre-funded accounts
+            vec![
                 AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")), // Alith
-                // Pre-funded accounts
-                vec![
-                    AccountId::from(hex!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac")), // Alith
-                    AccountId::from(hex!("3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0")), // Baltathar
-                    AccountId::from(hex!("798d4Ba9baf0064Ec19eB4F0a1a45785ae9D6DFc")), // Charleth
-                    AccountId::from(hex!("773539d4Ac0e786233D90A233654ccEE26a613D9")), // Dorothy
-                    AccountId::from(hex!("Ff64d3F6efE2317EE2807d223a0Bdc4c0c49dfDB")), // Ethan
-                    AccountId::from(hex!("C0F0f4ab324C46e55D02D0033343B4Be8A55532d")), // Faith
-                ],
-                true,
-            )
-        },
-        // Bootnodes
-        vec![],
-        // Telemetry
-        None,
-        // Protocol ID
-        None,
-        // Properties
-        None,
-        None,
-        // Extensions
-        None,
-    ))
+                AccountId::from(hex!("3Cd0A705a2DC65e5b1E1205896BaA2be8A07c6e0")), // Baltathar
+                AccountId::from(hex!("798d4Ba9baf0064Ec19eB4F0a1a45785ae9D6DFc")), // Charleth
+                AccountId::from(hex!("773539d4Ac0e786233D90A233654ccEE26a613D9")), // Dorothy
+                AccountId::from(hex!("Ff64d3F6efE2317EE2807d223a0Bdc4c0c49dfDB")), // Ethan
+                AccountId::from(hex!("C0F0f4ab324C46e55D02D0033343B4Be8A55532d")), // Faith
+            ],
+            vec![
+                authority_keys_from_seed("Alice"),
+                authority_keys_from_seed("Bob"),
+            ],
+            42,
+        ))
+        .build())
 }
 
 const UNITS: Balance = 1_000_000_000_000_000_000;
 
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
-    wasm_binary: &[u8],
-    initial_authorities: Vec<(AuraId, GrandpaId)>,
-    root_key: AccountId,
+    root: AccountId,
     endowed_accounts: Vec<AccountId>,
-    _enable_println: bool,
-) -> RuntimeGenesisConfig {
-    RuntimeGenesisConfig {
-        system: SystemConfig {
-            // Add Wasm runtime to storage.
-            code: wasm_binary.to_vec(),
-            ..Default::default()
+    initial_authorities: Vec<(AuraId, GrandpaId)>,
+    _chain_id: u64,
+) -> serde_json::Value {
+    serde_json::json!({
+        "sudo": { "key": Some(root) },
+        "balances": {
+            "balances": endowed_accounts.iter().cloned().map(|k| (k, 1u64 << 60)).collect::<Vec<_>>(),
         },
-        balances: BalancesConfig {
-            balances: endowed_accounts
-                .iter()
-                .cloned()
-                .map(|k| (k, 1_000_000 * UNITS))
-                .collect(),
-        },
-        aura: AuraConfig {
-            authorities: initial_authorities.iter().map(|x| (x.0.clone())).collect(),
-        },
-        grandpa: GrandpaConfig {
-            authorities: initial_authorities
-                .iter()
-                .map(|x| (x.1.clone(), 1))
-                .collect(),
-            ..Default::default()
-        },
-        sudo: SudoConfig {
-            // Assign network admin rights.
-            key: Some(root_key),
-        },
-        transaction_payment: Default::default(),
-        assets: Default::default(),
-    }
+        "aura": { "authorities": initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>() },
+        "grandpa": { "authorities": initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect::<Vec<_>>() },
+    })
 }
