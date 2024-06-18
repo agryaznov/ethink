@@ -17,6 +17,7 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
+use sp_runtime::traits::Zero;
 use std::{
     ffi::{OsStr, OsString},
     io::{BufRead, BufReader, Read},
@@ -180,9 +181,13 @@ fn find_path_and_port_from_output(r: impl Read + Send) -> (String, String) {
 
     while base_path.is_none() || rpc_port.is_none() {
         let mut line = String::new();
-        let _ = buf
+        if buf
             .read_line(&mut line)
-            .expect("failed to obtain next line from stdout for port and base path discovery");
+            .expect("failed to obtain next line from stdout for port and base path discovery")
+            .is_zero()
+        {
+            panic!("node has failed to start properly")
+        }
 
         if rpc_port.is_none() {
             // does the line contain our port (we expect this specific output from
