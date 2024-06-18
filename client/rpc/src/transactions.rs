@@ -1,6 +1,5 @@
 use super::*;
-use sp_api::HeaderT;
-use sp_runtime::traits::UniqueSaturatedInto;
+use sp_runtime::traits::{Header as HeaderT, UniqueSaturatedInto};
 
 impl<B, C, P> EthRPC<B, C, P>
 where

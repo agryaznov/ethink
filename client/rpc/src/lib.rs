@@ -39,7 +39,7 @@ use pallet_ethink::EthinkAPI;
 use sc_client_api::BlockBackend;
 use sc_network_sync::SyncingService;
 use sc_transaction_pool_api::TransactionPool;
-use sp_api::{HeaderT, ProvideRuntimeApi};
+use sp_api::ProvideRuntimeApi;
 use sp_blockchain::HeaderBackend;
 use sp_core::crypto::KeyTypeId;
 use sp_keystore::Keystore;
@@ -53,20 +53,22 @@ pub use ethink_rpc_core::{types::Transaction as Tx, EthApiServer};
 
 pub const ETHINK_KEYTYPE_ID: KeyTypeId = KeyTypeId(*b"ethi");
 
-pub fn err<T: ToString>(code: i32, message: T, data: Option<&[u8]>) -> jsonrpsee::core::Error {
-    jsonrpsee::core::Error::Call(jsonrpsee::types::error::CallError::Custom(
-        jsonrpsee::types::error::ErrorObject::owned(
-            code,
-            message.to_string(),
-            data.map(|bytes| {
-                jsonrpsee::core::to_json_raw_value(&format!("0x{}", hex::encode(bytes)))
-                    .expect("fail to serialize data")
-            }),
-        ),
-    ))
+pub fn err<T: ToString>(
+    code: i32,
+    message: T,
+    data: Option<&[u8]>,
+) -> jsonrpsee::types::error::ErrorObjectOwned {
+    jsonrpsee::types::error::ErrorObject::owned(
+        code,
+        message.to_string(),
+        data.map(|bytes| {
+            jsonrpsee::core::to_json_raw_value(&format!("0x{}", hex::encode(bytes)))
+                .expect("fail to serialize data")
+        }),
+    )
 }
 
-pub fn rpc_err<T: ToString>(message: T) -> jsonrpsee::core::Error {
+pub fn rpc_err<T: ToString>(message: T) -> jsonrpsee::types::error::ErrorObjectOwned {
     err(jsonrpsee::types::error::INTERNAL_ERROR_CODE, message, None)
 }
 

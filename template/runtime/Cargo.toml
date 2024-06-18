@@ -33,7 +33,6 @@ frame-system.workspace = true
 pallet-assets.workspace = true
 pallet-aura.workspace = true
 pallet-balances.workspace = true
-pallet-contracts-primitives.workspace = true
 pallet-contracts.workspace = true
 pallet-grandpa.workspace = true
 pallet-insecure-randomness-collective-flip.workspace = true
@@ -87,7 +86,6 @@ std = [
 	"sp-transaction-pool/std",
 	"sp-version/std",
 	"pallet-contracts/std",
-	"pallet-contracts-primitives/std",
 	"pallet-assets/std",
 	"substrate-wasm-builder",
 	"fp-self-contained/std",
