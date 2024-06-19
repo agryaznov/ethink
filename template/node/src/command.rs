@@ -197,12 +197,6 @@ pub fn run() -> sc_cli::Result<()> {
 			You can enable it with `--features runtime-benchmarks`."
                 .into())
         }
-        #[cfg(feature = "try-runtime")]
-        Some(Subcommand::TryRuntime) => Err(try_runtime_cli::DEPRECATION_NOTICE.into()),
-        #[cfg(not(feature = "try-runtime"))]
-        Some(Subcommand::TryRuntime) => Err("TryRuntime wasn't enabled when building the node. \
-				You can enable it with `--features try-runtime`."
-            .into()),
         Some(Subcommand::ChainInfo(cmd)) => {
             let runner = cli.create_runner(cmd)?;
             runner.sync_run(|config| cmd.run::<Block>(&config))
@@ -210,7 +204,8 @@ pub fn run() -> sc_cli::Result<()> {
         None => {
             let runner = cli.create_runner(&cli.run)?;
             runner.run_node_until_exit(|config| async move {
-                service::new_full(config).map_err(sc_cli::Error::Service)
+                service::new_full::<sc_network::NetworkWorker<_, _>>(config)
+                    .map_err(sc_cli::Error::Service)
             })
         }
     }
