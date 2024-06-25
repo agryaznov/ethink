@@ -60,9 +60,9 @@ async fn eth_sendRawTransaction() {
       "id": 0
      });
     // Handle response
-    //    let json = to_json_val!(rs);
-    //    ensure_no_err!(&json);
-    //    let _tx_hash = extract_result!(&json);
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    let _tx_hash = extract_result!(&json);
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
