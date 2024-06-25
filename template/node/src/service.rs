@@ -163,8 +163,7 @@ where
         other: (block_import, grandpa_link, mut telemetry),
     } = new_partial(&config)?;
 
-    let mut net_config =
-        sc_network::config::FullNetworkConfiguration::<_, _, N>::new(&config.network);
+    let net_config = sc_network::config::FullNetworkConfiguration::<_, _, N>::new(&config.network);
     let peer_store_handle = net_config.peer_store_handle();
     let metrics = N::register_notification_metrics(
         config.prometheus_config.as_ref().map(|cfg| &cfg.registry),
@@ -179,7 +178,7 @@ where
         &config.chain_spec,
     );
 
-    let (grandpa_protocol_config, grandpa_notification_service) =
+    let (_grandpa_protocol_config, grandpa_notification_service) =
         sc_consensus_grandpa::grandpa_peers_set_config::<_, N>(
             grandpa_protocol_name.clone(),
             metrics.clone(),

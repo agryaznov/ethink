@@ -32,6 +32,12 @@ use super::account::AccountId20;
 #[cfg_attr(feature = "serde", derive(serde::Serialize, serde::Deserialize))]
 pub struct EthereumSignature(pub ecdsa::Signature);
 
+impl From<sp_core::ecdsa::Signature> for EthereumSignature {
+    fn from(s: sp_core::ecdsa::Signature) -> Self {
+        Self(s)
+    }
+}
+
 impl sp_std::fmt::Debug for EthereumSignature {
     fn fmt(&self, f: &mut sp_std::fmt::Formatter<'_>) -> sp_std::fmt::Result {
         write!(f, "{:02x?}", &self.0 .0)

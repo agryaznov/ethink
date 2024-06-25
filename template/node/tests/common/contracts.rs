@@ -45,6 +45,7 @@ pub fn deploy(
     let surl_arg = &format!("-s={}", signer.unwrap_or(ALITH_KEY));
     let manifest_arg = format!("--manifest-path={manifest_path}");
     let url_arg = format!("--url={}", url);
+    let config_arg = &format!("--config=Ecdsachain");
 
     let mut cmd_args = vec![
         "contract",
@@ -55,6 +56,7 @@ pub fn deploy(
         "-x",
         "--skip-confirm",
         "--output-json",
+        config_arg,
     ];
 
     let args = args
@@ -84,6 +86,7 @@ pub fn call(
     let url_arg = &format!("--url={}", env.ws_url());
     let contract_arg = &format!("--contract={}", env.contract_address());
     let msg_arg = &format!("--message={msg}");
+    let config_arg = &format!("--config=Ecdsachain");
 
     let mut cmd_args = vec![
         "contract",
@@ -94,6 +97,7 @@ pub fn call(
         contract_arg,
         msg_arg,
         "--output-json",
+        config_arg,
     ];
 
     let args = args

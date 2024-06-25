@@ -1,12 +1,9 @@
 use crate::{
-    benchmarking::{inherent_benchmark_data, RemarkBuilder, TransferKeepAliveBuilder},
     chain_spec,
-    chain_spec::get_account_id_from_seed,
     cli::{Cli, Subcommand},
     service,
 };
-use ethink_runtime::{Block, ED};
-use frame_benchmarking_cli::{BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE};
+use ethink_runtime::Block;
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
 
