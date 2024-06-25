@@ -1,13 +1,9 @@
-use ethink_runtime::{
-    AccountId, AuraConfig, Balance, BalancesConfig, GrandpaConfig, RuntimeGenesisConfig, Signature,
-    SudoConfig, SystemConfig, WASM_BINARY,
-};
+use ethink_runtime::{AccountId, RuntimeGenesisConfig, Signature, WASM_BINARY};
 use hex_literal::hex;
 use sc_service::{ChainType, Properties};
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_consensus_grandpa::AuthorityId as GrandpaId;
 use sp_core::{Pair, Public};
-use sp_runtime::traits::{IdentifyAccount, Verify};
 
 // The URL for the telemetry server.
 // const STAGING_TELEMETRY_URL: &str = "wss://telemetry.polkadot.io/submit/";
@@ -20,16 +16,6 @@ pub fn get_from_seed<TPublic: Public>(seed: &str) -> <TPublic::Pair as Pair>::Pu
     TPublic::Pair::from_string(&format!("//{}", seed), None)
         .expect("static values are valid; qed")
         .public()
-}
-
-type AccountPublic = <Signature as Verify>::Signer;
-
-/// Generate an account ID from seed.
-pub fn get_account_id_from_seed<TPublic: Public>(seed: &str) -> AccountId
-where
-    AccountPublic: From<<TPublic::Pair as Pair>::Public>,
-{
-    AccountPublic::from(get_from_seed::<TPublic>(seed)).into_account()
 }
 
 /// Generate an Aura authority key.
@@ -95,8 +81,6 @@ pub fn local_testnet_config() -> Result<ChainSpec, String> {
         ))
         .build())
 }
-
-const UNITS: Balance = 1_000_000_000_000_000_000;
 
 /// Configure initial storage state for FRAME modules.
 fn testnet_genesis(
