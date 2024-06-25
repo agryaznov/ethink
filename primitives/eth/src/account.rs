@@ -31,6 +31,10 @@ use sp_io::hashing::keccak_256;
 #[derive(
     Copy, Clone, Eq, PartialEq, Ord, PartialOrd, Default, Encode, Decode, MaxEncodedLen, TypeInfo,
 )]
+#[cfg_attr(
+    feature = "std",
+    derive(scale_encode::EncodeAsType, scale_decode::DecodeAsType,)
+)]
 pub struct AccountId20(pub [u8; 20]);
 
 impl_serde::impl_fixed_hash_serde!(AccountId20, 20);
