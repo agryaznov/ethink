@@ -14,6 +14,25 @@ This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](
 
 ## Quickstart 
 
+Install accustomed cargo-contract tool:
+
+<details>
+<summary>
+Why?
+</summary>
+
+Our 🦆-chain has _pallet-contracts_ on board and at the same time works with _Ethereum_ 20-bytes _Account_ format. The latter fact is required so that our node can understand *MetaMask*-signed transactions. But for the existing _ink!_ contracts tooling this is an unusual setting, as they're expected to work with 32-bytes long _Accounts_.  
+
+For this reason, to work with our *ink!* contracts on this chain, we use a fork of _cargo-contract_ tool which speaks with our node the same language! Run this command to install it: 
+
+</details>
+
+
+``` bash
+cargo install --git https://github.com/agryaznov/cargo-contract --branch ethink --force
+```
+
+
 Run tests:
 
 ```bash
