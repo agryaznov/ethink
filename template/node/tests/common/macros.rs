@@ -67,8 +67,7 @@ macro_rules! extract_result {
     };
 }
 
-/// Spawn a node, deploy a contract specified with $path to it,
-/// and make post request to its RPC.
+/// Make a request to node's RPC.
 #[macro_export]
 macro_rules! rpc_rq {
     ( $env:ident, $rq:ident ) => {
