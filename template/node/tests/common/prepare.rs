@@ -43,10 +43,10 @@ pub async fn node_and_contract<R: subxt::Config>(
     );
 
     if !output.status.success() {
-       use std::io::Write;
-       std::io::stdout().write_all(&output.stdout).unwrap();
-       std::io::stderr().write_all(&output.stderr).unwrap();
-       panic!("'cargo contract instantantiate' failed")
+        use std::io::Write;
+        std::io::stdout().write_all(&output.stdout).unwrap();
+        std::io::stderr().write_all(&output.stderr).unwrap();
+        panic!("'cargo contract instantantiate' failed")
     }
     // Look for contract address in the json output
     let rs = Deserializer::from_slice(&output.stdout);

@@ -127,7 +127,7 @@ pub fn encode(manifest_path: &str, msg: &str, args: Vec<&str>) -> ContractInput 
     let manifest_arg = &format!("--manifest-path={manifest_path}");
     let msg_arg = &format!("--message={msg}");
 
-    let mut cmd_args = vec!["contract", "encode", manifest_arg, msg_arg,];
+    let mut cmd_args = vec!["contract", "encode", manifest_arg, msg_arg];
 
     let args = args
         .iter()
