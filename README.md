@@ -14,7 +14,7 @@ This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](
 
 ## Quickstart 
 
-Install accustomed cargo-contract tool:
+Install customized `cargo-contract` tool:
 
 <details>
 <summary>
@@ -29,7 +29,7 @@ For this reason, to work with our *ink!* contracts on this chain, we use a fork 
 
 
 ``` bash
-cargo install --git https://github.com/agryaznov/cargo-contract --branch 4.1.1-ethink --force
+cargo install --git https://github.com/agryaznov/cargo-contract --tag 4.1.1+ethink --force
 ```
 
 
@@ -78,7 +78,7 @@ _ethink!_ comes with e2e integration tests, grouped into test suites:
 Use this command to run the integration tests (at the project root): 
 
 ```bash
-cargo test --test *
+cargo test --test "*"
 ```
 
 ## Documentation 
