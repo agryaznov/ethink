@@ -101,6 +101,19 @@ impl From<[u8; 20]> for AccountId20 {
     }
 }
 
+impl<'a> TryFrom<&'a [u8]> for AccountId20 {
+    type Error = ();
+    fn try_from(x: &'a [u8]) -> Result<AccountId20, ()> {
+        if x.len() == 20 {
+            let mut data = [0; 20];
+            data.copy_from_slice(x);
+            Ok(AccountId20(data))
+        } else {
+            Err(())
+        }
+    }
+}
+
 impl From<AccountId20> for [u8; 20] {
     fn from(val: AccountId20) -> Self {
         val.0
