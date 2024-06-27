@@ -29,7 +29,7 @@ For this reason, to work with our *ink!* contracts on this chain, we use a fork 
 
 
 ``` bash
-cargo install --git https://github.com/agryaznov/cargo-contract --tag 4.1.1+ethink --force
+cargo install --git https://github.com/agryaznov/cargo-contract --branch v4-ethink --force
 ```
 
 
