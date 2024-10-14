@@ -86,26 +86,57 @@ mod erc20 {
         }
 
         /// Returns token decimals.
-        // TODO remove selector, add note to docs that selector calc in ink
-        // is the same as in solidity
+        // NOTE (put to docs) that selector calc logic in ink!
+        // is the same as in Solidity
+        // BUG: NO, not the same
+        // TODO put to docs:
+        // TODO we bound ret val len to 1 byte
+        // The returning val is scale encoded ink_primitives::MessageResult<[u8;32]> = ::core::result::Result<[u8;1], LangError>;
+        // according to scale encoding rules, it will add 2 leading bytes to the inner bytes: first is Result enum var (0=Ok, 1=Err), second is size
+        // once size in our bounded case is 32, it taked 1 byte
+        // see https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#1097-1107
+        // and https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#637-657
+        //
+        // therefore for result 6u8 we get the following:
+        //
         #[ink(message, selector = 0x313ce567)]
-        pub fn decimals(&self) -> Vec<u8> {
-            // TODO: add to constructor?
-            6u8.to_be_bytes().into()
+        pub fn decimals(&self) -> [u8;1] {
+            // TODO: add decimals to constructor
+            [6u8]
         }
 
         /// Returns the total token supply.
-        #[ink(message)]
-        pub fn total_supply(&self) -> Balance {
-            self.total_supply
+        // TODO put to docs:
+        // NOTE we bound ret val len to 16 bytes
+        // The returning val is scale encoded ink_primitives::MessageResult<[u8;32]> = ::core::result::Result<[u8;16], LangError>;
+        // according to scale encoding rules, it will add 2 leading bytes to the inner bytes: first is Result enum var (0=Ok, 1=Err), second is size
+        // once size in our bounded case is 32, it taked 1 byte
+        // see https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#1097-1107
+        // and https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#637-657
+        //
+        // therefore for result 7u8 we get the following
+        #[ink(message, selector = 0x18160ddd)]
+        pub fn total_supply(&self) -> [u8;16] {
+            self.total_supply.to_be_bytes()
         }
 
         /// Returns the account balance for the specified `owner`.
         ///
         /// Returns `0` if the account is non-existent.
-        #[ink(message)]
-        pub fn balance_of(&self, owner: AccountId) -> Vec<u8> {
-            self.balance_of_internal(owner).to_le_bytes().into()
+        // NOTE we bound ret val len to 16 bytes
+        // The returning val is scale encoded ink_primitives::MessageResult<[u8;32]> = ::core::result::Result<[u8;16], LangError>;
+        // according to scale encoding rules, it will add 2 leading bytes to the inner bytes: first is Result enum var (0=Ok, 1=Err), second is size
+        // once size in our bounded case is 32, it taked 1 byte
+        // see https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#1097-1107
+        // and https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#637-657
+        //
+        // therefore for result 7u8 we get the following
+        // TODO RLP-decoding of the input in ink! so that address offset gets sliced here
+        // see https://docs.soliditylang.org/en/develop/abi-spec.html
+        // NOTE: 32 bytes is off-setted accountid, so we need to dissect it here
+        #[ink(message, selector = 0x70a08231)]
+        pub fn balance_of(&self, owner: AccountId) -> [u8;16] {
+            self.balance_of_internal(owner).to_be_bytes()
         }
 
         fn balance_of_internal(&self, owner: AccountId) -> Balance {
@@ -232,6 +263,7 @@ mod tests {
         let d = U256::from(6u8);
         <U256 as Encodable>::encode(&d, &mut encoded);
         println!("6u8 in bytes is: {:?}", &encoded);
+        println!("6u8.to_le_bytes().into(): {:?}", 6u8.to_le_bytes());
         todo!()
     }
 }
