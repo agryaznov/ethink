@@ -209,7 +209,7 @@ async fn eth_call() {
     ensure_no_err!(&json);
     // Should return `false` as flipper state
     let result = extract_result!(&json);
-    assert_eq!(*result, "0x00000000080000");
+    assert_eq!(*result, "0x0000");
     // Flip it via contract call
     let _ = call!(env, "flip", vec![], true);
     // Wait until tx gets executed
@@ -220,7 +220,7 @@ async fn eth_call() {
     ensure_no_err!(&json);
     // Should now return `true` as flipper state
     let result = extract_result!(&json);
-    assert_eq!(*result, "0x00000000080001");
+    assert_eq!(*result, "0x0001");
 }
 
 #[tokio::test]
