@@ -85,11 +85,11 @@ where
             .runtime_api()
             .call(
                 hash,
-                from.ok_or(rpc_err!("empty `from` in call rq"))?,
+                from.unwrap_or_default(), // some calls like e.g. ERC20::decimals() don't have _from
                 to.ok_or(rpc_err!("empty `to` in call rq"))?,
                 data.unwrap_or_default().0, // No data defaults to vec![]
                 value.unwrap_or(0.into()),  // No value defaults to 0
-                gas.unwrap_or(0.into()), // No gas_limit defaults 0 (TODO could be changed to MAX (no limit))
+                gas.unwrap_or(U256::MAX),   // defaults to MAX (no limit)
             )
             .map_err(|err| rpc_err!("execution fatal: {:?}", err))?
             .map_err(|err| rpc_err!("runtime error on eth_call(): {:?}", err))
