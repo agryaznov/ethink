@@ -841,9 +841,9 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, DispatchError> {
-            Ethink::contract_call(from, to, data, value, gas_limit)?
-                .result
-                .map(|res| res.encode())
+            let result = Ethink::contract_call(from, to, data, value, gas_limit)?
+                .result?;
+            Ok(result.data)
         }
 
         fn gas_estimate(

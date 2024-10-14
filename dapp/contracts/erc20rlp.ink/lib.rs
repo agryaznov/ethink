@@ -3,6 +3,7 @@
 #[ink::contract(env = EthinkEnvironment)]
 mod erc20 {
     use ink::storage::Mapping;
+    use ink::prelude::vec::Vec;
 
     // Use custom environmanent with Ethereum-flavored Accountid
     #[derive(Clone)]
@@ -85,9 +86,12 @@ mod erc20 {
         }
 
         /// Returns token decimals.
+        // TODO remove selector, add note to docs that selector calc in ink
+        // is the same as in solidity
         #[ink(message, selector = 0x313ce567)]
-        pub fn decimals(&self) -> u8 {
-            6
+        pub fn decimals(&self) -> Vec<u8> {
+            // TODO: add to constructor?
+            6u8.to_be_bytes().into()
         }
 
         /// Returns the total token supply.
@@ -100,7 +104,11 @@ mod erc20 {
         ///
         /// Returns `0` if the account is non-existent.
         #[ink(message)]
-        pub fn balance_of(&self, owner: AccountId) -> Balance {
+        pub fn balance_of(&self, owner: AccountId) -> Vec<u8> {
+            self.balance_of_internal(owner).to_le_bytes().into()
+        }
+
+        fn balance_of_internal(&self, owner: AccountId) -> Balance {
             self.balances.get(owner).unwrap_or_default()
         }
 
@@ -193,14 +201,14 @@ mod erc20 {
             to: &AccountId,
             value: Balance,
         ) -> Result<()> {
-            let from_balance = self.balance_of(*from);
+            let from_balance = self.balance_of_internal(*from);
             if from_balance < value {
                 return Err(Error::InsufficientBalance);
             }
             // We checked that from_balance >= value
             #[allow(clippy::arithmetic_side_effects)]
             self.balances.insert(from, &(from_balance - value));
-            let to_balance = self.balance_of(*to);
+            let to_balance = self.balance_of_internal(*to);
             self.balances
                 .insert(to, &(to_balance.checked_add(value).unwrap()));
             self.env().emit_event(Transfer {
@@ -210,5 +218,20 @@ mod erc20 {
             });
             Ok(())
         }
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use alloy::{primitives::U256, rlp::Encodable};
+
+    #[test]
+    fn u8_output() {
+        let mut encoded = Vec::<u8>::new();
+        let d = U256::from(6u8);
+        <U256 as Encodable>::encode(&d, &mut encoded);
+        println!("6u8 in bytes is: {:?}", &encoded);
+        todo!()
     }
 }
