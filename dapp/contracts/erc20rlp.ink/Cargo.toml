@@ -1,0 +1,25 @@
+[package]
+name = "erc20rlp"
+version = "5.0.0"
+authors = ["[your_name] <[your_email]>"]
+edition = "2021"
+publish = false
+
+[dependencies]
+# TODO update to crates.io with the next ink release
+ink = { git = "https://github.com/use-ink/ink", rev = "0cd2b89", default-features = false }
+ink_env = { git = "https://github.com/use-ink/ink", rev = "0cd2b89", default-features = false }
+
+scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
+scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
+
+[lib]
+path = "lib.rs"
+
+[features]
+default = ["std"]
+std = [
+    "ink/std",
+    "scale/std",
+    "scale-info/std",
+]

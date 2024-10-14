@@ -51,7 +51,7 @@ cargo contract build
 
 
 ``` bash
-cd dapp/contracts/flipper.ink
+cd dapp/contracts/flipper.sol
 truffle build
 ```
 
