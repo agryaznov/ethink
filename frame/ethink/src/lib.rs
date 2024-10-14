@@ -251,7 +251,14 @@ where
         value: U256,
         gas_limit: U256,
     ) -> Result<<T::Contracts as Executor<T::RuntimeCall>>::ExecResult, DispatchError> {
-        T::Contracts::call(from, to, data, value, gas_limit)
+        // BUG this is a temp dirty hack working for ERC20::balance_of() calldata only!
+        // TODO we need decode this in the contract, accepting a bytes array as the input
+        // see https://docs.soliditylang.org/en/develop/abi-spec.html
+        // shrink selector to 4 bytes (from given 16)
+        let mut data1 = data;
+        let _ = data1.drain(4..16);
+        log::error!("DATA1: {}", hex::encode(&data1));
+        T::Contracts::call(from, to, data1, value, gas_limit)
     }
 
     fn check_eth_signature(tx: &EthTransaction) -> Result<H160, TransactionValidityError> {

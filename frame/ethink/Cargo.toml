@@ -19,6 +19,9 @@ sp-std.workspace = true
 sp-core.workspace = true
 log.workspace = true
 
+# TODO REMOVE
+hex.workspace = true
+
 [dev-dependencies]
 hex.workspace = true
 libsecp256k1 = { workspace = true, features = ["static-context", "hmac"] }

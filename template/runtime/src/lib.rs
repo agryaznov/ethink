@@ -841,8 +841,12 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, DispatchError> {
+            log::error!("CALLING:\nfrom:{:?}\nto:{:?},\ndata:{:?},\ngas_limit:{:?}", &from, &to, &data, &gas_limit);
             let result = Ethink::contract_call(from, to, data, value, gas_limit)?
                 .result?;
+            log::error!("DID REVERT?: {:?}", &result.did_revert());
+            log::error!("DATA REEEEETURNED: {:?}", &result.data);
+            log::error!("WHOLE RESULT: {:?}", &result);
             Ok(result.data)
         }
 
