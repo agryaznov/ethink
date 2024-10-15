@@ -9,7 +9,7 @@ mod erc20 {
     use alloy_sol_types::{sol, SolType, SolValue};
 
     sol! {
-        function decimals() {}
+        type Address is address;
     }
     // Use custom environmanent with Ethereum-flavored Accountid
     #[derive(Clone)]
@@ -139,12 +139,13 @@ mod erc20 {
         // and https://docs.rs/parity-scale-codec/3.6.12/src/parity_scale_codec/codec.rs.html#637-657
         //
         // therefore for result 7u8 we get the following
-        // TODO RLP-decoding of the input in ink! so that address offset gets sliced here
+        // TODO ABI-decoding of the input in ink! so that address offset gets sliced here
         // see https://docs.soliditylang.org/en/develop/abi-spec.html
         // NOTE: 32 bytes is off-setted accountid, so we need to dissect it here
         #[ink(message, selector = 0x70a08231)]
-        pub fn balance_of(&self, owner: AccountId) -> [u8;16] {
-            self.balance_of_internal(owner).to_be_bytes()
+        pub fn balance_of(&self, input: [u8;36]) -> [u8;16] {
+            let (owner,) = <(Address,)>::abi_decode_params(input.as_slice(), false).unwrap();
+            self.balance_of_internal(**owner).to_be_bytes()
         }
 
         fn balance_of_internal(&self, owner: AccountId) -> Balance {
