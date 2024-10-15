@@ -251,11 +251,7 @@ where
         value: U256,
         gas_limit: U256,
     ) -> Result<<T::Contracts as Executor<T::RuntimeCall>>::ExecResult, DispatchError> {
-        // BUG this is a temp dirty hack working for ERC20::balance_of() calldata only!
-        // TODO we need decode this in the contract, accepting a bytes array as the input
-        // see https://docs.soliditylang.org/en/develop/abi-spec.html
-        // shrink selector to 4 bytes (from given 16)
-        log::error!("DATA PASSED to contract fn: {}", hex::encode(&data));
+        log::error!(target: "ethink", "Contract: {:?} call with input: {}", hex::encode(&to), hex::encode(&data));
         T::Contracts::call(from, to, data, value, gas_limit)
     }
 
