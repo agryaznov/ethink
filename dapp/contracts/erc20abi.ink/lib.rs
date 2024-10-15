@@ -109,7 +109,7 @@ mod erc20 {
         /// Output len: 16 (U256)
         #[ink(message, selector = 0x70a08231)]
         pub fn balance_of(&self, input: [u8; 32]) -> [u8; 16] {
-            ink::env::debug_println!("Hello from contract! Input is: {:x?}", &input);
+            ink::env::debug_println!("Hello from contract:balance_of(). Input is: {:x?}", &input);
             let (owner,) = <(Address,)>::abi_decode_params(input.as_slice(), false).unwrap();
             ink::env::debug_println!("Address decoded is: {:x?}", &owner);
             self.balance_of_internal(**owner).to_be_bytes()
@@ -139,11 +139,12 @@ mod erc20 {
         ///
         /// Input len: 20 (accountId) + 32 (U256) + 12 (padding)
         #[ink(message, selector = 0xa9059cbb)]
-        pub fn transfer(&mut self, input: [u8; 64]) -> Result<()> {
+        pub fn transfer(&mut self, input: [u8; 64]) -> Result<bool> {
             let from = self.env().caller();
+            ink::env::debug_println!("Hello from contract:transfer(). Input is: {:x?}", &input);
             let (to, value) =
                 <(Address, Amount)>::abi_decode_params(input.as_slice(), false).unwrap();
-            self.transfer_from_to(&from, &to, value)
+            self.transfer_from_to(&from, &to, value).map(|_| true)
         }
 
         /// Allows `spender` to withdraw from the caller's account multiple times, up to
@@ -217,6 +218,7 @@ mod erc20 {
             value: Balance,
         ) -> Result<()> {
             let from_balance = self.balance_of_internal(*from);
+            ink::env::debug_println!("Hello from contract:transfer_from_to(). from_balance is: {:?}", &from_balance);
             if from_balance < value {
                 return Err(Error::InsufficientBalance);
             }

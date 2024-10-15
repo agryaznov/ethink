@@ -204,6 +204,7 @@ pub mod pallet {
             let call = T::Contracts::build_call(to, value, data, gas_limit)
                 .ok_or(Error::<T>::TxNotSupported)?;
             // Make call
+            log::error!(target: "ethink:pallet", "Dispatching CALL {:?}", &call);
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
@@ -251,7 +252,7 @@ where
         value: U256,
         gas_limit: U256,
     ) -> Result<<T::Contracts as Executor<T::RuntimeCall>>::ExecResult, DispatchError> {
-        log::error!(target: "ethink", "Contract: {:?} call with input: {}", hex::encode(&to), hex::encode(&data));
+        log::error!(target: "ethink:pallet", "Contract: {:?} call with input: {}", hex::encode(&to), hex::encode(&data));
         T::Contracts::call(from, to, data, value, gas_limit)
     }
 

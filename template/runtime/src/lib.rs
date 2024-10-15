@@ -857,6 +857,8 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<U256, DispatchError> {
+            // BUG eth_estimateGas is also used on native token transfers
+            // TODO add ContractExecutor::gas_estimate() and route the request to it
             let res = Ethink::contract_call(from, to, data, value, gas_limit)?;
             // ensure successful execution
             let _ = res.result?;
