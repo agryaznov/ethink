@@ -6,8 +6,11 @@ const ABI: &str = "{\"compiler\":{\"version\":\"0.8.26+commit.8a97fa7a\"},\"lang
 mod erc20 {
     use ink::storage::Mapping;
     use ink::prelude::vec::Vec;
-    use alloy_json_abi::JsonAbi;
+    use alloy_sol_types::{sol, SolType, SolValue};
 
+    sol! {
+        function decimals() {}
+    }
     // Use custom environmanent with Ethereum-flavored Accountid
     #[derive(Clone)]
     pub struct EthinkEnvironment;
@@ -107,11 +110,6 @@ mod erc20 {
         //
         #[ink(message, selector = 0x313ce567)]
         pub fn decimals(&self) -> [u8;1] {
-            let abi = JsonAbi::parse([
-                "constructor(string symbol, string name)",
-                "function decimals()(uint8)",
-                "function balanceOf(address owner)(uint balance)",
-            ]).unwrap();
             [6u8]
         }
 
