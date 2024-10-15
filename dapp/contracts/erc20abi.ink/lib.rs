@@ -143,8 +143,10 @@ mod erc20 {
         // see https://docs.soliditylang.org/en/develop/abi-spec.html
         // NOTE: 32 bytes is off-setted accountid, so we need to dissect it here
         #[ink(message, selector = 0x70a08231)]
-        pub fn balance_of(&self, input: [u8;36]) -> [u8;16] {
+        pub fn balance_of(&self, input: [u8;32]) -> [u8;16] {
+            ink::env::debug_println!("Hello from contract! Input is: {:x?}", &input);
             let (owner,) = <(Address,)>::abi_decode_params(input.as_slice(), false).unwrap();
+            ink::env::debug_println!("Address decoded is: {:x?}", &owner);
             self.balance_of_internal(**owner).to_be_bytes()
         }
 
