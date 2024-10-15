@@ -1,5 +1,5 @@
 [package]
-name = "erc20rlp"
+name = "erc20abi"
 version = "5.0.0"
 authors = ["[your_name] <[your_email]>"]
 edition = "2021"
@@ -13,10 +13,7 @@ ink_env = { git = "https://github.com/use-ink/ink", rev = "0cd2b89", default-fea
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
 
-[dev-dependencies]
-alloy = { version = "0.4.2", features = [
-      "rlp"
-] }
+alloy-json-abi = { version = "0.8.8", default-features = false }
 
 [lib]
 path = "lib.rs"

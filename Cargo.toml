@@ -12,7 +12,7 @@ members = [
     "primitives/mapping",
     "primitives/eth",
 ]
-exclude = [ "dapp/contracts/flipper.ink", "dapp/contracts/erc20.ink" , "dapp/contracts/erc20rlp.ink" ]
+exclude = [ "dapp/contracts/flipper.ink", "dapp/contracts/erc20.ink" , "dapp/contracts/erc20abi.ink" ]
 resolver = "2"
 
 [workspace.dependencies]
