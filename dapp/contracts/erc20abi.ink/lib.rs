@@ -3,8 +3,10 @@
 
 #[ink::contract(env = EthinkEnvironment)]
 mod erc20 {
-    use alloy_sol_types::{sol, SolType};
+    use alloy_sol_types::{sol, SolType, sol_data::Uint};
+    use alloy_primitives::U256;
     use ink::storage::Mapping;
+    use sp_std::vec::Vec;
 
     sol! {
         type Address is address;
@@ -93,8 +95,11 @@ mod erc20 {
 
         /// Returns token decimals
         #[ink(message, selector = 0x313ce567)]
-        pub fn decimals(&self) -> [u8; 1] {
-            [6u8]
+        pub fn decimals(&self) -> Vec<u8> {
+            // we need 32 bytes because abi spec requires that length
+            let dbg = Uint::<8>::abi_encode(&7u8);
+            ink::env::debug_println!("7u8 encoded is: {:x?}", &dbg);
+            dbg
         }
 
         /// Returns the total token supply.

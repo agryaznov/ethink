@@ -12,8 +12,10 @@ ink_env = { git = "https://github.com/use-ink/ink", rev = "0cd2b89", default-fea
 
 scale = { package = "parity-scale-codec", version = "3", default-features = false, features = ["derive"] }
 scale-info = { version = "2.6", default-features = false, features = ["derive"], optional = true }
+sp-std = { version = "14.0.0",  default-features = false }
 
 alloy-sol-types = { version = "0.8.8", default-features = false }
+alloy-primitives = { version = "0.8.8", default-features = false }
 
 [lib]
 path = "lib.rs"
