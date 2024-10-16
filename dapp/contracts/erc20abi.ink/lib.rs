@@ -113,9 +113,7 @@ mod erc20 {
         /// Output len: 32 (U256)
         #[ink(message, selector = 0x70a08231)]
         pub fn balance_of(&self, input: [u8;32]) -> [u8;32] {
-            ink::env::debug_println!("Hello from contract:balance_of(). Input is: {:x?}", &input);
             let (owner,) = <(Address,)>::abi_decode_params(input.as_slice(), false).unwrap();
-            ink::env::debug_println!("Address decoded is: {:x?}", &owner);
             Uint::<128>::abi_encode(&self.balance_of_internal(**owner)).try_into().expect("ink: result value length is wrong")
         }
 
@@ -124,31 +122,27 @@ mod erc20 {
         /// Returns `0` if no allowance has been set.
         ///
         /// Input len: 20 + 20 (accountId) + 12 (padding)
-        /// Output len: 16 (U256)
+        /// Output len: 32 (U256)
         #[ink(message, selector = 0xdd62ed3e)]
-        pub fn allowance(&self, input: [u8; 52]) -> [u8; 16] {
+        pub fn allowance(&self, input: [u8; 52]) -> [u8; 32] {
             let (owner, spender) =
                 <(Address, Address)>::abi_decode_params(input.as_slice(), false).unwrap();
-            self.allowance_internal(**owner, **spender).to_be_bytes()
+            Uint::<128>::abi_encode(&self.allowance_internal(**owner, **spender)).try_into().expect("ink: result value length is wrong")
         }
 
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
         ///
         /// On success a `Transfer` event is emitted.
         ///
-        /// # Errors
-        ///
-        /// Returns `InsufficientBalance` error if there are not enough tokens on
-        /// the caller's account balance.
-        ///
         /// Input len: 20 (accountId) + 32 (U256) + 12 (padding)
         #[ink(message, selector = 0xa9059cbb)]
-        pub fn transfer(&mut self, input: [u8; 64]) -> Result<bool> {
+        pub fn transfer(&mut self, input: [u8; 64]) -> [u8;32] {
             let from = self.env().caller();
             ink::env::debug_println!("Hello from contract:transfer(). Input is: {:x?}", &input);
             let (to, value) =
                 <(Address, Amount)>::abi_decode_params(input.as_slice(), false).unwrap();
-            self.transfer_from_to(&from, &to, value).map(|_| true)
+            self.transfer_from_to(&from, &to, value).expect("ink: insufficient allowance or balance");
+            Uint::<8>::abi_encode(&(true as u8)).try_into().expect("ink: result value length is wrong")
         }
 
         /// Allows `spender` to withdraw from the caller's account multiple times, up to
