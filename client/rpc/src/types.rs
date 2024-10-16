@@ -1,7 +1,8 @@
 //! We keep custom types here and not in rpc-core,
 //! for we might later switch to fc-rpc-core.
 use ep_eth::{
-    AccountId20, EthereumSignature, LegacyTransactionMessage, TransactionSignature, H256, U256, H160, H64
+    AccountId20, EthereumSignature, LegacyTransactionMessage, TransactionSignature, H160, H256,
+    H64, U256,
 };
 
 // Substrate
