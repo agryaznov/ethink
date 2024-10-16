@@ -1,7 +1,7 @@
 //! We keep custom types here and not in rpc-core,
 //! for we might later switch to fc-rpc-core.
 use ep_eth::{
-    AccountId20, EthereumSignature, LegacyTransactionMessage, TransactionSignature, H256, U256,
+    AccountId20, EthereumSignature, LegacyTransactionMessage, TransactionSignature, H256, U256, H160, H64
 };
 
 // Substrate
@@ -42,11 +42,14 @@ impl<B: BlockT<Hash = H256>> From<SubstrateBlock<B>> for RichBlock {
             number: Some(U256::from(
                 UniqueSaturatedInto::<u128>::unique_saturated_into(*h.number()),
             )),
+            miner: Some(H160::zero()),
+            nonce: Some(H64::zero()),
             ..Default::default()
         };
 
         let eth_block = EthereumBlock {
             header,
+            total_difficulty: Some(U256::zero()),
             ..Default::default()
         };
 
