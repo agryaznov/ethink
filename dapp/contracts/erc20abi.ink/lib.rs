@@ -6,7 +6,6 @@ mod erc20 {
     use alloy_sol_types::{sol, SolType, sol_data::Uint};
     use alloy_primitives::U256;
     use ink::storage::Mapping;
-    use ink::prelude::vec::Vec;
 
     sol! {
         type Address is address;
@@ -95,26 +94,29 @@ mod erc20 {
 
         /// Returns token decimals
         #[ink(message, selector = 0x313ce567)]
-        pub fn decimals(&self) -> Vec<u8> {
-            Uint::<8>::abi_encode(&6u8)
+        pub fn decimals(&self) -> [u8;32] {
+            Uint::<8>::abi_encode(&6u8).try_into().expect("ink: result value length is wrong")
         }
 
         /// Returns the total token supply.
         #[ink(message, selector = 0x18160ddd)]
-        pub fn total_supply(&self) -> Vec<u8> {
-            Uint::<128>::abi_encode(&self.total_supply)
+        pub fn total_supply(&self) -> [u8;32] {
+            Uint::<128>::abi_encode(&self.total_supply).try_into().expect("ink: result value length is wrong")
         }
 
         /// Returns the account balance for the specified `owner`
-        ///
+        /// NOTE: we can't use Vec<u8> as i\o type for contracts,
+        /// because ink! will apply metadata [de|en]coding for its value as a custom type
+        /// Hence we use fixed-sized byte arrays here as a workaround.
+        /// Proper solution would be to upstream abi logic into ink!.
         /// Input len: 20 (accountId) + 12 (padding)
-        /// Output len: 16 (U256)
+        /// Output len: 32 (U256)
         #[ink(message, selector = 0x70a08231)]
-        pub fn balance_of(&self, input: [u8; 32]) -> [u8; 16] {
+        pub fn balance_of(&self, input: [u8;32]) -> [u8;32] {
             ink::env::debug_println!("Hello from contract:balance_of(). Input is: {:x?}", &input);
             let (owner,) = <(Address,)>::abi_decode_params(input.as_slice(), false).unwrap();
             ink::env::debug_println!("Address decoded is: {:x?}", &owner);
-            self.balance_of_internal(**owner).to_be_bytes()
+            Uint::<128>::abi_encode(&self.balance_of_internal(**owner)).try_into().expect("ink: result value length is wrong")
         }
 
         /// Returns the amount which `spender` is still allowed to withdraw from `owner`.
