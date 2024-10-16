@@ -848,13 +848,10 @@ impl_runtime_apis! {
                 log::error!("Contract {:?} call reverted: {:?}", &to, &result.data);
                 return Err(DispatchError::Other("Contract call reverted"))
             }
-            // ink! returns returned val wrapped into Result, which takes 1st byte
-            // here we rm it to get the inner value only
-            // We also remove 1 more byte encoding the ret val type
-            // NOTE: might be incompatible with ink-non-abi contracts, though those ones are not expected to be
-            // called via eth rpc
-            // TODO: this is Convention that ink contract retval is Vec<u8>, which needs to be added to docs
-            let dbg = result.data[2..].to_vec();
+            // NOTE: ink! returns returned val wrapped into Result, which takes 1st byte
+            // here we rm it to get the inner value only.
+            // Proper solution would be to upstream abi logic into ink!.
+            let dbg = result.data[1..].to_vec();
             log::debug!("Contract returned val: {:x?}", &dbg);
             Ok(dbg)
         }
