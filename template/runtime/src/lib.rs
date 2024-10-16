@@ -380,6 +380,8 @@ impl pallet_transaction_payment::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type OnChargeTransaction = FungibleAdapter<Balances, ()>;
     type OperationalFeeMultiplier = ConstU8<5>;
+    // NOTE: this only charges for the ref_time() part of Weight
+    // see https://docs.rs/sp-weights/31.0.0/src/sp_weights/lib.rs.html#222
     type WeightToFee = IdentityFee<Balance>;
     type LengthToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
@@ -838,11 +840,11 @@ impl_runtime_apis! {
             from: H160,
             to: H160,
             data: Vec<u8>,
-            value: U256,
-            gas_limit: U256,
+            value: u128,
+            gas_limit: Weight,
         ) -> Result<Vec<u8>, DispatchError> {
             log::debug!("CALLING:\nfrom:{:?}\nto:{:?},\ndata:{:?},\ngas_limit:{:?}", &from, &to, &data, &gas_limit);
-            let result = Ethink::contract_call(from, to, data, value, gas_limit)?
+            let result = Ethink::contract_call(from.into(), to.into(), data, value, gas_limit)
                 .result?;
             if result.did_revert() {
                 log::error!("Contract {:?} call reverted: {:?}", &to, &result.data);
@@ -860,10 +862,13 @@ impl_runtime_apis! {
             from: H160,
             to: H160,
             data: Vec<u8>,
-            value: U256,
-            gas_limit: U256,
+            value: u128,
+            gas_limit: Weight,
         ) -> Result<U256, DispatchError> {
-            Ethink::gas_estimate(from, to, data, value, gas_limit)
+            log::debug!("Estimating Gas, GAS_LIMIT: {:?}", &gas_limit);
+            let dbg = Ethink::gas_estimate(from.into(), to.into(), data, value, gas_limit);
+            log::debug!("Estimated Gas: {:?}", &dbg);
+            dbg
         }
 
         fn build_extrinsic(
@@ -883,7 +888,7 @@ pub struct ContractsExecutor;
 
 use pallet_contracts::ContractExecResult;
 
-impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
+impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
     type ExecResult = ContractExecResult<Balance, EventRecord>;
 
     fn is_contract(who: H160) -> bool {
@@ -894,22 +899,22 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
 
     /// Estimate gas
     fn gas_estimate(
-        from: H160,
-        to: H160,
+        from: AccountId,
+        to: AccountId,
         data: Vec<u8>,
-        value: U256,
-        gas_limit: U256,
+        value: Balance,
+        gas_limit: Weight,
     ) -> Result<U256, DispatchError> {
-        if Self::is_contract(to) {
-            let res = Self::call(from, to, data, value, gas_limit)?;
+        if Self::is_contract(to.into()) {
+            let res = Self::call(from, to, data, value, gas_limit);
             // ensure successful execution
             let _ = res.result?;
-            // get consumed weight
-            let weight: SubstrateWeight = res.gas_consumed.into();
-            // convert Weight into U256
-            Ok(weight.into())
+            // get consumed gas
+            let gas_consumed = res.gas_consumed.ref_time();
+            Ok(gas_consumed.into())
         } else {
             // Standard base fee
+            // TODO put to ethink constants
             Ok(U256::from(21000u32))
         }
     }
@@ -937,24 +942,13 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
     }
 
     fn call(
-        from: H160,
-        to: H160,
+        from: AccountId,
+        to: AccountId,
         data: Vec<u8>,
-        value: U256,
-        gas_limit: U256,
-    ) -> Result<Self::ExecResult, DispatchError> {
-        let from = AccountId::from(from);
-        let to = AccountId::from(to);
-        // TODO this is not really a Dispatch error
-        // TODO maybe it worth adding specific error types on arg. types conversion failures
-        // Here we try to convert provided U256 into runtime Balance (which is usually u128 in Substrate)
-        let value = value
-            .try_into()
-            .map_err(|_| DispatchError::Arithmetic(ArithmeticError::Overflow))?;
-
-        let gas_limit = SubstrateWeight::from(gas_limit).into();
-
-        Ok(Contracts::bare_call(
+        value: Balance,
+        gas_limit: Weight,
+    ) -> Self::ExecResult {
+        Contracts::bare_call(
             from,
             to,
             value,
@@ -964,6 +958,6 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             CONTRACTS_DEBUG_OUTPUT,
             CONTRACTS_EVENTS,
             pallet_contracts::Determinism::Enforced,
-        ))
+        )
     }
 }

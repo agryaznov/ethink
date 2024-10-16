@@ -1,5 +1,6 @@
 use crate::{types::EthereumSigner, CallRequest, *};
 use ep_eth::{AccountId20, EnvelopedDecodable, LegacyTransaction, LegacyTransactionMessage};
+use ep_mapping::Weight;
 
 impl<B, C, P> EthRPC<B, C, P>
 where
@@ -80,16 +81,31 @@ where
             gas,
             ..
         } = request;
+        // some calls like e.g. ERC20::decimals() don't have _from
+        let from = from.unwrap_or_default();
+        let to = to.ok_or(rpc_err!("empty `to` in call rq"))?;
+        // No value defaults to 0
+        let value = value
+            .unwrap_or_default()
+            .try_into()
+            .map_err(|_| rpc_err!("bad `value` in call rq"))?;
+        // Set ref_time weight limit to MAX if not provided
+        let gas: u64 = gas
+            .unwrap_or(U256::from(u64::MAX))
+            .try_into()
+            .map_err(|_| rpc_err!("bad `gas` in call rq"))?;
+        // Set proof_size weight limit to MAX: ethink runtime is configured not to charge fees for it
+        let gas_limit = Weight::from_parts(gas, u64::MAX);
 
         self.client
             .runtime_api()
             .call(
                 hash,
-                from.unwrap_or_default(), // some calls like e.g. ERC20::decimals() don't have _from
-                to.ok_or(rpc_err!("empty `to` in call rq"))?,
+                from.into(),
+                to.into(),
                 data.unwrap_or_default().0, // No data defaults to vec![]
-                value.unwrap_or(0.into()),  // No value defaults to 0
-                gas.unwrap_or(U256::MAX),   // defaults to MAX (no limit)
+                value,
+                gas_limit,
             )
             .map_err(|err| rpc_err!("execution fatal: {:?}", err))?
             .map_err(|err| rpc_err!("runtime error on eth_call(): {:?}", err))
@@ -110,8 +126,21 @@ where
             to,
             value,
             data,
+            gas,
             ..
         } = request;
+        // No value defaults to 0
+        let value = value
+            .unwrap_or_default()
+            .try_into()
+            .map_err(|_| rpc_err!("bad `value` in call rq"))?;
+        // Set ref_time weight limit to MAX if not provided
+        let gas: u64 = gas
+            .unwrap_or(U256::from(u64::MAX))
+            .try_into()
+            .map_err(|_| rpc_err!("bad `gas` in call rq"))?;
+        // Set proof_size weight limit to MAX: ethink runtime is configured not to charge fees for it
+        let gas_limit = Weight::from_parts(gas, u64::MAX);
 
         self.client
             .runtime_api()
@@ -120,8 +149,8 @@ where
                 from.ok_or(rpc_err!("empty `from` in call rq"))?,
                 to.ok_or(rpc_err!("empty `to` in call rq"))?,
                 data.unwrap_or_default().0,
-                value.unwrap_or(0.into()),
-                U256::MAX,
+                value,
+                gas_limit,
             )
             .map_err(|err| rpc_err!("execution fatal: {:?}", err))?
             .map_err(|err| rpc_err!("runtime error on eth_call(): {:?}", err))
