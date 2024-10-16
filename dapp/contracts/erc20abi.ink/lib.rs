@@ -6,7 +6,7 @@ mod erc20 {
     use alloy_sol_types::{sol, SolType, sol_data::Uint};
     use alloy_primitives::U256;
     use ink::storage::Mapping;
-    use sp_std::vec::Vec;
+    use ink::prelude::vec::Vec;
 
     sol! {
         type Address is address;
@@ -96,16 +96,13 @@ mod erc20 {
         /// Returns token decimals
         #[ink(message, selector = 0x313ce567)]
         pub fn decimals(&self) -> Vec<u8> {
-            // we need 32 bytes because abi spec requires that length
-            let dbg = Uint::<8>::abi_encode(&7u8);
-            ink::env::debug_println!("7u8 encoded is: {:x?}", &dbg);
-            dbg
+            Uint::<8>::abi_encode(&6u8)
         }
 
         /// Returns the total token supply.
         #[ink(message, selector = 0x18160ddd)]
-        pub fn total_supply(&self) -> [u8; 16] {
-            self.total_supply.to_be_bytes()
+        pub fn total_supply(&self) -> Vec<u8> {
+            Uint::<128>::abi_encode(&self.total_supply)
         }
 
         /// Returns the account balance for the specified `owner`
