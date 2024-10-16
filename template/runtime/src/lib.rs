@@ -841,13 +841,16 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<Vec<u8>, DispatchError> {
-            log::error!("CALLING:\nfrom:{:?}\nto:{:?},\ndata:{:?},\ngas_limit:{:?}", &from, &to, &data, &gas_limit);
+            log::debug!("CALLING:\nfrom:{:?}\nto:{:?},\ndata:{:?},\ngas_limit:{:?}", &from, &to, &data, &gas_limit);
             let result = Ethink::contract_call(from, to, data, value, gas_limit)?
                 .result?;
-            log::error!("DID REVERT?: {:?}", &result.did_revert());
-            log::error!("DATA REEEEETURNED: {:?}", &result.data);
-            log::error!("WHOLE RESULT: {:?}", &result);
-            Ok(result.data)
+            if result.did_revert() {
+                log::error!("Contract {:?} call reverted: {:?}", &to, &result.data);
+                return Err(DispatchError::Other("Contract call reverted"))
+            }
+            // ink! returns returned val wrapped into Result, which takes 1st byte
+            // here we rm it to get the inner value only
+            Ok(result.data[1..].to_vec())
         }
 
         fn gas_estimate(
