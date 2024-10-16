@@ -92,7 +92,7 @@ fn testnet_genesis(
     serde_json::json!({
         "sudo": { "key": Some(root) },
         "balances": {
-            "balances": endowed_accounts.iter().cloned().map(|k| (k, 1u64 << 60)).collect::<Vec<_>>(),
+            "balances": endowed_accounts.iter().cloned().map(|k| (k, 100_000_000_000_000_000_000_000_000u128)).collect::<Vec<_>>(),
         },
         "aura": { "authorities": initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>() },
         "grandpa": { "authorities": initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect::<Vec<_>>() },

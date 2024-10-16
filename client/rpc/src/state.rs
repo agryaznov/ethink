@@ -52,7 +52,7 @@ where
 
     // TODO implement
     pub fn gas_price(&self) -> RpcResult<U256> {
-        Ok(U256::zero())
+        Ok(U256::from(1000u32))
     }
 
     // TODO implement

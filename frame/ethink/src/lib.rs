@@ -146,6 +146,14 @@ pub trait Executor<RuntimeCall> {
         value: U256,
         gas_limit: U256,
     ) -> Result<Self::ExecResult, DispatchError>;
+    /// Estimate gas
+    fn gas_estimate(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> Result<U256, DispatchError>;
 }
 
 pub use self::pallet::*;
@@ -254,6 +262,16 @@ where
     ) -> Result<<T::Contracts as Executor<T::RuntimeCall>>::ExecResult, DispatchError> {
         log::error!(target: "ethink:pallet", "Contract: {:?} call with input: {}", hex::encode(&to), hex::encode(&data));
         T::Contracts::call(from, to, data, value, gas_limit)
+    }
+
+    pub fn gas_estimate(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> Result<U256, DispatchError> {
+        T::Contracts::gas_estimate(from, to, data, value, gas_limit)
     }
 
     fn check_eth_signature(tx: &EthTransaction) -> Result<H160, TransactionValidityError> {

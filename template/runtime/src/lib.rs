@@ -863,15 +863,7 @@ impl_runtime_apis! {
             value: U256,
             gas_limit: U256,
         ) -> Result<U256, DispatchError> {
-            // BUG eth_estimateGas is also used on native token transfers
-            // TODO add ContractExecutor::gas_estimate() and route the request to it
-            let res = Ethink::contract_call(from, to, data, value, gas_limit)?;
-            // ensure successful execution
-            let _ = res.result?;
-            // get consumed weight
-            let weight: SubstrateWeight = res.gas_consumed.into();
-            // convert Weight into U256
-            Ok(weight.into())
+            Ethink::gas_estimate(from, to, data, value, gas_limit)
         }
 
         fn build_extrinsic(
@@ -898,6 +890,28 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
         // TODO This could possibly be optimized later with another method which uses
         // StorageMap::contains_key() instead of StorageMap::get() under the hood.
         Contracts::code_hash(&who.into()).is_some()
+    }
+
+    /// Estimate gas
+    fn gas_estimate(
+        from: H160,
+        to: H160,
+        data: Vec<u8>,
+        value: U256,
+        gas_limit: U256,
+    ) -> Result<U256, DispatchError> {
+        if Self::is_contract(to) {
+            let res = Self::call(from, to, data, value, gas_limit)?;
+            // ensure successful execution
+            let _ = res.result?;
+            // get consumed weight
+            let weight: SubstrateWeight = res.gas_consumed.into();
+            // convert Weight into U256
+            Ok(weight.into())
+        } else {
+            // Standard base fee
+            Ok(U256::from(21000u32))
+        }
     }
 
     fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
