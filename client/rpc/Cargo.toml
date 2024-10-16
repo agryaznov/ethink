@@ -15,6 +15,7 @@ futures.workspace = true
 ethink-rpc-core.workspace = true
 pallet-ethink = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
+ep-mapping = { workspace = true, features = ["default"] }
 
 # Substrate
 sp-io = { workspace = true, default-features = false }

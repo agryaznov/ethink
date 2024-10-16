@@ -2483,6 +2483,7 @@ name = "ethink-rpc"
 version = "0.3.0"
 dependencies = [
  "ep-eth",
+ "ep-mapping",
  "ethink-rpc-core",
  "futures",
  "hex",
