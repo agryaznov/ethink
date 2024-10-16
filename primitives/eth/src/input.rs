@@ -32,6 +32,7 @@ impl Serialize for ContractInput {
 
 #[derive(Clone)]
 /// Ethereum transaction input, used for transaciton building in tests
+// TODO BUG update to proper gas-weight conversion
 pub struct EthTxInput {
     pub nonce: u64,
     pub gas_price: u64,

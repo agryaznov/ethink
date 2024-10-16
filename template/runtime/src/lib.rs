@@ -921,8 +921,12 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
 
     fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
+        // TODO proper ERR on conversion failures
         let value = value.try_into().ok()?;
-        let gas_limit = SubstrateWeight::from(gas_limit).into();
+        let gas_limit = gas_limit.try_into().ok()?;
+        // TODO this logic to be encapsulated in ep_ crate,
+        // and re-used from there here and in the rpc
+        let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
 
         Some(if Self::is_contract(to) {
             pallet_contracts::Call::<Runtime>::call {
