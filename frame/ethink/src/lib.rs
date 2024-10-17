@@ -210,10 +210,10 @@ pub mod pallet {
             // Increment nonce of the sender account
             System::<T>::inc_account_nonce(from);
             // Compose proper destination pallet call
-            let call = T::Contracts::build_call(to, value, data, gas_limit)
+            let call = T::Contracts::build_call(to, value, data.clone(), gas_limit)
                 .ok_or(Error::<T>::TxNotSupported)?;
             // Make call
-            log::debug!(target: "ethink:pallet", "Dispatching CALL {:?}", &call);
+            log::debug!(target: "ethink:pallet", "Dispatching CALL {:?}\n DATA in hex: {}", &call, hex::encode(&data));
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed
