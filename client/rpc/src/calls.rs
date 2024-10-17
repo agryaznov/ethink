@@ -136,6 +136,8 @@ where
             .map_err(|_| rpc_err!("bad `value` in call rq"))?;
         // Set ref_time weight limit to MAX if not provided
         let gas: u64 = gas
+            // When 0 gas is passed, it's treated as no limit
+            .filter(|g| !g.is_zero())
             .unwrap_or(U256::from(u64::MAX))
             .try_into()
             .map_err(|_| rpc_err!("bad `gas` in call rq"))?;
