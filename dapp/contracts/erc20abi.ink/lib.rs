@@ -3,7 +3,7 @@
 
 #[ink::contract(env = EthinkEnvironment)]
 mod erc20 {
-    use alloy_sol_types::{sol, SolType, sol_data::Uint};
+    use alloy_sol_types::{sol, SolType, sol_data::{String,Uint}};
     use alloy_primitives::U256;
     use ink::storage::Mapping;
 
@@ -201,6 +201,13 @@ mod erc20 {
             Ok(())
         }
 
+        // TODO doc
+        // TODO output size reasoning
+        #[ink(message, selector = 0x95d89b41)]
+        pub fn name(&self) -> [u8;96] {
+            String::abi_encode("ink! token").try_into().expect("ink: result value length is wrong")
+        }
+
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
         ///
         /// On success a `Transfer` event is emitted.
@@ -241,21 +248,5 @@ mod erc20 {
         fn allowance_internal(&self, owner: AccountId, spender: AccountId) -> Balance {
             self.allowances.get((&owner, &spender)).unwrap_or_default()
         }
-    }
-}
-
-#[cfg(test)]
-mod tests {
-    use super::*;
-    use alloy::{primitives::U256, rlp::Encodable};
-
-    #[test]
-    fn u8_output() {
-        let mut encoded = Vec::<u8>::new();
-        let d = U256::from(6u8);
-        <U256 as Encodable>::encode(&d, &mut encoded);
-        println!("6u8 in bytes is: {:?}", &encoded);
-        println!("6u8.to_le_bytes().into(): {:?}", 6u8.to_le_bytes());
-        todo!()
     }
 }
