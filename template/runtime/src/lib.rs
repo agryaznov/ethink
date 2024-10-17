@@ -865,7 +865,7 @@ impl_runtime_apis! {
             value: u128,
             gas_limit: Weight,
         ) -> Result<U256, DispatchError> {
-            log::debug!("Estimating Gas, GAS_LIMIT: {:?}", &gas_limit);
+            log::debug!("Estimating Gas for call from: {from:?}, to: {to:?}, data: {} GAS_LIMIT: {:?}", hex::encode(&data), &gas_limit);
             let dbg = Ethink::gas_estimate(from.into(), to.into(), data, value, gas_limit);
             log::debug!("Estimated Gas: {:?}", &dbg);
             dbg

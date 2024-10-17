@@ -2527,6 +2527,7 @@ dependencies = [
  "frame-support",
  "frame-system",
  "frame-system-rpc-runtime-api",
+ "hex",
  "log",
  "pallet-assets",
  "pallet-aura",
