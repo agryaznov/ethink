@@ -113,7 +113,7 @@ where
     }
 
     // for this we do same as for call() but return consumed gas val
-    // we encode sp_weights::Weight, which is 64*2 bytes length, into U256 value
+    // we return ref_time() part of the Weight consumed, as U256
     pub async fn estimate_gas(
         &self,
         request: CallRequest,
@@ -126,7 +126,6 @@ where
             to,
             value,
             data,
-            gas,
             ..
         } = request;
         // No value defaults to 0
@@ -134,15 +133,8 @@ where
             .unwrap_or_default()
             .try_into()
             .map_err(|_| rpc_err!("bad `value` in call rq"))?;
-        // Set ref_time weight limit to MAX if not provided
-        let gas: u64 = gas
-            // When 0 gas is passed, it's treated as no limit
-            .filter(|g| !g.is_zero())
-            .unwrap_or(U256::from(u64::MAX))
-            .try_into()
-            .map_err(|_| rpc_err!("bad `gas` in call rq"))?;
-        // Set proof_size weight limit to MAX: ethink runtime is configured not to charge fees for it
-        let gas_limit = Weight::from_parts(gas, u64::MAX);
+        // For gas estimation we set limit to max to allow dry call pass
+        let gas_limit = Weight::MAX;
 
         self.client
             .runtime_api()
