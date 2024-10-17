@@ -27,7 +27,6 @@ where
             .map_err(|err| rpc_err!("Fetching runtime account balance failed: {:?}", err))
     }
 
-    // TODO implement
     pub fn chain_id(&self) -> RpcResult<Option<U64>> {
         let hash = self.client.info().best_hash;
         Ok(Some(
@@ -52,7 +51,7 @@ where
 
     // TODO implement
     pub fn gas_price(&self) -> RpcResult<U256> {
-        Ok(U256::zero())
+        Ok(U256::from(1000u32))
     }
 
     // TODO implement
@@ -65,7 +64,6 @@ where
         Ok(H256::zero())
     }
 
-    // TODO implement
     pub async fn transaction_count(
         &self,
         address: H160,

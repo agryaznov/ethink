@@ -36,7 +36,6 @@ use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
 };
-use scale_codec::Encode;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata, H160, U256};
@@ -48,7 +47,7 @@ use sp_runtime::{
         IdentifyAccount, NumberFor, PostDispatchInfoOf, Verify,
     },
     transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
-    ApplyExtrinsicResult, ArithmeticError, DispatchError,
+    ApplyExtrinsicResult, DispatchError,
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -56,7 +55,6 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 // ETH RPC support
 use ep_eth::EthereumSignature;
-use ep_mapping::SubstrateWeight;
 use pallet_ethink::EthTransaction;
 
 // A few exports that help ease life for downstream crates.
@@ -80,7 +78,7 @@ use pallet_grandpa::{
     fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
 pub use pallet_timestamp::Call as TimestampCall;
-use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter};
+use pallet_transaction_payment::FungibleAdapter;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};
@@ -380,6 +378,8 @@ impl pallet_transaction_payment::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type OnChargeTransaction = FungibleAdapter<Balances, ()>;
     type OperationalFeeMultiplier = ConstU8<5>;
+    // NOTE: this only charges for the ref_time() part of Weight
+    // see https://docs.rs/sp-weights/31.0.0/src/sp_weights/lib.rs.html#222
     type WeightToFee = IdentityFee<Balance>;
     type LengthToFee = IdentityFee<Balance>;
     type FeeMultiplierUpdate = ();
@@ -445,7 +445,6 @@ impl pallet_contracts::Config for Runtime {
     type Currency = Balances;
     type RuntimeEvent = RuntimeEvent;
     type RuntimeCall = RuntimeCall;
-
     /// The safest default is to allow no calls at all.
     ///
     /// Runtimes should whitelist dispatchables that are allowed to be called from contracts
@@ -838,28 +837,35 @@ impl_runtime_apis! {
             from: H160,
             to: H160,
             data: Vec<u8>,
-            value: U256,
-            gas_limit: U256,
+            value: u128,
+            gas_limit: Weight,
         ) -> Result<Vec<u8>, DispatchError> {
-            Ethink::contract_call(from, to, data, value, gas_limit)?
-                .result
-                .map(|res| res.encode())
+            log::debug!("CALLING:\nfrom:{:?}\nto:{:?},\ndata:{:?},\ngas_limit:{:?}", &from, &to, &data, &gas_limit);
+            let result = Ethink::contract_call(from.into(), to.into(), data, value, gas_limit)
+                .result?;
+            if result.did_revert() {
+                log::error!("Contract {:?} call reverted: {:?}", &to, &result.data);
+                return Err(DispatchError::Other("Contract call reverted"))
+            }
+            // NOTE: ink! returns returned val wrapped into Result, which takes 1st byte
+            // here we rm it to get the inner value only.
+            // Proper solution would be to upstream abi logic into ink!.
+            let dbg = result.data[1..].to_vec();
+            log::debug!("Contract returned val: {:x?}", &dbg);
+            Ok(dbg)
         }
 
         fn gas_estimate(
             from: H160,
             to: H160,
             data: Vec<u8>,
-            value: U256,
-            gas_limit: U256,
+            value: u128,
+            gas_limit: Weight,
         ) -> Result<U256, DispatchError> {
-            let res = Ethink::contract_call(from, to, data, value, gas_limit)?;
-            // ensure successful execution
-            let _ = res.result?;
-            // get consumed weight
-            let weight: SubstrateWeight = res.gas_consumed.into();
-            // convert Weight into U256
-            Ok(weight.into())
+            log::debug!("Estimating Gas for call from: {from:?}, to: {to:?}, data: {} GAS_LIMIT: {:?}", hex::encode(&data), &gas_limit);
+            let dbg = Ethink::gas_estimate(from.into(), to.into(), data, value, gas_limit);
+            log::debug!("Estimated Gas: {:?}", &dbg);
+            dbg
         }
 
         fn build_extrinsic(
@@ -879,19 +885,43 @@ pub struct ContractsExecutor;
 
 use pallet_contracts::ContractExecResult;
 
-impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
+impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
     type ExecResult = ContractExecResult<Balance, EventRecord>;
 
     fn is_contract(who: H160) -> bool {
-        // TODO This could possibly be optimized later with another method which uses
-        // StorageMap::contains_key() instead of StorageMap::get() under the hood.
         Contracts::code_hash(&who.into()).is_some()
+    }
+
+    /// Estimate gas
+    fn gas_estimate(
+        from: AccountId,
+        to: AccountId,
+        data: Vec<u8>,
+        value: Balance,
+        gas_limit: Weight,
+    ) -> Result<U256, DispatchError> {
+        if Self::is_contract(to.into()) {
+            let res = Self::call(from, to, data, value, gas_limit);
+            // ensure successful execution
+            let _ = res.result?;
+            // get consumed gas
+            let gas_consumed = res.gas_consumed.ref_time();
+            Ok(gas_consumed.into())
+        } else {
+            // Standard base fee
+            // TODO put to ethink constants
+            Ok(U256::from(21000u32))
+        }
     }
 
     fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
+        // TODO proper ERR on conversion failures
         let value = value.try_into().ok()?;
-        let gas_limit = SubstrateWeight::from(gas_limit).into();
+        let gas_limit = gas_limit.try_into().ok()?;
+        // TODO this logic to be encapsulated in ep_ crate,
+        // and re-used from there here and in the rpc
+        let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
 
         Some(if Self::is_contract(to) {
             pallet_contracts::Call::<Runtime>::call {
@@ -911,24 +941,13 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
     }
 
     fn call(
-        from: H160,
-        to: H160,
+        from: AccountId,
+        to: AccountId,
         data: Vec<u8>,
-        value: U256,
-        gas_limit: U256,
-    ) -> Result<Self::ExecResult, DispatchError> {
-        let from = AccountId::from(from);
-        let to = AccountId::from(to);
-        // TODO this is not really a Dispatch error
-        // TODO maybe it worth adding specific error types on arg. types conversion failures
-        // Here we try to convert provided U256 into runtime Balance (which is usually u128 in Substrate)
-        let value = value
-            .try_into()
-            .map_err(|_| DispatchError::Arithmetic(ArithmeticError::Overflow))?;
-
-        let gas_limit = SubstrateWeight::from(gas_limit).into();
-
-        Ok(Contracts::bare_call(
+        value: Balance,
+        gas_limit: Weight,
+    ) -> Self::ExecResult {
+        Contracts::bare_call(
             from,
             to,
             value,
@@ -938,6 +957,6 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             CONTRACTS_DEBUG_OUTPUT,
             CONTRACTS_EVENTS,
             pallet_contracts::Determinism::Enforced,
-        ))
+        )
     }
 }

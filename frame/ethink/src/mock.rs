@@ -2,7 +2,8 @@
 
 use crate::{self as pallet_ethink, Config};
 use ep_eth::AccountId20;
-use ep_mapping::{SubstrateWeight, Weight};
+use ep_eth::EthereumSignature;
+use ep_mapping::Weight;
 use frame_support::{
     derive_impl,
     dispatch::DispatchClass,
@@ -19,11 +20,12 @@ use frame_system::{
 };
 use pallet_contracts::Schedule;
 use pallet_transaction_payment::CurrencyAdapter;
+use sp_core::ConstU128;
 use sp_core::{ConstU32, ConstU64, ConstU8, H160, H256, U256};
-use sp_runtime::{
-    traits::{BlakeTwo256, IdentityLookup},
-    ArithmeticError, DispatchError, Perbill,
-};
+use sp_runtime::traits::AccountIdLookup;
+use sp_runtime::traits::IdentifyAccount;
+use sp_runtime::traits::Verify;
+use sp_runtime::{DispatchError, Perbill};
 
 // Well-known accounts taken from Moonbeam
 pub const ALITH: AccountId20 = AccountId20([
@@ -33,7 +35,6 @@ pub const BALTATHAR: AccountId20 = AccountId20([
     60, 208, 167, 5, 162, 220, 101, 229, 177, 225, 32, 88, 150, 186, 162, 190, 138, 7, 198, 224,
 ]);
 
-pub const ED: u64 = 1_000;
 /// We allow for 2 seconds of compute with a 6 second average block time, with maximum proof size.
 const MAXIMUM_BLOCK_WEIGHT: Weight =
     Weight::from_parts(WEIGHT_REF_TIME_PER_SECOND.saturating_mul(2), u64::MAX);
@@ -47,8 +48,21 @@ const CONTRACTS_DEBUG_OUTPUT: pallet_contracts::DebugInfo =
     pallet_contracts::DebugInfo::UnsafeDebug;
 const CONTRACTS_EVENTS: pallet_contracts::CollectEvents =
     pallet_contracts::CollectEvents::UnsafeCollect;
+// Unit = the base number of indivisible units for balances
+const MILLIUNIT: Balance = 1_000_000_000;
+pub const ED: Balance = MILLIUNIT;
 
+/// An index to a block.
 pub type BlockNumber = u32;
+/// Alias to 512-bit hash when used in the context of a transaction signature on the chain.
+pub type Signature = EthereumSignature;
+/// Some way of identifying an account on the chain. We intentionally make it equivalent
+/// to the public key of our transaction signing scheme.
+/// This is derived to ep_crypto::AccountId20 because of the used EthereumSignature above.
+pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::AccountId;
+/// Balance of an account.
+pub type Balance = u128;
+
 type Block = frame_system::mocking::MockBlock<Test>;
 type EventRecord = frame_system::EventRecord<
     <Test as frame_system::Config>::RuntimeEvent,
@@ -109,12 +123,12 @@ impl frame_system::Config for Test {
     type Nonce = u64;
     type Hash = H256;
     type RuntimeCall = RuntimeCall;
-    type AccountId = AccountId20;
-    type Lookup = IdentityLookup<Self::AccountId>;
+    type AccountId = AccountId;
+    type Lookup = AccountIdLookup<AccountId, ()>;
     type Block = Block;
     type BlockHashCount = ConstU64<250>;
     type Version = ();
-    type AccountData = pallet_balances::AccountData<u64>;
+    type AccountData = pallet_balances::AccountData<Balance>;
     type SystemWeightInfo = ();
     type SS58Prefix = ();
     type MaxConsumers = frame_support::traits::ConstU32<16>;
@@ -126,10 +140,10 @@ impl pallet_balances::Config for Test {
     type MaxLocks = ();
     type MaxReserves = ();
     type ReserveIdentifier = [u8; 8];
-    type Balance = u64;
+    type Balance = u128;
     type RuntimeEvent = RuntimeEvent;
     type DustRemoval = ();
-    type ExistentialDeposit = ConstU64<ED>;
+    type ExistentialDeposit = ConstU128<ED>;
     type AccountStore = System;
     type WeightInfo = ();
     type FreezeIdentifier = ();
@@ -156,8 +170,8 @@ impl pallet_transaction_payment::Config for Test {
     type RuntimeEvent = RuntimeEvent;
     type OnChargeTransaction = CurrencyAdapter<Balances, ()>;
     type OperationalFeeMultiplier = ConstU8<5>;
-    type WeightToFee = IdentityFee<u64>;
-    type LengthToFee = IdentityFee<u64>;
+    type WeightToFee = IdentityFee<u128>;
+    type LengthToFee = IdentityFee<u128>;
     type FeeMultiplierUpdate = ();
 }
 
@@ -210,7 +224,7 @@ parameter_types! {
     };
     pub static DepositPerByte: u64 = 1;
     pub const DepositPerItem: u64 = 2;
-    pub const DefaultDepositLimit: u64 = 10_000_000;
+    pub const DefaultDepositLimit: u64 = 10_000_000_000;
     pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
 }
 
@@ -219,19 +233,43 @@ pub struct ContractsExecutor;
 
 use pallet_contracts::ContractExecResult;
 
-impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
-    type ExecResult = ContractExecResult<u64, EventRecord>;
+impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
+    type ExecResult = ContractExecResult<Balance, EventRecord>;
 
     fn is_contract(who: H160) -> bool {
-        // TODO This could possibly be optimized later with another method which uses
-        // StorageMap::contains_key() instead of StorageMap::get() under the hood.
         Contracts::code_hash(&who.into()).is_some()
     }
 
+    /// Estimate gas
+    fn gas_estimate(
+        from: AccountId,
+        to: AccountId,
+        data: Vec<u8>,
+        value: Balance,
+        gas_limit: Weight,
+    ) -> Result<U256, DispatchError> {
+        if Self::is_contract(to.into()) {
+            let res = Self::call(from, to, data, value, gas_limit);
+            // ensure successful execution
+            let _ = res.result?;
+            // get consumed gas
+            let gas_consumed = res.gas_consumed.ref_time();
+            Ok(gas_consumed.into())
+        } else {
+            // Standard base fee
+            // TODO put to ethink constants
+            Ok(U256::from(21000u32))
+        }
+    }
+
     fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
-        let dest = to.into();
+        let dest = sp_runtime::MultiAddress::Id(to.into());
+        // TODO proper ERR on conversion failures
         let value = value.try_into().ok()?;
-        let gas_limit = SubstrateWeight::from(gas_limit).into();
+        let gas_limit = gas_limit.try_into().ok()?;
+        // TODO this logic to be encapsulated in ep_ crate,
+        // and re-used from there here and in the rpc
+        let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
 
         Some(if Self::is_contract(to) {
             pallet_contracts::Call::<Test>::call {
@@ -243,29 +281,21 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             }
             .into()
         } else {
+            // NOTE basically pallet-contracts can do this for us, as its call() extrinsic
+            // handles the call made to user account in a similar fashion.
+            // However, we keep this logic here not to rely on particular executor pallet too much.
             pallet_balances::Call::<Test>::transfer_allow_death { dest, value }.into()
         })
     }
 
     fn call(
-        from: H160,
-        to: H160,
+        from: AccountId,
+        to: AccountId,
         data: Vec<u8>,
-        value: U256,
-        gas_limit: U256,
-    ) -> Result<Self::ExecResult, DispatchError> {
-        let from = AccountId20::from(from);
-        let to = AccountId20::from(to);
-        // TODO this is not really a Dispatch error
-        // TODO maybe it worth adding specific error types on arg. types conversion failures
-        // Here we try to convert provided U256 into runtime Balance (which is usually u128 in Substrate)
-        let value = value
-            .try_into()
-            .map_err(|_| DispatchError::Arithmetic(ArithmeticError::Overflow))?;
-
-        let gas_limit = SubstrateWeight::from(gas_limit).into();
-
-        Ok(Contracts::bare_call(
+        value: Balance,
+        gas_limit: Weight,
+    ) -> Self::ExecResult {
+        Contracts::bare_call(
             from,
             to,
             value,
@@ -275,6 +305,6 @@ impl pallet_ethink::Executor<RuntimeCall> for ContractsExecutor {
             CONTRACTS_DEBUG_OUTPUT,
             CONTRACTS_EVENTS,
             pallet_contracts::Determinism::Enforced,
-        ))
+        )
     }
 }

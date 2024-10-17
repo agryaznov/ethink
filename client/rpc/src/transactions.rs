@@ -29,6 +29,8 @@ where
 
     // NOTE: tx_hash in Polkadot is not unique... block_hash ++ tx_hash is unique.
     // Anyway for now we generate a fake receipt just to provide some response to MetaMask queries.
+    // TODO this needs to get implemented
+    // BUG not working with alloy
     pub async fn transaction_receipt(&self, hash: H256) -> RpcResult<Option<Receipt>> {
         let transaction_hash = Some(hash);
         // Always answer as if:

@@ -1,4 +1,4 @@
-use ethink_runtime::{AccountId, RuntimeGenesisConfig, Signature, WASM_BINARY};
+use ethink_runtime::{AccountId, RuntimeGenesisConfig, WASM_BINARY};
 use hex_literal::hex;
 use sc_service::{ChainType, Properties};
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
@@ -92,7 +92,7 @@ fn testnet_genesis(
     serde_json::json!({
         "sudo": { "key": Some(root) },
         "balances": {
-            "balances": endowed_accounts.iter().cloned().map(|k| (k, 1u64 << 60)).collect::<Vec<_>>(),
+            "balances": endowed_accounts.iter().cloned().map(|k| (k, 100_000_000_000_000_000_000_000_000u128)).collect::<Vec<_>>(),
         },
         "aura": { "authorities": initial_authorities.iter().map(|x| (x.0.clone())).collect::<Vec<_>>() },
         "grandpa": { "authorities": initial_authorities.iter().map(|x| (x.1.clone(), 1)).collect::<Vec<_>>() },
