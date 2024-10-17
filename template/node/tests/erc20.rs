@@ -16,27 +16,22 @@
 // See the License for the specific language governing permissions and
 // limitations under the License.
 
-//! Integraion tests for ethink!
+//! Integraion tests for ethink! ERC20
 #![allow(non_snake_case)]
-
-mod common;
-
 use alloy::{
-    contract::{ContractInstance, Interface},
-    network::{Ethereum, TransactionBuilder},
-    primitives::{address, Address, U256},
+    primitives::{Address, U256},
     providers::{Provider, ProviderBuilder},
-    rpc::types::TransactionRequest,
-    transports::http::{Client, Http},
 };
-use common::{codegen::*, consts::*, *};
-use ep_eth::{AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
-use ep_mapping::SubstrateWeight;
 use serde_json::Deserializer;
 use sp_core::{ecdsa, Pair};
 use std::sync::Once;
-use subxt::{Config, OnlineClient};
-use futures::StreamExt;
+
+use common::{codegen::*, consts::*, *};
+use ep_eth::{AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
+use ep_mapping::SubstrateWeight;
+use ethink_runtime::ED;
+
+mod common;
 
 const ERC20_PATH: &'static str = concat!(
     env!("CARGO_MANIFEST_DIR"),
@@ -47,81 +42,78 @@ static ONCE: Once = Once::new();
 
 #[tokio::test]
 async fn transfer_works() {
-    // Spawn node and deploy contract
-    // let mut env: Env<PolkadotConfig> =
-    //     prepare_node_and_contract!(ONCE, ERC20_PATH, vec!["1_230_000_000"], BALTATHAR_KEY);
-    // (ERC20 is deployed with 10_000 supply)
-    // Make ETH RPC request (to transfer 2_000 to Alith)
-    // TODO ABI encode
-    //    let _call_data = encode!(ERC20_PATH, "transfer", vec![ALITH_ADDRESS, "2_000"]);
+    // ERC20 is being deployed with 1230 *10^6 supply
+    const ERC20_SUPPLY: u128 = 1_230_000_000;
 
-    //    let contract_addr = Address::from(env.contract_address().0);
-    let contract_addr = address!("99393F7eADdc5Ff70b13379986e9d7fc1485A669");
+    // SUBSTRATE RPC: Spawn node and deploy contract
+    let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(
+        ONCE,
+        ERC20_PATH,
+        vec![&ERC20_SUPPLY.to_string()],
+        BALTATHAR_KEY
+    );
+
+    // TODO put to Env
+    // TODO AccountId20 -> Address
+    let contract_addr = Address::from(env.contract_address().0);
+    // Build alloy ETH RPC provider
     let rpc = ProviderBuilder::new().on_http(
-        //        env.http_url()
-        "http://localhost:9944"
+        env.http_url()
             .parse()
             .expect("failed to build alloy provider"),
     );
-    let bal = rpc
+    // ETH RPC: query contract balance
+    let contract_bal = rpc
         .get_balance(contract_addr)
         .await
         .expect("can't get balance");
-    println!("Contract BALANCE is {bal}");
-    // TODO AccountId20 -> Address
-    println!("CONTRACT AccountId is {:?}", hex::encode(contract_addr));
-    println!("CONTRACT ADR is {:?}", Address::from(contract_addr));
-    // TODO alloy
+    // Deployed contract should have ED balance
+    assert_eq!(contract_bal, U256::from(ED));
+    // Get our ink! contract instance as Solidity contract
     let contract = IERC20::new(contract_addr, rpc);
-    let cal = contract.balanceOf(ALITH_ADDR);
-    let bal = cal.call().await.unwrap();
+    // ETH RPC: query ERC20 token balances
+    let (cal_a, cal_b) = (
+        contract.balanceOf(ALITH_ADDR),
+        contract.balanceOf(BALTATHAR_ADDR),
+    );
+    let (a_bal, b_bal) = (
+        cal_a.call().await.unwrap()._0,
+        cal_b.call().await.unwrap()._0,
+    );
+    // Alith ERC20 token balance should be zero
+    assert_eq!(a_bal, U256::ZERO);
+    // Baltathar ERC20 token balance should be total supply
+    assert_eq!(b_bal, U256::from(ERC20_SUPPLY));
 
-    println!("Alith ERC20 BEFORE balance is: {bal:?}");
-    // println!("Contract instance: {:#?}", &contract);
+    // ETH RPC: send tx to transfer 100k of ERC20 to Alith
     let _tx_hash = contract
-        .transfer(ALITH_ADDR, U256::from(100_000u64))
+        .transfer(ALITH_ADDR, U256::from(100_000))
         .from(BALTATHAR_ADDR)
         .gas(u64::MAX)
         .send()
         .await
         .unwrap();
-    // TODO: make rpc return proper receipt, and take tx_hash like this:
+    // TODO: make rpc return proper receipt, and wait for tx execution completeness like this:
     //        .watch()
     //        .await
     //        .unwrap();
-    //  println!("TX_HASH: {:?}", &tx_hash);
-    // TODO replace with .watch() see above
-    let subclient = OnlineClient::<PolkadotConfig>::from_url("ws://127.0.0.1:9945")
-        .await
-        .unwrap();
-    let mut blocks_sub = subclient
-        .blocks()
-        .subscribe_finalized()
-        .await
-        .expect("can't subscribe to finalized blocks")
-        .take(3);
 
-    while let Some(b) = blocks_sub.next().await {
-        let block = b.expect("can't get next finalized block");
-        println!("GOT NEW BLOCK: {}", &block.number());
-    }
-    //let _ = &env.wait_for_event("ethink.TxExecuted", 3).await;
-
-    // Get Alith token balance
-    let cal = contract.balanceOf(ALITH_ADDR);
-    let bal = cal.call().await.unwrap();
-
-    println!("Alith ERC20 AFTER balance is: {bal:?}");
-
-    let cal = contract.balanceOf(BALTATHAR_ADDR);
-    let bal = cal.call().await.unwrap();
-
-    println!("Baltathar ERC20 balance is: {bal:?}");
-
-    todo!()
+    // Wait tx to be included into block
+    let _ = &env.wait_for_event("Ethink.TxExecuted", 3).await;
+    // ETH RPC: query ERC20 token balances
+    let (a_bal, b_bal) = (
+        cal_a.call().await.unwrap()._0,
+        cal_b.call().await.unwrap()._0,
+    );
+    // Alith ERC20 token balance should become 100k
+    assert_eq!(a_bal, U256::from(100_000));
+    // Baltathar ERC20 token balance should be total_supply - 100k
+    assert_eq!(b_bal, U256::from(ERC20_SUPPLY - 100_000));
 }
 
-//#[tokio::test]
+// TODO
+#[tokio::test]
+#[ignore]
 async fn allowances_work() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
