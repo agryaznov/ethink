@@ -39,7 +39,6 @@ pub mod consts {
 }
 
 use crate::AccountId20;
-use alloy::primitives::Address;
 use futures::StreamExt;
 use node::{Protocol, TestNodeProcess};
 
@@ -63,14 +62,14 @@ impl<R: subxt::Config> Env<R> {
     pub fn contract_address(&self) -> AccountId20 {
         self.contract
             .as_ref()
-            .expect("env does not have a contract deployed!")
+            .expect("env does not have the contract deployed!")
             .address
     }
 
     pub fn contract_manifest_path(&self) -> String {
         self.contract
             .as_ref()
-            .expect("env does not have a contract deployed!")
+            .expect("env does not have the contract deployed!")
             .manifest_path
             .to_owned()
     }
@@ -99,10 +98,8 @@ impl<R: subxt::Config> Env<R> {
             while let Some(block) = blocks_sub.next().await {
                 let block = block.expect("can't get next finalized block");
                 let events = block.events().await.expect("can't get events from block");
-
                 if let Some(_) = events.iter().find(|e| {
                     let event = e.as_ref().expect("failed to read event");
-
                     event.pallet_name().eq(pallet) && event.variant_name().eq(variant)
                 }) {
                     break;
