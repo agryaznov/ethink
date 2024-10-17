@@ -36,7 +36,6 @@ use frame_system::{
     limits::{BlockLength, BlockWeights},
     EnsureSigned,
 };
-use scale_codec::Encode;
 use sp_api::impl_runtime_apis;
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;
 use sp_core::{crypto::KeyTypeId, OpaqueMetadata, H160, U256};
@@ -48,7 +47,7 @@ use sp_runtime::{
         IdentifyAccount, NumberFor, PostDispatchInfoOf, Verify,
     },
     transaction_validity::{TransactionSource, TransactionValidity, TransactionValidityError},
-    ApplyExtrinsicResult, ArithmeticError, DispatchError,
+    ApplyExtrinsicResult, DispatchError,
 };
 use sp_std::prelude::*;
 #[cfg(feature = "std")]
@@ -56,7 +55,6 @@ use sp_version::NativeVersion;
 use sp_version::RuntimeVersion;
 // ETH RPC support
 use ep_eth::EthereumSignature;
-use ep_mapping::SubstrateWeight;
 use pallet_ethink::EthTransaction;
 
 // A few exports that help ease life for downstream crates.
@@ -80,7 +78,7 @@ use pallet_grandpa::{
     fg_primitives, AuthorityId as GrandpaId, AuthorityList as GrandpaAuthorityList,
 };
 pub use pallet_timestamp::Call as TimestampCall;
-use pallet_transaction_payment::{ConstFeeMultiplier, FungibleAdapter};
+use pallet_transaction_payment::FungibleAdapter;
 #[cfg(any(feature = "std", test))]
 pub use sp_runtime::BuildStorage;
 pub use sp_runtime::{Perbill, Permill};

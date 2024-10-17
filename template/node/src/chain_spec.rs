@@ -1,4 +1,4 @@
-use ethink_runtime::{AccountId, RuntimeGenesisConfig, Signature, WASM_BINARY};
+use ethink_runtime::{AccountId, RuntimeGenesisConfig, WASM_BINARY};
 use hex_literal::hex;
 use sc_service::{ChainType, Properties};
 use sp_consensus_aura::sr25519::AuthorityId as AuraId;

@@ -3,7 +3,7 @@
 use crate::{self as pallet_ethink, Config};
 use ep_eth::AccountId20;
 use ep_eth::EthereumSignature;
-use ep_mapping::{SubstrateWeight, Weight};
+use ep_mapping::Weight;
 use frame_support::{
     derive_impl,
     dispatch::DispatchClass,
@@ -25,10 +25,7 @@ use sp_core::{ConstU32, ConstU64, ConstU8, H160, H256, U256};
 use sp_runtime::traits::AccountIdLookup;
 use sp_runtime::traits::IdentifyAccount;
 use sp_runtime::traits::Verify;
-use sp_runtime::{
-    traits::{BlakeTwo256, IdentityLookup},
-    ArithmeticError, DispatchError, Perbill,
-};
+use sp_runtime::{DispatchError, Perbill};
 
 // Well-known accounts taken from Moonbeam
 pub const ALITH: AccountId20 = AccountId20([
@@ -52,7 +49,6 @@ const CONTRACTS_DEBUG_OUTPUT: pallet_contracts::DebugInfo =
 const CONTRACTS_EVENTS: pallet_contracts::CollectEvents =
     pallet_contracts::CollectEvents::UnsafeCollect;
 // Unit = the base number of indivisible units for balances
-const UNIT: Balance = 1_000_000_000_000;
 const MILLIUNIT: Balance = 1_000_000_000;
 pub const ED: Balance = MILLIUNIT;
 
