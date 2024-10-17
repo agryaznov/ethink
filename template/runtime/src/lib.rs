@@ -892,8 +892,6 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
     type ExecResult = ContractExecResult<Balance, EventRecord>;
 
     fn is_contract(who: H160) -> bool {
-        // TODO This could possibly be optimized later with another method which uses
-        // StorageMap::contains_key() instead of StorageMap::get() under the hood.
         Contracts::code_hash(&who.into()).is_some()
     }
 

@@ -4,7 +4,6 @@
 #[ink::contract(env = EthinkEnvironment)]
 mod erc20 {
     use alloy_sol_types::{sol, SolType, sol_data::{String,Uint}};
-    use alloy_primitives::U256;
     use ink::storage::Mapping;
 
     sol! {
@@ -203,11 +202,17 @@ mod erc20 {
 
         // TODO doc
         // TODO output size reasoning
-        #[ink(message, selector = 0x95d89b41)]
+        #[ink(message, selector = 0x06fdde03)]
         pub fn name(&self) -> [u8;96] {
             String::abi_encode("ink! token").try_into().expect("ink: result value length is wrong")
         }
 
+        // TODO doc
+        // TODO output size reasoning
+        #[ink(message, selector = 0x95d89b41)]
+        pub fn symbol(&self) -> [u8;96] {
+            String::abi_encode("ink!").try_into().expect("ink: result value length is wrong")
+        }
         /// Transfers `value` amount of tokens from the caller's account to account `to`.
         ///
         /// On success a `Transfer` event is emitted.
