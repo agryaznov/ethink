@@ -35,7 +35,8 @@ mod tests;
 pub use ep_eth::{EthTransaction, LegacyTransactionMessage, Receipt, TransactionAction};
 use frame_support::{
     dispatch::{DispatchInfo, PostDispatchInfo},
-    traits::fungible::{Inspect, Mutate}, weights::Weight
+    traits::fungible::{Inspect, Mutate},
+    weights::Weight,
 };
 use frame_system::{pallet_prelude::OriginFor, CheckWeight, Pallet as System};
 use scale_codec::{Decode, Encode, MaxEncodedLen};
@@ -131,7 +132,7 @@ where
 
 /// Provider of the contracts functionality
 /// This is pallet_contracts in our case
-pub trait Executor<AccountId,Balance,RuntimeCall> {
+pub trait Executor<AccountId, Balance, RuntimeCall> {
     type ExecResult;
 
     /// Check if AccountId is owned by a contract
@@ -188,7 +189,7 @@ pub mod pallet {
         OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
         T::AccountId: From<sp_core::H160> + Into<sp_core::H160> + AsRef<[u8]>,
         T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
-        T::Contracts: Executor<T::AccountId,BalanceOf<T>,T::RuntimeCall>,
+        T::Contracts: Executor<T::AccountId, BalanceOf<T>, T::RuntimeCall>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
         /// Transact a call coming from Ethereum RPC
@@ -212,7 +213,7 @@ pub mod pallet {
             let call = T::Contracts::build_call(to, value, data, gas_limit)
                 .ok_or(Error::<T>::TxNotSupported)?;
             // Make call
-            log::error!(target: "ethink:pallet", "Dispatching CALL {:?}", &call);
+            log::debug!(target: "ethink:pallet", "Dispatching CALL {:?}", &call);
             let _ = call.dispatch(origin.into()).map_err(|e| {
                 log::error!(target: "ethink:pallet", "Failed: {:?}", &e);
                 Error::<T>::TxExecutionFailed

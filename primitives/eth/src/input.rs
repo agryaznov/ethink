@@ -32,13 +32,12 @@ impl Serialize for ContractInput {
 
 #[derive(Clone)]
 /// Ethereum transaction input, used for transaciton building in tests
-// TODO BUG update to proper gas-weight conversion
 pub struct EthTxInput {
     pub nonce: u64,
     pub gas_price: u64,
-    pub gas_limit: SubstrateWeight,
+    pub gas_limit: Weight,
     pub action: ethereum::TransactionAction,
-    pub value: u64,
+    pub value: u128,
     pub data: ContractInput,
     pub chain_id: Option<u64>,
     pub signer: ecdsa::Pair,
@@ -49,9 +48,9 @@ impl Default for EthTxInput {
         Self {
             nonce: 1u64,
             gas_price: 0u64,
-            gas_limit: SubstrateWeight::from(Weight::MAX),
+            gas_limit: Weight::MAX,
             action: ethereum::TransactionAction::Call(Default::default()),
-            value: 0u64,
+            value: 0u128,
             data: vec![0].into(),
             chain_id: None,
             signer: ecdsa::Pair::generate().0,
@@ -63,7 +62,7 @@ impl From<EthTxInput> for LegacyTransactionMessage {
     fn from(v: EthTxInput) -> Self {
         let nonce = v.nonce.into();
         let gas_price = v.gas_price.into();
-        let gas_limit: U256 = v.gas_limit.into();
+        let gas_limit: U256 = v.gas_limit.ref_time().into();
         let value = v.value.into();
 
         Self {
