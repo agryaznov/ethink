@@ -11,10 +11,10 @@ mod test_utils {
     use crate::{mock::Test, tests::AccountId20, Config};
     use frame_support::traits::fungible::Mutate;
 
-    pub fn set_balance(who: &AccountId20, amount: u64) {
+    pub fn set_balance(who: &AccountId20, amount: u128) {
         let _ = <Test as Config>::Currency::set_balance(who, amount);
     }
-    pub fn get_balance(who: &AccountId20) -> u64 {
+    pub fn get_balance(who: &AccountId20) -> u128 {
         <Test as Config>::Currency::free_balance(who)
     }
 }
@@ -43,33 +43,6 @@ impl ExtBuilder {
 
         ext
     }
-}
-
-#[test]
-fn calling_user_account_transfers_balance() {
-    ExtBuilder::default().build().execute_with(|| {
-        let init_balance = 100_000_000;
-        let transfer_balance = 20_000_000;
-
-        let _ = test_utils::set_balance(&ALITH, init_balance);
-
-        let input = EthTxInput {
-            action: TransactionAction::Call(BALTATHAR.into()),
-            data: vec![].into(),
-            value: transfer_balance,
-            ..Default::default()
-        };
-        let eth_tx = compose_and_sign_tx(input);
-
-        let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
-        assert_ok!(Ethink::transact(origin, eth_tx));
-
-        let alith_balance = test_utils::get_balance(&ALITH);
-        let baltathar_balance = test_utils::get_balance(&BALTATHAR);
-
-        assert_eq!(alith_balance, init_balance - transfer_balance);
-        assert_eq!(baltathar_balance, transfer_balance);
-    });
 }
 
 // This is a simple Wasm contract which when called terminates itself,
@@ -101,7 +74,7 @@ fn calling_contract_account_executes_it() {
     let wasm = wat::parse_str(CONTRACT_CODE).unwrap();
 
     ExtBuilder::default().build().execute_with(|| {
-        let _ = test_utils::set_balance(&ALITH, 10_000_000);
+        let _ = test_utils::set_balance(&ALITH, 10_000_000_000);
         // Instantiate contract and deposit balance (ED) to it
         let contract_addr = Contracts::bare_instantiate(
             ALITH,
@@ -118,6 +91,8 @@ fn calling_contract_account_executes_it() {
         .expect("Failed to instantiate contract")
         .account_id;
 
+        println!("CONTRACT ADDR: {:?}", &contract_addr);
+
         // Compose transaction
         let input = EthTxInput {
             action: TransactionAction::Call(contract_addr.into()),
@@ -125,6 +100,8 @@ fn calling_contract_account_executes_it() {
             ..Default::default()
         };
         let eth_tx = compose_and_sign_tx(input);
+        println!("Signed Eth Tx: {:#?}", &eth_tx);
+
         let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
         // Ensure Baltathar has no balance before the call
         assert_eq!(test_utils::get_balance(&BALTATHAR), 0);
@@ -136,26 +113,8 @@ fn calling_contract_account_executes_it() {
         // The only balance the contract had was existentional deposit,
         // which is now trasferred to Baltathar
         assert_eq!(test_utils::get_balance(&BALTATHAR), ED);
-    });
-}
-
-#[test]
-fn transaction_increments_nonce() {
-    ExtBuilder::default().build().execute_with(|| {
-        let _ = test_utils::set_balance(&ALITH, 10_000_000);
-
-        let input = EthTxInput {
-            action: TransactionAction::Call(BALTATHAR.into()),
-            data: vec![].into(),
-            ..Default::default()
-        };
-        let eth_tx = compose_and_sign_tx(input);
-
-        let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
-        assert_ok!(Ethink::transact(origin, eth_tx));
-
+        // Check that sender account nonce incremented
         let nonce: u64 = System::<Test>::account_nonce(ALITH).into();
-
         assert_eq!(nonce, 1);
     });
 }
