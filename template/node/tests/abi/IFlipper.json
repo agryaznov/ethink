@@ -1,0 +1,67 @@
+{
+  "contractName": "Flipper",
+  "abi": [
+    {
+      "inputs": [
+        {
+          "internalType": "bool",
+          "name": "initvalue",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "nonpayable",
+      "type": "constructor"
+    },
+    {
+      "inputs": [],
+      "name": "flip",
+      "outputs": [],
+      "stateMutability": "nonpayable",
+      "type": "function"
+    },
+    {
+      "inputs": [],
+      "name": "get",
+      "outputs": [
+        {
+          "internalType": "bool",
+          "name": "",
+          "type": "bool"
+        }
+      ],
+      "stateMutability": "view",
+      "type": "function",
+      "constant": true
+    }
+  ],
+  "methodIdentifiers": {
+    "flip()": "dd62ed3e",
+    "get()approve(address,uint256)": "095ea7b3",
+    "balanceOf(address)": "70a08231",
+    "transfer(address,uint256)": "a9059cbb",
+    "transferFrom(address,address,uint256)": "23b872dd"
+  },
+"metadata": "{\"compiler\":{\"version\":\"0.8.13+commit.abaa5c0e\"},\"language\":\"Solidity\",\"output\":{\"abi\":[{\"inputs\":[{\"internalType\":\"bool\",\"name\":\"initvalue\",\"type\":\"bool\"}],\"stateMutability\":\"nonpayable\",\"type\":\"constructor\"},{\"inputs\":[],\"name\":\"flip\",\"outputs\":[],\"stateMutability\":\"nonpayable\",\"type\":\"function\"},{\"inputs\":[],\"name\":\"get\",\"outputs\":[{\"internalType\":\"bool\",\"name\":\"\",\"type\":\"bool\"}],\"stateMutability\":\"view\",\"type\":\"function\"}],\"devdoc\":{\"kind\":\"dev\",\"methods\":{},\"version\":1},\"userdoc\":{\"kind\":\"user\",\"methods\":{\"constructor\":{\"notice\":\"Constructor that initializes the `bool` value to the given `init_value`.\"},\"flip()\":{\"notice\":\"A message that can be called on instantiated contracts. This one flips the value of the stored `bool` from `true` to `false` and vice versa.\"},\"get()\":{\"notice\":\"Simply returns the current value of our `bool`.\"}},\"version\":1}},\"settings\":{\"compilationTarget\":{\"project:/contracts/Flipper.sol\":\"Flipper\"},\"evmVersion\":\"london\",\"libraries\":{},\"metadata\":{\"bytecodeHash\":\"ipfs\"},\"optimizer\":{\"enabled\":false,\"runs\":200},\"remappings\":[]},\"sources\":{\"project:/contracts/Flipper.sol\":{\"keccak256\":\"0xcfa056c3209eca55d607d3e5648ad9ea1a5e4cc36846d6025f881c08d57f0e88\",\"license\":\"UNLICENSED\",\"urls\":[\"bzz-raw://73b97bbf924334314f3714ba88c62ab220342fd99c291383729138a11e586c36\",\"dweb:/ipfs/QmVrTNDuP8pHj7SoFKGSGpPkvjvyDiDMdPVnXmAuG3d2Wf\"]}},\"version\":1}",
+  "schemaVersion": "3.4.16",
+  "networkType": "ethereum",
+  "devdoc": {
+    "kind": "dev",
+    "methods": {},
+    "version": 1
+  },
+  "userdoc": {
+    "kind": "user",
+    "methods": {
+      "constructor": {
+        "notice": "Constructor that initializes the `bool` value to the given `init_value`."
+      },
+      "flip()": {
+        "notice": "A message that can be called on instantiated contracts. This one flips the value of the stored `bool` from `true` to `false` and vice versa."
+      },
+      "get()": {
+        "notice": "Simply returns the current value of our `bool`."
+      }
+    },
+    "version": 1
+  }
+}

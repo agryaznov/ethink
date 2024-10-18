@@ -48,6 +48,7 @@ pub struct Contract {
     // TODO rm
     pub address: AccountId20,
     pub addr: Address,
+    pub instance:
 }
 
 // Testing environment, consisting of a node with a possibly deployed contract
@@ -105,12 +106,12 @@ impl<R: subxt::Config> Env<R> {
                 .take(timeout);
 
             while let Some(block) = blocks_sub.next().await {
-                println!("next block events: ");
+//                println!("next block events: ");
                 let block = block.expect("can't get next finalized block");
                 let events = block.events().await.expect("can't get events from block");
                 if let Some(_) = events.iter().find(|e| {
                     let event = e.as_ref().expect("failed to read event");
-                    println!("{}.{}", &event.pallet_name(), &event.variant_name());
+//                    println!("{}.{}", &event.pallet_name(), &event.variant_name());
                     event.pallet_name().eq(pallet) && event.variant_name().eq(variant)
                 }) {
                     break;
