@@ -143,7 +143,6 @@ async fn approve_allowance_transfer_from_works() {
             .expect("failed to build alloy provider"),
     );
     // Get our ink! contract instance as Solidity contract
-    // TODO out to env
     let contract = IERC20::new(env.contract_addr(), rpc);
     // ETH RPC: query ERC20 token balances
     let (cal_a, cal_b) = (contract.balanceOf(ALITH), contract.balanceOf(BALTATHAR));

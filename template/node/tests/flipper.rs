@@ -18,10 +18,7 @@
 
 //! Integraion tests for ethink!
 #![allow(non_snake_case)]
-
-mod common;
-
-use common::{consts::*, *};
+use alloy::providers::ProviderBuilder;
 use ep_eth::{compose_and_sign_tx, AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
 use ep_mapping::{SubstrateWeight, Weight};
 use serde_json::{value::Serializer, Deserializer};
@@ -29,6 +26,10 @@ use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
 use std::sync::Once;
 use ureq::json;
+
+mod common;
+
+use common::{consts::*, codegen::*, *};
 
 const FLIPPER_PATH: &'static str = concat!(
     env!("CARGO_MANIFEST_DIR"),
@@ -39,7 +40,6 @@ static ONCE: Once = Once::new();
 
 // TODO
 #[tokio::test]
-#[ignore]
 async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -68,12 +68,23 @@ async fn eth_sendRawTransaction() {
     // Wait until tx gets executed
     let _ = &env.wait_for_event("ethink.EthTransactionExecuted", 3).await;
     // Check state
+    // SUBSTRATE RPC: make rq with cargo-contract
     let output = call!(env, "get");
     let rs = Deserializer::from_slice(&output.stdout);
     // Should be flipped to `true`
     assert!(json_get!(rs["data"]["Tuple"]["values"][0]["Bool"])
         .as_bool()
         .expect("can't parse cargo contract output"));
+
+    // ETH RPC: call w alloy
+    let rpc = ProviderBuilder::new().on_http(
+        env.http_url()
+            .parse()
+            .expect("failed to build alloy provider"),
+    );
+    let contract = IFlipper::new(env.contract_addr(), rpc);
+    let state = contract.get().call().await.unwrap()._0;
+    assert_eq!(state, true)
 }
 
 // TODO
