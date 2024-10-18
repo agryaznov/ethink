@@ -2,7 +2,7 @@
 
 ### Prepare
 
-Take just the same steps as described in the [flipper demo](demo.md#prepare)
+Take just the same steps as described in the [flipper demo](flipper.md#prepare)
 
 ### Set Up 
 
