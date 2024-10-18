@@ -152,9 +152,9 @@ mod erc20 {
         ///
         /// An `Approval` event is emitted.
         ///
-        /// Input len: 20 (accountId) + 16 (U256) + 12 (padding)
+        /// Input len: 20 (accountId) + 32 (U256) + 12 (padding)
         #[ink(message, selector = 0x095ea7b3)]
-        pub fn approve(&mut self, input: [u8; 48]) -> Result<()> {
+        pub fn approve(&mut self, input: [u8; 64]) -> Result<()> {
             let owner = self.env().caller();
             let (spender, value) =
                 <(Address, Amount)>::abi_decode_params(input.as_slice(), false).unwrap();
@@ -182,9 +182,9 @@ mod erc20 {
         /// Returns `InsufficientBalance` error if there are not enough tokens on
         /// the account balance of `from`.
         ///
-        /// Input len: 20 + 20 (accountId) + 16 (U256) + 12 (padding)
+        /// Input len: 20 + 20 (accountId) + 32 (U256) + 12 (padding)
         #[ink(message, selector = 0x23b872dd)]
-        pub fn transfer_from(&mut self, input: [u8; 68]) -> Result<()> {
+        pub fn transfer_from(&mut self, input: [u8; 84]) -> Result<()> {
             let caller = self.env().caller();
             let (from, to, value) =
                 <(Address, Address, Amount)>::abi_decode_params(input.as_slice(), false).unwrap();
