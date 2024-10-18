@@ -46,7 +46,6 @@ const ERC20_SUPPLY: u128 = 1_230_000_000;
 static ONCE: Once = Once::new();
 
 #[tokio::test]
-#[ignore]
 async fn transfer_works() {
     // SUBSTRATE RPC: Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(
@@ -73,10 +72,7 @@ async fn transfer_works() {
     // Get our ink! contract instance as Solidity contract
     let contract = IERC20::new(env.contract_addr(), rpc);
     // ETH RPC: query ERC20 token balances
-    let (cal_a, cal_b) = (
-        contract.balanceOf(ALITH),
-        contract.balanceOf(BALTATHAR),
-    );
+    let (cal_a, cal_b) = (contract.balanceOf(ALITH), contract.balanceOf(BALTATHAR));
     let (a_bal, b_bal) = (
         cal_a.call().await.unwrap()._0,
         cal_b.call().await.unwrap()._0,
@@ -114,7 +110,7 @@ async fn transfer_works() {
 }
 
 #[tokio::test]
-async fn approve_transfer_from_works() {
+async fn approve_allowance_transfer_from_works() {
     // SUBSTRATE RPC: Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(
         ONCE,
@@ -122,34 +118,36 @@ async fn approve_transfer_from_works() {
         vec![&ERC20_SUPPLY.to_string()],
         BALTATHAR_KEY
     );
+    // TODO put to common::provider_with_key()
     // Alith signer
     let signer: PrivateKeySigner = ALITH_KEY.parse().expect("can't parse Alith key");
     let wallet = EthereumWallet::from(signer);
     // Build alloy ETH RPC provider
-    let rpc = ProviderBuilder::new().with_recommended_fillers().wallet(wallet).on_http(
-        //      env.http_url()
-        "http://localhost:9944/"
-            .parse()
-            .expect("failed to build alloy provider"),
-    );
+    let rpc = ProviderBuilder::new()
+        .with_recommended_fillers()
+        .wallet(wallet)
+        .on_http(
+            env.http_url()
+                //        "http://localhost:9944/"
+                .parse()
+                .expect("failed to build alloy provider"),
+        );
     // BALTATHAR key is inserted into node's keystore
     // henve for his transactions we build provider with no wallet
+    // TODO put to common::provider_without_key()
     let rpc_b = ProviderBuilder::new().on_http(
-//        env.http_url()
-        "http://localhost:9944/"
+        env.http_url()
+            //        "http://localhost:9944/"
             .parse()
             .expect("failed to build alloy provider"),
     );
     // TODO rm
-    let contract_addr = address!("3d1ACc1e116Bc2824e19725B3121677914966325");
-    // Get our ink! contract instance as Solidity contract
-    // TODO out to env
+    let contract_addr = env.contract_addr(); //address!("3d1ACc1e116Bc2824e19725B3121677914966325");
+                                             // Get our ink! contract instance as Solidity contract
+                                             // TODO out to env
     let contract = IERC20::new(contract_addr, rpc);
     // ETH RPC: query ERC20 token balances
-    let (cal_a, cal_b) = (
-        contract.balanceOf(ALITH),
-        contract.balanceOf(BALTATHAR),
-    );
+    let (cal_a, cal_b) = (contract.balanceOf(ALITH), contract.balanceOf(BALTATHAR));
     let (a_bal, b_bal) = (
         cal_a.call().await.unwrap()._0,
         cal_b.call().await.unwrap()._0,
@@ -179,7 +177,6 @@ async fn approve_transfer_from_works() {
     // ETH RPC: send tx to approve spend 100k of ERC20 to Alith
     let contract_b = IERC20::new(contract_addr, rpc_b);
     let _tx_hash = contract_b
-//        .transfer(ALITH, U256::from(100_000))
         .approve(ALITH, U256::from(100_000))
         .from(BALTATHAR)
         .gas(u64::MAX)
@@ -187,28 +184,34 @@ async fn approve_transfer_from_works() {
         .await
         .unwrap();
 
-    // Wait until txs get executed
-    let _ = &env.wait_for_event("Ethink.TxExecuted", 1).await;
+    // Wait until tx gets executed
+    let _ = &env.wait_for_event("Ethink.TxExecuted", 3).await;
 
-    // ETH RPC: send tx to (authorized) transfer 100k of ERC20 to Alith
+    // Check allowance
+    let cal_allowance = contract.allowance(BALTATHAR, ALITH);
+    assert_eq!(cal_allowance.call().await.unwrap()._0, U256::from(100_000));
+
+    // ETH RPC: send tx to (authorized) transfer 35k of ERC20 to Alith
     let _tx_hash = contract
-        .transfer(ALITH, U256::from(100_000))
+        .transferFrom(BALTATHAR, ALITH, U256::from(35_000))
         .from(ALITH)
         .gas(u64::MAX)
         .send()
         .await
         .unwrap();
 
-    // Wait until txs get executed
-    let _ = &env.wait_for_event("Ethink.TxExecuted", 1).await;
+    // Wait until tx gets executed
+    let _ = &env.wait_for_event("Ethink.TxExecuted", 3).await;
 
     // ETH RPC: query ERC20 token balances
     let (a_bal, b_bal) = (
         cal_a.call().await.unwrap()._0,
         cal_b.call().await.unwrap()._0,
     );
-    // Alith ERC20 token balance should become 100k
-    assert_eq!(a_bal, U256::from(100_000));
-    // Baltathar ERC20 token balance should be total_supply - 100k
-    assert_eq!(b_bal, U256::from(ERC20_SUPPLY - 100_000));
+    // Alith ERC20 token balance should become 35k
+    assert_eq!(a_bal, U256::from(35_000));
+    // Baltathar ERC20 token balance should be total_supply - 35k
+    assert_eq!(b_bal, U256::from(ERC20_SUPPLY - 35_000));
+    // Remaining allowance should be
+    assert_eq!(cal_allowance.call().await.unwrap()._0, U256::from(65_000));
 }
