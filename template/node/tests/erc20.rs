@@ -20,7 +20,7 @@
 #![allow(non_snake_case)]
 use alloy::{
     network::EthereumWallet,
-    primitives::{Address, U256},
+    primitives::{address, Address, U256},
     providers::{Provider, ProviderBuilder},
     signers::local::PrivateKeySigner,
 };
@@ -114,7 +114,7 @@ async fn transfer_works() {
 }
 
 #[tokio::test]
-async fn allowances_work() {
+async fn approve_transfer_from_works() {
     // SUBSTRATE RPC: Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> = prepare_node_and_contract!(
         ONCE,
@@ -127,20 +127,24 @@ async fn allowances_work() {
     let wallet = EthereumWallet::from(signer);
     // Build alloy ETH RPC provider
     let rpc = ProviderBuilder::new().with_recommended_fillers().wallet(wallet).on_http(
-        env.http_url()
+        //      env.http_url()
+        "http://localhost:9944/"
             .parse()
             .expect("failed to build alloy provider"),
     );
     // BALTATHAR key is inserted into node's keystore
     // henve for his transactions we build provider with no wallet
     let rpc_b = ProviderBuilder::new().on_http(
-        env.http_url()
+//        env.http_url()
+        "http://localhost:9944/"
             .parse()
             .expect("failed to build alloy provider"),
     );
+    // TODO rm
+    let contract_addr = address!("3d1ACc1e116Bc2824e19725B3121677914966325");
     // Get our ink! contract instance as Solidity contract
     // TODO out to env
-    let contract = IERC20::new(env.contract_addr(), rpc);
+    let contract = IERC20::new(contract_addr, rpc);
     // ETH RPC: query ERC20 token balances
     let (cal_a, cal_b) = (
         contract.balanceOf(ALITH),
@@ -173,7 +177,7 @@ async fn allowances_work() {
     assert_eq!(b_bal, U256::from(ERC20_SUPPLY));
 
     // ETH RPC: send tx to approve spend 100k of ERC20 to Alith
-    let contract_b = IERC20::new(env.contract_addr(), rpc_b);
+    let contract_b = IERC20::new(contract_addr, rpc_b);
     let _tx_hash = contract_b
 //        .transfer(ALITH, U256::from(100_000))
         .approve(ALITH, U256::from(100_000))
