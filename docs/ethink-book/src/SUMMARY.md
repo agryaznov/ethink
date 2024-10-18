@@ -5,8 +5,9 @@
 # User Guide
 
 - [Quickstart](user/quickstart.md)
-- [Demo: Flipper + (native) token transfer](user/demo.md)
-- [Demo: ERC20](user/demo_erc20.md)
+- [Demo](user/demo/index.md)
+  + [Flipper + Native token transfer](user/demo/flipper.md)
+  + [ERC20](user/demo/erc20.md)
     
 # Developer Guide 
 

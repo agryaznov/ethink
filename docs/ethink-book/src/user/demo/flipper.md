@@ -1,13 +1,13 @@
-# Demo 🧐
+# Flipper and Native Token Transfer
 
-Our little demo consists of the three basic actions we complete on our *Substrate*-based 🦆-network using *MetaMask*:
+Our little demo consists of the three basic actions we complete on our *Substrate*-based 🦑-network using *MetaMask*:
 
 1. **👛 Transfer Tokens**.
 
    With the MetaMask UI controls solely.
 
    This is the simplest action as we already have everything set up to do this. 
-   Once launched the ethink! node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our 🦆 network. You should see *Alith* account holding `10000000 🥚`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
+   Once launched the ethink! node with `cargo run -- --dev`, just open your MetaMask and make sure it is connected to our Ethink! network. You should see *Alith* account holding `10000000 🦑`. Go ahead and send some amount of eggs to *Goliath* or any other account you'd like to (set gas limit to `21000` as requested by MetaMask). 
 
 2. **⚡ dApp (simple): Tokens Transfer**.
 
