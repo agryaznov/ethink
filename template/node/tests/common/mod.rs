@@ -48,7 +48,6 @@ pub struct Contract {
     // TODO rm
     pub address: AccountId20,
     pub addr: Address,
-    pub instance:
 }
 
 // Testing environment, consisting of a node with a possibly deployed contract

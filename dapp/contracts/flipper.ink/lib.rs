@@ -41,7 +41,7 @@ pub mod flipper {
         }
 
         /// Returns the current value of the Flipper's boolean.
-        #[ink(message)]
+        #[ink(message, selector = 0x6d4ce63c)]
         pub fn get(&self) -> bool {
             self.value
         }

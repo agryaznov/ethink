@@ -76,6 +76,9 @@ async fn eth_sendRawTransaction() {
         .as_bool()
         .expect("can't parse cargo contract output"));
 
+    // println!("NODE is running at {:?}", &env.http_url());
+    // println!("Contract address is {:?}", &env.contract_addr());
+    // loop {}
     // ETH RPC: call w alloy
     let rpc = ProviderBuilder::new().on_http(
         env.http_url()
