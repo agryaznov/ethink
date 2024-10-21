@@ -1,6 +1,6 @@
 [package]
 name = "pallet-ethink"
-version = "0.3.0"
+version = "0.3.1"
 license = "Apache-2.0"
 description = "Ethereum RPC compatibility aid for pallet-contracts. This crate is derived from pallet-ethereum."
 edition.workspace = true

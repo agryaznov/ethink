@@ -2995,7 +2995,7 @@ checksum = "e48c92028aaa870e83d51c64e5d4e0b6981b360c522198c23959f219a4e1b15b"
 
 [[package]]
 name = "ep-eth"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -3083,7 +3083,7 @@ dependencies = [
 
 [[package]]
 name = "ethink-node"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "alloy",
  "clap",
@@ -3141,7 +3141,7 @@ dependencies = [
 
 [[package]]
 name = "ethink-rpc"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "ep-eth",
  "ethink-rpc-core",
@@ -3167,7 +3167,7 @@ dependencies = [
 
 [[package]]
 name = "ethink-rpc-core"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "ethereum",
  "ethereum-types",
@@ -3179,7 +3179,7 @@ dependencies = [
 
 [[package]]
 name = "ethink-runtime"
-version = "0.2.0"
+version = "0.3.1"
 dependencies = [
  "ep-eth",
  "fp-self-contained",
@@ -6658,7 +6658,7 @@ dependencies = [
 
 [[package]]
 name = "pallet-ethink"
-version = "0.3.0"
+version = "0.3.1"
 dependencies = [
  "ep-eth",
  "frame-support",
