@@ -1,6 +1,6 @@
 [package]
 name = "ethink-node"
-version = "0.3.0"
+version = "0.3.1"
 description = "ethink! node (based on substrate-node-template)."
 authors.workspace = true
 edition.workspace = true
@@ -65,7 +65,6 @@ frame-benchmarking-cli.workspace = true
 ethink-rpc.workspace = true
 ethink-runtime = { workspace = true, features = ["default"] }
 pallet-ethink = { workspace = true, features = ["default"] }
-ep-mapping = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
 
 [build-dependencies]

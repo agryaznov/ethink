@@ -1,6 +1,6 @@
 [package]
 name = "ethink-runtime"
-version = "0.2.0"
+version = "0.3.1"
 authors.workspace = true
 edition.workspace = true
 license = "Apache-2.0"
@@ -50,7 +50,6 @@ log.workspace = true
 
 # ethink
 ep-eth.workspace = true
-ep-mapping.workspace = true
 pallet-ethink.workspace = true
 fp-self-contained = { workspace = true, features = ["serde"] }
 
@@ -94,5 +93,4 @@ std = [
 	"substrate-wasm-builder",
 	"fp-self-contained/std",
 	"ep-eth/std",
-	"ep-mapping/std",
 ]

@@ -1,6 +1,6 @@
 [package]
 name = "ethink-rpc"
-version = "0.3.0"
+version = "0.3.1"
 license = "GPL-3.0-or-later WITH Classpath-exception-2.0"
 description = "Ethereum RPC compatibility layer for pallet-contracts. This crate is derived from fc-rpc."
 edition.workspace = true
@@ -15,7 +15,6 @@ futures.workspace = true
 ethink-rpc-core.workspace = true
 pallet-ethink = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
-ep-mapping = { workspace = true, features = ["default"] }
 
 # Substrate
 sp-io = { workspace = true, default-features = false }
@@ -30,6 +29,7 @@ sc-network.workspace = true
 sc-network-common.workspace = true
 sc-network-sync.workspace = true
 pallet-balances.workspace = true
+frame-support.workspace = true
 
 [features]
 default = []

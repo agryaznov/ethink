@@ -3,13 +3,13 @@
 use crate::{self as pallet_ethink, Config};
 use ep_eth::AccountId20;
 use ep_eth::EthereumSignature;
-use ep_mapping::Weight;
 use frame_support::{
     derive_impl,
     dispatch::DispatchClass,
     parameter_types,
     traits::{ConstBool, Everything},
     weights::{
+        Weight,
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_REF_TIME_PER_SECOND},
         IdentityFee,
     },
@@ -21,7 +21,7 @@ use frame_system::{
 use pallet_contracts::Schedule;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_core::ConstU128;
-use sp_core::{ConstU32, ConstU64, ConstU8, H160, H256, U256};
+use sp_core::{ConstU32, ConstU64, ConstU8, H256, U256};
 use sp_runtime::traits::AccountIdLookup;
 use sp_runtime::traits::IdentifyAccount;
 use sp_runtime::traits::Verify;
@@ -213,7 +213,7 @@ impl pallet_contracts::Config for Test {
 impl Config for Test {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
-    type Contracts = ContractsExecutor;
+    type Contracts = Contracts;
     type Call = RuntimeCall;
 }
 
@@ -228,83 +228,5 @@ parameter_types! {
     pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
 }
 
-// TODO this was just copied from runtime
-pub struct ContractsExecutor;
-
-use pallet_contracts::ContractExecResult;
-
-impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
-    type ExecResult = ContractExecResult<Balance, EventRecord>;
-
-    fn is_contract(who: H160) -> bool {
-        Contracts::code_hash(&who.into()).is_some()
-    }
-
-    /// Estimate gas
-    fn gas_estimate(
-        from: AccountId,
-        to: AccountId,
-        data: Vec<u8>,
-        value: Balance,
-        gas_limit: Weight,
-    ) -> Result<U256, DispatchError> {
-        if Self::is_contract(to.into()) {
-            let res = Self::call(from, to, data, value, gas_limit);
-            // ensure successful execution
-            let _ = res.result?;
-            // get consumed gas
-            let gas_consumed = res.gas_consumed.ref_time();
-            Ok(gas_consumed.into())
-        } else {
-            // Standard base fee
-            // TODO put to ethink constants
-            Ok(U256::from(21000u32))
-        }
-    }
-
-    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
-        let dest = sp_runtime::MultiAddress::Id(to.into());
-        // TODO proper ERR on conversion failures
-        let value = value.try_into().ok()?;
-        let gas_limit = gas_limit.try_into().ok()?;
-        // TODO this logic to be encapsulated in ep_ crate,
-        // and re-used from there here and in the rpc
-        let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
-
-        Some(if Self::is_contract(to) {
-            pallet_contracts::Call::<Test>::call {
-                dest,
-                value,
-                data,
-                gas_limit,
-                storage_deposit_limit: None,
-            }
-            .into()
-        } else {
-            // NOTE basically pallet-contracts can do this for us, as its call() extrinsic
-            // handles the call made to user account in a similar fashion.
-            // However, we keep this logic here not to rely on particular executor pallet too much.
-            pallet_balances::Call::<Test>::transfer_allow_death { dest, value }.into()
-        })
-    }
-
-    fn call(
-        from: AccountId,
-        to: AccountId,
-        data: Vec<u8>,
-        value: Balance,
-        gas_limit: Weight,
-    ) -> Self::ExecResult {
-        Contracts::bare_call(
-            from,
-            to,
-            value,
-            gas_limit,
-            None,
-            data,
-            CONTRACTS_DEBUG_OUTPUT,
-            CONTRACTS_EVENTS,
-            pallet_contracts::Determinism::Enforced,
-        )
-    }
-}
+// Implement ethink! executor for Contracts
+pallet_ethink::impl_executor!(Test, Contracts);
