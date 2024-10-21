@@ -21,7 +21,7 @@ use frame_system::{
 use pallet_contracts::Schedule;
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_core::ConstU128;
-use sp_core::{ConstU32, ConstU64, ConstU8, H160, H256, U256};
+use sp_core::{ConstU32, ConstU64, ConstU8, H256, U256};
 use sp_runtime::traits::AccountIdLookup;
 use sp_runtime::traits::IdentifyAccount;
 use sp_runtime::traits::Verify;
@@ -213,7 +213,7 @@ impl pallet_contracts::Config for Test {
 impl Config for Test {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
-    type Contracts = ContractsExecutor;
+    type Contracts = Contracts;
     type Call = RuntimeCall;
 }
 
@@ -228,16 +228,14 @@ parameter_types! {
     pub CodeHashLockupDepositPercent: Perbill = Perbill::from_percent(30);
 }
 
-// TODO this was just copied from runtime
-pub struct ContractsExecutor;
-
+use crate::Executor;
 use pallet_contracts::ContractExecResult;
 
-impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
+impl Executor<Test> for Contracts {
     type ExecResult = ContractExecResult<Balance, EventRecord>;
 
-    fn is_contract(who: H160) -> bool {
-        Contracts::code_hash(&who.into()).is_some()
+    fn is_contract(who: &AccountId) -> bool {
+        Self::code_hash(who).is_some()
     }
 
     /// Estimate gas
@@ -248,8 +246,8 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         value: Balance,
         gas_limit: Weight,
     ) -> Result<U256, DispatchError> {
-        if Self::is_contract(to.into()) {
-            let res = Self::call(from, to, data, value, gas_limit);
+        if Self::is_contract(&to) {
+            let res = <Self as Executor<Test>>::call(from, to, data, value, gas_limit);
             // ensure successful execution
             let _ = res.result?;
             // get consumed gas
@@ -262,7 +260,12 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         }
     }
 
-    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
+    fn build_call(
+        to: AccountId,
+        value: U256,
+        data: Vec<u8>,
+        gas_limit: U256,
+    ) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         // TODO proper ERR on conversion failures
         let value = value.try_into().ok()?;
@@ -271,7 +274,7 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         // and re-used from there here and in the rpc
         let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
 
-        Some(if Self::is_contract(to) {
+        Some(if Self::is_contract(&to) {
             pallet_contracts::Call::<Test>::call {
                 dest,
                 value,
@@ -295,7 +298,7 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         value: Balance,
         gas_limit: Weight,
     ) -> Self::ExecResult {
-        Contracts::bare_call(
+        Self::bare_call(
             from,
             to,
             value,
