@@ -30,8 +30,7 @@ use std::sync::Once;
 
 use common::{codegen::*, consts::*, *};
 use ep_eth::{AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
-use ep_mapping::SubstrateWeight;
-use ethink_runtime::ED;
+use ethink_runtime::{Weight, ED};
 
 mod common;
 

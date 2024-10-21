@@ -20,7 +20,7 @@
 #![allow(non_snake_case)]
 use alloy::providers::ProviderBuilder;
 use ep_eth::{compose_and_sign_tx, AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
-use ep_mapping::Weight;
+use ethink_runtime::Weight;
 use serde_json::{value::Serializer, Deserializer};
 use sp_core::{ecdsa, Pair, U256};
 use sp_runtime::Serialize;
