@@ -1,6 +1,6 @@
 use super::*;
 
-/// Provider of the contracts functionality
+/// Provider of the contracts functionality.
 /// Currently this is pallet_contracts, though might be changed in the future.
 pub trait Executor<T: pallet::Config> {
     type ExecResult;
@@ -33,9 +33,12 @@ pub trait Executor<T: pallet::Config> {
 }
 
 #[macro_export]
-macro_rules! impl_ethink_executor {
+macro_rules! impl_executor {
     ($conf:ident,$contr:ident) => {
-        impl pallet_ethink::Executor<$conf> for $contr {
+        use pallet_contracts::ContractExecResult;
+        use pallet_ethink::{BalanceOf, Executor};
+
+        impl Executor<$conf> for $contr {
             type ExecResult = ContractExecResult<
                 BalanceOf<$conf>,
                 frame_system::EventRecord<
@@ -65,8 +68,7 @@ macro_rules! impl_ethink_executor {
                     Ok(gas_consumed.into())
                 } else {
                     // Standard base fee
-                    // TODO put to ethink constants
-                    Ok(U256::from(21000u32))
+                    Ok(U256::from(pallet_ethink::ETH_BASE_GAS_FEE))
                 }
             }
 
@@ -77,11 +79,8 @@ macro_rules! impl_ethink_executor {
                 gas_limit: U256,
             ) -> Option<<$conf as frame_system::Config>::RuntimeCall> {
                 let dest = sp_runtime::MultiAddress::Id(to.into());
-                // TODO proper ERR on conversion failures
                 let value = value.try_into().ok()?;
                 let gas_limit = gas_limit.try_into().ok()?;
-                // TODO this logic to be encapsulated in ep_ crate,
-                // and re-used from there here and in the rpc
                 let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
 
                 Some(if Self::is_contract(&to) {

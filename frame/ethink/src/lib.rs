@@ -26,17 +26,6 @@
 // `no_std` when compiling to WebAssembly
 #![cfg_attr(not(feature = "std"), no_std)]
 #![allow(clippy::comparison_chain, clippy::large_enum_variant)]
-
-#[cfg(all(feature = "std", test))]
-mod mock;
-#[cfg(all(feature = "std", test))]
-mod tests;
-
-mod exec;
-
-pub use exec::Executor;
-
-pub use ep_eth::{EthTransaction, LegacyTransactionMessage, Receipt, TransactionAction};
 use frame_support::{
     dispatch::{DispatchInfo, PostDispatchInfo},
     traits::fungible::{Inspect, Mutate},
@@ -53,10 +42,23 @@ use sp_runtime::{
     },
     DispatchError, RuntimeDebug,
 };
+use sp_std::vec::Vec;
 use sp_std::{marker::PhantomData, prelude::*};
+
+mod exec;
+#[cfg(all(feature = "std", test))]
+mod mock;
+#[cfg(all(feature = "std", test))]
+mod tests;
+
+pub use self::pallet::*;
+pub use ep_eth::{EthTransaction, LegacyTransactionMessage, Receipt, TransactionAction};
+pub use exec::Executor;
 
 pub type BalanceOf<T> =
     <<T as Config>::Currency as Inspect<<T as frame_system::Config>::AccountId>>::Balance;
+
+pub const ETH_BASE_GAS_FEE: u64 = 21_000;
 
 #[derive(Clone, Eq, PartialEq, RuntimeDebug, Encode, Decode, MaxEncodedLen, TypeInfo)]
 pub enum RawOrigin {
@@ -133,8 +135,6 @@ where
         }
     }
 }
-
-pub use self::pallet::*;
 
 #[frame_support::pallet]
 pub mod pallet {
@@ -305,8 +305,6 @@ pub enum ReturnValue {
     Bytes(Vec<u8>),
     Hash(H160),
 }
-
-use sp_std::vec::Vec;
 
 sp_api::decl_runtime_apis! {
     /// Runtime-exposed API necessary for ETH-compatibility layer.
