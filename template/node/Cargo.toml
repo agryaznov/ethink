@@ -65,7 +65,6 @@ frame-benchmarking-cli.workspace = true
 ethink-rpc.workspace = true
 ethink-runtime = { workspace = true, features = ["default"] }
 pallet-ethink = { workspace = true, features = ["default"] }
-ep-mapping = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
 
 [build-dependencies]

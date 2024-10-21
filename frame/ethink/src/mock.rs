@@ -3,13 +3,13 @@
 use crate::{self as pallet_ethink, Config};
 use ep_eth::AccountId20;
 use ep_eth::EthereumSignature;
-use ep_mapping::Weight;
 use frame_support::{
     derive_impl,
     dispatch::DispatchClass,
     parameter_types,
     traits::{ConstBool, Everything},
     weights::{
+        Weight,
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_REF_TIME_PER_SECOND},
         IdentityFee,
     },

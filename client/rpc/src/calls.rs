@@ -1,6 +1,6 @@
 use crate::{types::EthereumSigner, CallRequest, *};
 use ep_eth::{AccountId20, EnvelopedDecodable, LegacyTransaction, LegacyTransactionMessage};
-use ep_mapping::Weight;
+use frame_support::weights::Weight;
 
 impl<B, C, P> EthRPC<B, C, P>
 where
