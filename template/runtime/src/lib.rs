@@ -881,9 +881,5 @@ impl_runtime_apis! {
     }
 }
 
-use pallet_contracts::ContractExecResult;
-use pallet_ethink::BalanceOf;
-use pallet_ethink::Executor;
-use pallet_ethink::impl_ethink_executor;
-
-impl_ethink_executor!(Runtime, Contracts);
+// Implement ethink! executor for Contracts
+pallet_ethink::impl_executor!(Runtime, Contracts);
