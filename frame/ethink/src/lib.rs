@@ -136,9 +136,14 @@ pub trait Executor<AccountId, Balance, RuntimeCall> {
     type ExecResult;
 
     /// Check if AccountId is owned by a contract
-    fn is_contract(who: H160) -> bool;
+    fn is_contract(who: &AccountId) -> bool;
     /// Construct proper runtime call for the input provided
-    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall>;
+    fn build_call(
+        to: AccountId,
+        value: U256,
+        data: Vec<u8>,
+        gas_limit: U256,
+    ) -> Option<RuntimeCall>;
     /// Call contract
     fn call(
         from: AccountId,
@@ -210,7 +215,7 @@ pub mod pallet {
             // Increment nonce of the sender account
             System::<T>::inc_account_nonce(from);
             // Compose proper destination pallet call
-            let call = T::Contracts::build_call(to, value, data.clone(), gas_limit)
+            let call = T::Contracts::build_call(to.clone(), value, data.clone(), gas_limit)
                 .ok_or(Error::<T>::TxNotSupported)?;
             // Make call
             log::debug!(target: "ethink:pallet", "Dispatching CALL {:?}\n DATA in hex: {}", &call, hex::encode(&data));
@@ -221,7 +226,11 @@ pub mod pallet {
             // Deposit Event
             let tx_hash = tx.hash();
             let from = (*from).clone().into();
-            Self::deposit_event(Event::TxExecuted { from, to, tx_hash });
+            Self::deposit_event(Event::TxExecuted {
+                from,
+                to: to.into(),
+                tx_hash,
+            });
 
             Ok(())
         }
@@ -299,11 +308,14 @@ where
             .map(|p| H160::from(H256::from(sp_io::hashing::keccak_256(&p))))
     }
 
-    fn unpack_eth_tx(tx: &EthTransaction) -> Option<(Option<H160>, U256, Vec<u8>, U256)> {
+    fn unpack_eth_tx(tx: &EthTransaction) -> Option<(Option<T::AccountId>, U256, Vec<u8>, U256)>
+    where
+        <T as frame_system::Config>::AccountId: From<ep_eth::H160>,
+    {
         match tx {
             EthTransaction::Legacy(t) => Some((
                 match t.action {
-                    TransactionAction::Call(h) => Some(h),
+                    TransactionAction::Call(h) => Some(h.into()),
                     TransactionAction::Create => None,
                 },
                 t.value,

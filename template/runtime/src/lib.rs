@@ -888,8 +888,8 @@ use pallet_contracts::ContractExecResult;
 impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
     type ExecResult = ContractExecResult<Balance, EventRecord>;
 
-    fn is_contract(who: H160) -> bool {
-        Contracts::code_hash(&who.into()).is_some()
+    fn is_contract(who: &AccountId) -> bool {
+        Contracts::code_hash(who).is_some()
     }
 
     /// Estimate gas
@@ -900,7 +900,7 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         value: Balance,
         gas_limit: Weight,
     ) -> Result<U256, DispatchError> {
-        if Self::is_contract(to.into()) {
+        if Self::is_contract(&to) {
             let res = Self::call(from, to, data, value, gas_limit);
             // ensure successful execution
             let _ = res.result?;
@@ -914,7 +914,7 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         }
     }
 
-    fn build_call(to: H160, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
+    fn build_call(to: AccountId, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         // TODO proper ERR on conversion failures
         let value = value.try_into().ok()?;
@@ -923,7 +923,7 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         // and re-used from there here and in the rpc
         let gas_limit = Weight::from_parts(gas_limit, u64::MAX);
 
-        Some(if Self::is_contract(to) {
+        Some(if Self::is_contract(&to) {
             pallet_contracts::Call::<Runtime>::call {
                 dest,
                 value,
