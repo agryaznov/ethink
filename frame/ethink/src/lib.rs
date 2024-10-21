@@ -32,6 +32,10 @@ mod mock;
 #[cfg(all(feature = "std", test))]
 mod tests;
 
+mod exec;
+
+pub use exec::Executor;
+
 pub use ep_eth::{EthTransaction, LegacyTransactionMessage, Receipt, TransactionAction};
 use frame_support::{
     dispatch::{DispatchInfo, PostDispatchInfo},
@@ -81,7 +85,7 @@ where
     T: Send + Sync + Config,
     T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
     T::AccountId: From<sp_core::H160> + Into<sp_core::H160> + AsRef<[u8]>,
-    T::Contracts: Executor<T::AccountId, BalanceOf<T>, T::RuntimeCall>,
+    T::Contracts: Executor<T>,
     BalanceOf<T>: TryFrom<sp_core::U256>,
 {
     pub fn is_self_contained(&self) -> bool {
@@ -130,38 +134,6 @@ where
     }
 }
 
-/// Provider of the contracts functionality
-/// This is pallet_contracts in our case
-pub trait Executor<AccountId, Balance, RuntimeCall> {
-    type ExecResult;
-
-    /// Check if AccountId is owned by a contract
-    fn is_contract(who: &AccountId) -> bool;
-    /// Construct proper runtime call for the input provided
-    fn build_call(
-        to: AccountId,
-        value: U256,
-        data: Vec<u8>,
-        gas_limit: U256,
-    ) -> Option<RuntimeCall>;
-    /// Call contract
-    fn call(
-        from: AccountId,
-        to: AccountId,
-        data: Vec<u8>,
-        value: Balance,
-        gas_limit: Weight,
-    ) -> Self::ExecResult;
-    /// Estimate gas
-    fn gas_estimate(
-        from: AccountId,
-        to: AccountId,
-        data: Vec<u8>,
-        value: Balance,
-        gas_limit: Weight,
-    ) -> Result<U256, DispatchError>;
-}
-
 pub use self::pallet::*;
 
 #[frame_support::pallet]
@@ -185,7 +157,7 @@ pub mod pallet {
         /// The fungible in which fees are paid and contract balances are held.
         type Currency: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
         /// Contracts engine
-        type Contracts: Executor<Self::AccountId, BalanceOf<Self>, Self::Call>;
+        type Contracts: Executor<Self>;
     }
 
     #[pallet::call]
@@ -194,7 +166,7 @@ pub mod pallet {
         OriginFor<T>: Into<Result<RawOrigin, OriginFor<T>>>,
         T::AccountId: From<sp_core::H160> + Into<sp_core::H160> + AsRef<[u8]>,
         T::RuntimeCall: Dispatchable<Info = DispatchInfo, PostInfo = PostDispatchInfo>,
-        T::Contracts: Executor<T::AccountId, BalanceOf<T>, T::RuntimeCall>,
+        T::Contracts: Executor<T>,
         BalanceOf<T>: TryFrom<sp_core::U256>,
     {
         /// Transact a call coming from Ethereum RPC
@@ -262,7 +234,7 @@ impl<T> Pallet<T>
 where
     T: Config,
     T::AccountId: AsRef<[u8]>,
-    T::Contracts: Executor<T::AccountId, BalanceOf<T>, T::Call>,
+    T::Contracts: Executor<T>,
 {
     pub fn contract_call(
         from: T::AccountId,
@@ -270,7 +242,7 @@ where
         data: Vec<u8>,
         value: BalanceOf<T>,
         gas_limit: Weight,
-    ) -> <T::Contracts as Executor<T::AccountId, BalanceOf<T>, T::Call>>::ExecResult {
+    ) -> <T::Contracts as Executor<T>>::ExecResult {
         log::error!(target: "ethink:pallet", "Contract: {:?} call with input: {}", hex::encode(&to), hex::encode(&data));
         T::Contracts::call(from, to, data, value, gas_limit)
     }

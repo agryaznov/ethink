@@ -494,7 +494,7 @@ impl pallet_contracts::Config for Runtime {
 impl pallet_ethink::Config for Runtime {
     type RuntimeEvent = RuntimeEvent;
     type Currency = Balances;
-    type Contracts = ContractsExecutor;
+    type Contracts = Contracts;
     type Call = RuntimeCall;
 }
 
@@ -881,15 +881,15 @@ impl_runtime_apis! {
     }
 }
 
-pub struct ContractsExecutor;
-
 use pallet_contracts::ContractExecResult;
+use pallet_ethink::BalanceOf;
+use pallet_ethink::Executor;
 
-impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecutor {
+impl pallet_ethink::Executor<Runtime> for Contracts {
     type ExecResult = ContractExecResult<Balance, EventRecord>;
 
     fn is_contract(who: &AccountId) -> bool {
-        Contracts::code_hash(who).is_some()
+        Self::code_hash(who).is_some()
     }
 
     /// Estimate gas
@@ -897,11 +897,11 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         from: AccountId,
         to: AccountId,
         data: Vec<u8>,
-        value: Balance,
+        value: BalanceOf<Runtime>,
         gas_limit: Weight,
     ) -> Result<U256, DispatchError> {
         if Self::is_contract(&to) {
-            let res = Self::call(from, to, data, value, gas_limit);
+            let res = <Self as Executor<Runtime>>::call(from, to, data, value, gas_limit);
             // ensure successful execution
             let _ = res.result?;
             // get consumed gas
@@ -914,7 +914,12 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         }
     }
 
-    fn build_call(to: AccountId, value: U256, data: Vec<u8>, gas_limit: U256) -> Option<RuntimeCall> {
+    fn build_call(
+        to: AccountId,
+        value: U256,
+        data: Vec<u8>,
+        gas_limit: U256,
+    ) -> Option<RuntimeCall> {
         let dest = sp_runtime::MultiAddress::Id(to.into());
         // TODO proper ERR on conversion failures
         let value = value.try_into().ok()?;
@@ -944,10 +949,10 @@ impl pallet_ethink::Executor<AccountId, Balance, RuntimeCall> for ContractsExecu
         from: AccountId,
         to: AccountId,
         data: Vec<u8>,
-        value: Balance,
+        value: BalanceOf<Runtime>,
         gas_limit: Weight,
     ) -> Self::ExecResult {
-        Contracts::bare_call(
+        Self::bare_call(
             from,
             to,
             value,
