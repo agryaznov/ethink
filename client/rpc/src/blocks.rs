@@ -8,6 +8,7 @@ where
     C::Api: EthinkAPI<B>,
 {
     /// Fetch Substrate block hash by its number
+    // TODO BUG fix
     fn substrate_block_hash_by_number(&self, number: BlockNumber) -> RpcResult<Option<B::Hash>> {
         Ok(match number {
             BlockNumber::Num(num) => {

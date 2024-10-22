@@ -39,7 +39,6 @@ const FLIPPER_PATH: &'static str = concat!(
 static ONCE: Once = Once::new();
 
 #[tokio::test]
-#[ignore]
 async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -91,7 +90,6 @@ async fn eth_sendRawTransaction() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn eth_sendTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -128,7 +126,6 @@ async fn eth_sendTransaction() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn gas_limit_is_respected() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -203,7 +200,6 @@ async fn gas_limit_is_respected() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn eth_call() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -243,7 +239,6 @@ async fn eth_call() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn eth_estimateGas() {
     // Spawn node and deploy contract
     let env: Env<PolkadotConfig> = prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
@@ -277,7 +272,6 @@ async fn eth_estimateGas() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn eth_accounts() {
     // Spawn node with Baltathar key in keystore
     // (we don't need a contract deployment here, but so far this is the only test as such,
@@ -304,7 +298,6 @@ async fn eth_accounts() {
 }
 
 #[tokio::test]
-#[ignore]
 async fn eth_getBlockTransactionCountByNumber() {
     // Spawn node
     let mut env: Env<PolkadotConfig> = prepare_node!(BALTATHAR_KEY);
