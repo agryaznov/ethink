@@ -8,26 +8,13 @@ where
     C::Api: EthinkAPI<B>,
 {
     /// Fetch Substrate block hash by its number
-    // TODO BUG fix
-    fn substrate_block_hash_by_number(&self, number: BlockNumber) -> RpcResult<Option<B::Hash>> {
-        Ok(match number {
-            BlockNumber::Num(num) => {
-                // block num in Substrate db is u32
-                // https://github.com/paritytech/polkadot-sdk/blob/73c2bca9cdb17f1fdc2afd7aed826d0c55b8640a/substrate/client/rpc/src/chain/mod.rs#L75
-                let number = <NumberFor<B>>::try_from(num)
-                    .map_err(|_| rpc_err!("Error converting block number: {:?}", num))?;
-                self.client
-                    .hash(number)
-                    .map_err(|err| rpc_err!("Failed fetching block hash by number: {:?}", err))?
-            }
-            BlockNumber::Earliest => self
-                .client
-                .hash(0u32.into())
-                .map_err(|err| rpc_err!("Failed fetching earliest block: {:?}", err))?,
-            BlockNumber::Latest | BlockNumber::Pending => Some(self.client.info().best_hash),
-            BlockNumber::Safe | BlockNumber::Finalized => Some(self.client.info().finalized_hash),
-            BlockNumber::Hash { hash, .. } => Some(hash),
-        })
+    async fn substrate_block_hash_by_number(
+        &self,
+        number: BlockNumber,
+    ) -> RpcResult<Option<B::Hash>> {
+        block_hash::<B, C>(&self.client, Some(number))
+            .await
+            .map(|h| Some(h))
     }
 
     /// Fetch Substrate block by its hash
@@ -50,7 +37,7 @@ where
         _full: bool,
     ) -> RpcResult<Option<RichBlock>> {
         Ok(
-            if let Some(hash) = self.substrate_block_hash_by_number(number)? {
+            if let Some(hash) = self.substrate_block_hash_by_number(number).await? {
                 self.substrate_block_by_hash(hash)?.map(RichBlock::from)
             } else {
                 None
@@ -71,7 +58,7 @@ where
         number: BlockNumber,
     ) -> RpcResult<Option<U256>> {
         Ok(
-            if let Some(hash) = self.substrate_block_hash_by_number(number)? {
+            if let Some(hash) = self.substrate_block_hash_by_number(number).await? {
                 self.substrate_block_by_hash(hash)?
                     .map(|b| b.extrinsic_count())
             } else {

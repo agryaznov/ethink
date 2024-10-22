@@ -4,7 +4,6 @@ use sp_runtime::traits::{Header as HeaderT, UniqueSaturatedInto};
 impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = ep_eth::H256>,
-    B::Header: HeaderT<Number = u32>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
 {
     pub async fn transaction_by_hash(&self, _hash: H256) -> RpcResult<Option<Transaction>> {

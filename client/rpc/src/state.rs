@@ -8,7 +8,6 @@ use sp_runtime::traits::UniqueSaturatedInto;
 impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = sp_core::H256>,
-    B::Header: HeaderT<Number: TryFrom<u64>>,
     <<B as BlockT>::Header as HeaderT>::Number: Into<U256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     C::Api: EthinkAPI<B>,
