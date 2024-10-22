@@ -38,9 +38,24 @@ where
         ))
     }
 
-    // TODO implement
-    pub async fn code_at(&self, _address: H160, _number: Option<BlockNumber>) -> RpcResult<Bytes> {
-        Ok(Bytes::default())
+    pub async fn code_at(&self, address: H160, _number: Option<BlockNumber>) -> RpcResult<Bytes> {
+        let hash = self.client.info().best_hash;
+        // TODO
+        // let hash = if let Some(number) = number {
+        //     self.client
+        //         .hash(number)
+        //         .map_err(|err| rpc_err!("Failed fetching block hash by number: {:?}", err))?
+        // } else {
+        //     self.client.info().best_hash
+        // };
+
+        Ok(self
+            .client
+            .runtime_api()
+            .code_at(hash, address)
+            .map_err(|err| rpc_err!("Fetching runtime code_at failed: {:?}", err))?
+            .unwrap_or_default()
+            .into())
     }
 
     pub fn block_number(&self) -> RpcResult<U256> {

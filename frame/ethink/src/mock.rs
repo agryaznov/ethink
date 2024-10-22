@@ -9,9 +9,8 @@ use frame_support::{
     parameter_types,
     traits::{ConstBool, Everything},
     weights::{
-        Weight,
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_REF_TIME_PER_SECOND},
-        IdentityFee,
+        IdentityFee, Weight,
     },
 };
 use frame_system::{
