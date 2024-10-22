@@ -72,6 +72,30 @@ pub fn rpc_err<T: ToString>(message: T) -> jsonrpsee::types::error::ErrorObjectO
     err(jsonrpsee::types::error::INTERNAL_ERROR_CODE, message, None)
 }
 
+pub async fn block_hash<B, C>(client: &C, n: Option<BlockNumber>) -> RpcResult<H256>
+where
+    B: BlockT<Hash = sp_core::H256>,
+    B::Header: HeaderT<Number: TryFrom<u64>>,
+    C: HeaderBackend<B> + 'static,
+{
+    Ok(match n.unwrap_or_default() {
+        BlockNumber::Hash { hash, .. } => hash,
+        BlockNumber::Num(number) => {
+            let n = u32::try_from(number)
+                .map_err(|err| rpc_err!("Block numbers > u32::MAX are not supported)"))?;
+
+            client
+                .hash(n.into())
+                .map_err(|err| rpc_err!("Failed fetching block hash by number: {:?}", err))?
+                .ok_or(rpc_err!("Can't find block header on chain: {:?}", number))?
+        }
+        BlockNumber::Latest => client.info().best_hash,
+        BlockNumber::Earliest => client.info().genesis_hash,
+        BlockNumber::Safe | BlockNumber::Finalized => client.info().finalized_hash,
+        BlockNumber::Pending => return Err(rpc_err!("Pending block querying is not supported")),
+    })
+}
+
 #[macro_export]
 macro_rules! rpc_err {
     ( $msg:literal ) => {
@@ -95,7 +119,7 @@ pub struct EthRPC<B: BlockT, C, P> {
 impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = sp_core::H256>,
-    B::Header: HeaderT<Number = u32>,
+    B::Header: HeaderT<Number: TryFrom<u64>>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: EthinkAPI<B>,
@@ -147,7 +171,7 @@ where
 impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
     B: BlockT<Hash = ep_eth::H256>,
-    B::Header: HeaderT<Number = u32>,
+    B::Header: HeaderT<Number: TryFrom<u64>>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: EthinkAPI<B>,
