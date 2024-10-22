@@ -298,6 +298,10 @@ async fn eth_accounts() {
 }
 
 #[tokio::test]
+#[should_panic(expected = "RPC returned error: {
+    \"code\": Number(-32603),
+    \"message\": String(\"Can't find block header on chain: 100\"),
+}")]
 async fn eth_getBlockTransactionCountByNumber() {
     // Spawn node
     let mut env: Env<PolkadotConfig> = prepare_node!(BALTATHAR_KEY);
@@ -347,7 +351,7 @@ async fn eth_getBlockTransactionCountByNumber() {
     let cases = [
         (0, Some(0)), // no tx in genesis block
         (1, Some(2)), // 1 timestamp.set + 1 our tx
-        (100, None),  // a future block, hence None
+        (100, None), // a future block, should panic (ETH RPC returns error for future block queried state)
     ];
 
     for (n, m) in cases {

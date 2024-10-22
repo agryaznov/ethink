@@ -75,19 +75,19 @@ pub fn rpc_err<T: ToString>(message: T) -> jsonrpsee::types::error::ErrorObjectO
 pub async fn block_hash<B, C>(client: &C, n: Option<BlockNumber>) -> RpcResult<H256>
 where
     B: BlockT<Hash = sp_core::H256>,
-    B::Header: HeaderT<Number: TryFrom<u64>>,
     C: HeaderBackend<B> + 'static,
 {
     Ok(match n.unwrap_or_default() {
         BlockNumber::Hash { hash, .. } => hash,
-        BlockNumber::Num(number) => {
-            let n = u32::try_from(number)
-                .map_err(|err| rpc_err!("Block numbers > u32::MAX are not supported)"))?;
-
+        BlockNumber::Num(num) => {
+            // block num in Substrate db is u32
+            // https://github.com/paritytech/polkadot-sdk/blob/73c2bca9cdb17f1fdc2afd7aed826d0c55b8640a/substrate/client/rpc/src/chain/mod.rs#L75
+            let n = <NumberFor<B>>::try_from(num)
+                .map_err(|_| rpc_err!("Error converting block number: {:?}", num))?;
             client
-                .hash(n.into())
+                .hash(n)
                 .map_err(|err| rpc_err!("Failed fetching block hash by number: {:?}", err))?
-                .ok_or(rpc_err!("Can't find block header on chain: {:?}", number))?
+                .ok_or(rpc_err!("Can't find block header on chain: {:?}", num))?
         }
         BlockNumber::Latest => client.info().best_hash,
         BlockNumber::Earliest => client.info().genesis_hash,
@@ -119,7 +119,6 @@ pub struct EthRPC<B: BlockT, C, P> {
 impl<B, C, P> EthRPC<B, C, P>
 where
     B: BlockT<Hash = sp_core::H256>,
-    B::Header: HeaderT<Number: TryFrom<u64>>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: EthinkAPI<B>,
@@ -171,7 +170,6 @@ where
 impl<B, C, P> EthApiServer for EthRPC<B, C, P>
 where
     B: BlockT<Hash = ep_eth::H256>,
-    B::Header: HeaderT<Number: TryFrom<u64>>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + BlockBackend<B> + 'static,
     P: TransactionPool<Block = B> + 'static,
     C::Api: EthinkAPI<B>,
