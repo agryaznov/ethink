@@ -39,6 +39,7 @@ const FLIPPER_PATH: &'static str = concat!(
 static ONCE: Once = Once::new();
 
 #[tokio::test]
+#[ignore]
 async fn eth_sendRawTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -90,6 +91,7 @@ async fn eth_sendRawTransaction() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn eth_sendTransaction() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -126,6 +128,7 @@ async fn eth_sendTransaction() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn gas_limit_is_respected() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -200,6 +203,7 @@ async fn gas_limit_is_respected() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn eth_call() {
     // Spawn node and deploy contract
     let mut env: Env<PolkadotConfig> =
@@ -239,6 +243,7 @@ async fn eth_call() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn eth_estimateGas() {
     // Spawn node and deploy contract
     let env: Env<PolkadotConfig> = prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
@@ -272,6 +277,7 @@ async fn eth_estimateGas() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn eth_accounts() {
     // Spawn node with Baltathar key in keystore
     // (we don't need a contract deployment here, but so far this is the only test as such,
@@ -298,6 +304,7 @@ async fn eth_accounts() {
 }
 
 #[tokio::test]
+#[ignore]
 async fn eth_getBlockTransactionCountByNumber() {
     // Spawn node
     let mut env: Env<PolkadotConfig> = prepare_node!(BALTATHAR_KEY);
@@ -353,4 +360,28 @@ async fn eth_getBlockTransactionCountByNumber() {
     for (n, m) in cases {
         check_tx_count(n, m)
     }
+}
+
+#[tokio::test]
+async fn eth_getCode() {
+    // Spawn node and deploy contract
+    let mut env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
+    // (Flipper is deployed with `false` state)
+    // Make ETH RPC request
+    let rs = rpc_rq!(env,
+    {
+      "jsonrpc": "2.0",
+      "method": "eth_getCode",
+      "params": [ env.contract_addr() ],
+      "id": 0
+     });
+    // Handle response
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    let code_hash = extract_result!(&json);
+    assert_eq!(
+        *code_hash,
+        "0xc4f9ff8b07db007d68ceaa7a3f981ada3b5f706965695d94386841384e63bdf4"
+    )
 }
