@@ -236,6 +236,10 @@ where
     T::AccountId: AsRef<[u8]>,
     T::Contracts: Executor<T>,
 {
+    pub fn code_at(address: T::AccountId) -> Option<Vec<u8>> {
+        T::Contracts::code_at(&address)
+    }
+
     pub fn contract_call(
         from: T::AccountId,
         to: T::AccountId,
@@ -309,6 +313,9 @@ pub enum ReturnValue {
 sp_api::decl_runtime_apis! {
     /// Runtime-exposed API necessary for ETH-compatibility layer.
     pub trait EthinkAPI {
+        /// Return contract's code hash
+        fn code_at(address: H160) -> Option<Vec<u8>>;
+
         /// Return runtime-defined CHAIN_ID.
         fn chain_id() -> u64;
 
