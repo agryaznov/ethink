@@ -49,7 +49,7 @@ macro_rules! impl_executor {
                 >,
             >;
             // NOTE this returns code hash instead of code/
-            // To get the code, a getter should be added to the pallet storage.
+            // To get the code, a getter should be added for the pallet storage.
             fn code_at(address: &<$conf as frame_system::Config>::AccountId) -> Option<Vec<u8>> {
                 Self::code_hash(address).map(|h| h.to_fixed_bytes().to_vec())
             }
