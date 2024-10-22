@@ -298,6 +298,10 @@ async fn eth_accounts() {
 }
 
 #[tokio::test]
+#[should_panic(expected = "RPC returned error: {
+    \"code\": Number(-32603),
+    \"message\": String(\"Can't find block header on chain: 100\"),
+}")]
 async fn eth_getBlockTransactionCountByNumber() {
     // Spawn node
     let mut env: Env<PolkadotConfig> = prepare_node!(BALTATHAR_KEY);
@@ -347,10 +351,34 @@ async fn eth_getBlockTransactionCountByNumber() {
     let cases = [
         (0, Some(0)), // no tx in genesis block
         (1, Some(2)), // 1 timestamp.set + 1 our tx
-        (100, None),  // a future block, hence None
+        (100, None), // a future block, should panic (ETH RPC returns error for future block queried state)
     ];
 
     for (n, m) in cases {
         check_tx_count(n, m)
     }
+}
+
+#[tokio::test]
+async fn eth_getCode() {
+    // Spawn node and deploy contract
+    let mut env: Env<PolkadotConfig> =
+        prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
+    // (Flipper is deployed with `false` state)
+    // Make ETH RPC request
+    let rs = rpc_rq!(env,
+    {
+      "jsonrpc": "2.0",
+      "method": "eth_getCode",
+      "params": [ env.contract_addr() ],
+      "id": 0
+     });
+    // Handle response
+    let json = to_json_val!(rs);
+    ensure_no_err!(&json);
+    let code_hash = extract_result!(&json);
+    assert_eq!(
+        *code_hash,
+        "0xc4f9ff8b07db007d68ceaa7a3f981ada3b5f706965695d94386841384e63bdf4"
+    )
 }
