@@ -7,8 +7,7 @@ use sp_runtime::traits::UniqueSaturatedInto;
 
 impl<B, C, P> EthRPC<B, C, P>
 where
-    B: BlockT,
-    B::Header: HeaderT,
+    B: BlockT<Hash = sp_core::H256>,
     <<B as BlockT>::Header as HeaderT>::Number: Into<U256>,
     C: ProvideRuntimeApi<B> + HeaderBackend<B> + 'static,
     C::Api: EthinkAPI<B>,
@@ -19,8 +18,9 @@ where
         Ok(H160::zero())
     }
 
-    pub async fn balance(&self, address: H160, _number: Option<BlockNumber>) -> RpcResult<U256> {
-        let hash = self.client.info().best_hash;
+    pub async fn balance(&self, address: H160, number: Option<BlockNumber>) -> RpcResult<U256> {
+        let hash = block_hash::<B, C>(&self.client, number).await?;
+
         self.client
             .runtime_api()
             .account_free_balance(hash, address)
@@ -29,6 +29,7 @@ where
 
     pub fn chain_id(&self) -> RpcResult<Option<U64>> {
         let hash = self.client.info().best_hash;
+
         Ok(Some(
             self.client
                 .runtime_api()
@@ -38,9 +39,16 @@ where
         ))
     }
 
-    // TODO implement
-    pub async fn code_at(&self, _address: H160, _number: Option<BlockNumber>) -> RpcResult<Bytes> {
-        Ok(Bytes::default())
+    pub async fn code_at(&self, address: H160, number: Option<BlockNumber>) -> RpcResult<Bytes> {
+        let hash = block_hash::<B, C>(&self.client, number).await?;
+
+        Ok(self
+            .client
+            .runtime_api()
+            .code_at(hash, address)
+            .map_err(|err| rpc_err!("Fetching runtime code_at failed: {:?}", err))?
+            .unwrap_or_default()
+            .into())
     }
 
     pub fn block_number(&self) -> RpcResult<U256> {
@@ -67,9 +75,9 @@ where
     pub async fn transaction_count(
         &self,
         address: H160,
-        _number: Option<BlockNumber>,
+        number: Option<BlockNumber>,
     ) -> RpcResult<U256> {
-        let hash = self.client.info().best_hash;
+        let hash = block_hash::<B, C>(&self.client, number).await?;
         let nonce = self
             .client
             .runtime_api()

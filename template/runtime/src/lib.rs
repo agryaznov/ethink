@@ -819,6 +819,10 @@ impl_runtime_apis! {
     }
 
     impl pallet_ethink::EthinkAPI<Block> for Runtime {
+        fn code_at(address: H160) -> Option<Vec<u8>> {
+            Ethink::code_at(AccountId::from(address))
+        }
+
         fn chain_id() -> u64 {
             CHAIN_ID
         }
