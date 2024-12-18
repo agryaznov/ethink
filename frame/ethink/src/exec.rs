@@ -5,11 +5,8 @@ use super::*;
 pub trait Executor<T: pallet::Config> {
     type ExecResult;
 
-<<<<<<< HEAD
-=======
     fn code_at(address: &T::AccountId) -> Option<Vec<u8>>;
 
->>>>>>> deliver
     /// Check if AccountId is owned by a contract
     fn is_contract(who: &T::AccountId) -> bool;
     /// Construct proper runtime call for the input provided
