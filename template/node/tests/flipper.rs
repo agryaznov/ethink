@@ -379,6 +379,6 @@ async fn eth_getCode() {
     let code_hash = extract_result!(&json);
     assert_eq!(
         *code_hash,
-        "0xc4f9ff8b07db007d68ceaa7a3f981ada3b5f706965695d94386841384e63bdf4"
+        "0x4a3755406e385e93a315d150cc2b471357e8f3df247dc2fad2a47342d5b23c0e"
     )
 }
