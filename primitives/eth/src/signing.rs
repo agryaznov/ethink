@@ -88,9 +88,9 @@ impl EthereumSignature {
         let v = match chain_id {
             None => 27,
             Some(chain_id) => 2 * chain_id + 35,
-        } + self.0 .0[64] as u64;
-        let r = H256::from_slice(&self.0 .0[0..32]);
-        let s = H256::from_slice(&self.0 .0[32..64]);
+        } + self.0[64] as u64;
+        let r = H256::from_slice(&self.0[0..32]);
+        let s = H256::from_slice(&self.0[32..64]);
 
         (v, r, s)
     }

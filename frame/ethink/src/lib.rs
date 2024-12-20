@@ -45,6 +45,7 @@ use sp_runtime::{
 use sp_std::vec::Vec;
 use sp_std::{marker::PhantomData, prelude::*};
 
+#[cfg(feature = "runtime-benchmarks")]
 mod benchmarking;
 mod exec;
 
