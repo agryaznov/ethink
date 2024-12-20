@@ -28,6 +28,8 @@ sp-session.workspace = true
 sp-std.workspace = true
 sp-transaction-pool.workspace = true
 sp-version.workspace = true
+frame-benchmarking = { workspace = true, optional = true }
+frame-system-benchmarking = { workspace = true, optional = true }
 frame-executive.workspace = true
 frame-support.workspace = true
 frame-system.workspace = true
@@ -66,6 +68,8 @@ default = [
 std = [
 	"scale-codec/std",
 	"scale-info/std",
+	"frame-benchmarking/std",
+	"frame-system-benchmarking?/std",
 	"frame-executive/std",
 	"frame-support/std",
 	"frame-system-rpc-runtime-api/std",
@@ -96,6 +100,8 @@ std = [
 	"ep-eth/std",
 ]
 runtime-benchmarks = [
+	"frame-benchmarking/runtime-benchmarks",
+	"frame-system-benchmarking/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
 	"pallet-balances/runtime-benchmarks",
 	"pallet-contracts/runtime-benchmarks",

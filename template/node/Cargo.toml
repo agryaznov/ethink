@@ -94,7 +94,8 @@ runtime-benchmarks = [
 	"sc-service/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
 	"ethink-runtime/runtime-benchmarks",
-	"pallet-ethink/runtime-benchmarks"
+	"pallet-ethink/runtime-benchmarks",
+	"ethink-rpc/runtime-benchmarks"
 ]
 # Enable features that allow the runtime to be tried and debugged. Name might be subject to change
 # in the near future.
