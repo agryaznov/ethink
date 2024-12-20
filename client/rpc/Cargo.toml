@@ -33,3 +33,4 @@ frame-support.workspace = true
 
 [features]
 default = []
+runtime-benchmarks = []

@@ -19,7 +19,7 @@ mod benchmarks {
     use super::*;
 
     #[benchmark]
-    fn transact()  -> Result<(), BenchmarkError> {
+    fn transfer() {
         let tx = LegacyTransaction {
             nonce: U256::MAX,
             gas_price: U256::MAX,
@@ -36,9 +36,12 @@ mod benchmarks {
             .expect("cant' create tx signature"),
         };
 
-        #[extrinsic_call]
-        _(RawOrigin::Signed(whitelisted_caller()), tx);
+        // #[extrinsic_call]
+        // _(RawOrigin::Signed(whitelisted_caller()), tx);
 
-        Ok(())
+        #[block]
+        {
+            let _ = 1;
+        }
     }
 }

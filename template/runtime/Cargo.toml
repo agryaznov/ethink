@@ -89,8 +89,18 @@ std = [
 	"sp-transaction-pool/std",
 	"sp-version/std",
 	"pallet-contracts/std",
+	"pallet-ethink/std",
 	"pallet-assets/std",
 	"substrate-wasm-builder",
 	"fp-self-contained/std",
 	"ep-eth/std",
+]
+runtime-benchmarks = [
+	"frame-system/runtime-benchmarks",
+	"pallet-balances/runtime-benchmarks",
+	"pallet-contracts/runtime-benchmarks",
+	"pallet-grandpa/runtime-benchmarks",
+	"pallet-timestamp/runtime-benchmarks",
+	"pallet-sudo/runtime-benchmarks",
+	"pallet-ethink/runtime-benchmarks",
 ]
