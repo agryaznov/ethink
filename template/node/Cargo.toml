@@ -58,8 +58,8 @@ substrate-frame-rpc-system.workspace = true
 pallet-transaction-payment-rpc.workspace = true
 
 # These dependencies are used for runtime benchmarking
-frame-benchmarking.workspace = true
-frame-benchmarking-cli.workspace = true
+frame-benchmarking = { workspace = true }
+frame-benchmarking-cli = { workspace = true, optional = true }
 
 # Local Dependencies
 ethink-rpc.workspace = true
@@ -68,6 +68,7 @@ pallet-ethink = { workspace = true, features = ["default"] }
 ep-eth = { workspace = true, features = ["default"] }
 
 [build-dependencies]
+frame-benchmarking-cli = { workspace = true, optional = true }
 substrate-build-script-utils.workspace = true
 
 [dev-dependencies]
@@ -92,6 +93,8 @@ runtime-benchmarks = [
 	"frame-system/runtime-benchmarks",
 	"sc-service/runtime-benchmarks",
 	"sp-runtime/runtime-benchmarks",
+	"ethink-runtime/runtime-benchmarks",
+	"pallet-ethink/runtime-benchmarks"
 ]
 # Enable features that allow the runtime to be tried and debugged. Name might be subject to change
 # in the near future.

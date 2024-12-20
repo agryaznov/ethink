@@ -6,6 +6,7 @@ use crate::{
 use ethink_runtime::Block;
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
+use sp_runtime::traits::BlakeTwo256;
 
 impl SubstrateCli for Cli {
     fn impl_name() -> String {
@@ -121,6 +122,13 @@ pub fn run() -> sc_cli::Result<()> {
         }
         #[cfg(feature = "runtime-benchmarks")]
         Some(Subcommand::Benchmark(cmd)) => {
+            use crate::benchmarking::{
+                inherent_benchmark_data, RemarkBuilder, TransferKeepAliveBuilder,
+            };
+            use frame_benchmarking_cli::{
+                BenchmarkCmd, ExtrinsicFactory, SUBSTRATE_REFERENCE_HARDWARE,
+            };
+
             let runner = cli.create_runner(cmd)?;
 
             runner.sync_run(|config| {
@@ -128,15 +136,7 @@ pub fn run() -> sc_cli::Result<()> {
                 // which sub-commands it wants to support.
                 match cmd {
                     BenchmarkCmd::Pallet(cmd) => {
-                        if !cfg!(feature = "runtime-benchmarks") {
-                            return Err(
-                                "Runtime benchmarking wasn't enabled when building the node. \
-							You can enable it with `--features runtime-benchmarks`."
-                                    .into(),
-                            );
-                        }
-
-                        cmd.run::<Block, ()>(config)
+                        cmd.run_with_spec::<BlakeTwo256, ()>(Some(config.chain_spec))
                     }
                     BenchmarkCmd::Block(cmd) => {
                         let PartialComponents { client, .. } = service::new_partial(&config)?;
@@ -168,31 +168,14 @@ pub fn run() -> sc_cli::Result<()> {
                             &ext_builder,
                         )
                     }
-                    BenchmarkCmd::Extrinsic(cmd) => {
-                        let PartialComponents { client, .. } = service::new_partial(&config)?;
-                        // Register the *Remark* and *TKA* builders.
-                        let ext_factory = ExtrinsicFactory(vec![
-                            Box::new(RemarkBuilder::new(client.clone())),
-                            Box::new(TransferKeepAliveBuilder::new(
-                                client.clone(),
-                                get_account_id_from_seed::<sp_core::ecdsa::Public>("Alice"),
-                                ED,
-                            )),
-                        ]);
-
-                        cmd.run(client, inherent_benchmark_data()?, Vec::new(), &ext_factory)
+                    BenchmarkCmd::Extrinsic(_) => {
+                        return Err("Not supported".into());
                     }
                     BenchmarkCmd::Machine(cmd) => {
                         cmd.run(&config, SUBSTRATE_REFERENCE_HARDWARE.clone())
                     }
                 }
             })
-        }
-        #[cfg(not(feature = "runtime-benchmarks"))]
-        Some(Subcommand::Benchmark(_)) => {
-            Err("Benchmarking wasn't enabled when building the node. \
-			You can enable it with `--features runtime-benchmarks`."
-                .into())
         }
         Some(Subcommand::ChainInfo(cmd)) => {
             let runner = cli.create_runner(cmd)?;
