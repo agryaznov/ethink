@@ -12,15 +12,16 @@ scale-info.workspace = true
 # Substrate
 frame-support.workspace = true
 frame-system.workspace = true
+frame-benchmarking = { workspace = true, default-features = false }
 sp-api.workspace = true
 sp-io.workspace = true
 sp-runtime.workspace = true
 sp-std.workspace = true
 sp-core.workspace = true
 log.workspace = true
-
-# TODO REMOVE
+# TODO rm
 hex.workspace = true
+hex-literal.workspace = true
 
 [dev-dependencies]
 hex.workspace = true
@@ -31,9 +32,9 @@ wat = "1"
 pallet-balances = { workspace = true, features = ["default"] }
 pallet-contracts = { workspace = true, features = ["default"] }
 pallet-utility = { workspace = true, features = ["default"] }
-pallet-timestamp = { workspace = true, features = ["default"] }
-pallet-transaction-payment = { workspace = true, features = ["default"] }
-pallet-insecure-randomness-collective-flip = { workspace = true, features = ["default"] }
+pallet-timestamp = { workspace = true, default-features = false }
+pallet-transaction-payment = { workspace = true, default-features = false }
+pallet-insecure-randomness-collective-flip = { workspace = true, default-features = false }
 ep-eth = { workspace = true, features = ["default"] }
 sp-core = { workspace = true, features = ["default"] }
 
@@ -49,13 +50,23 @@ std = [
 	"sp-io/std",
 	"sp-runtime/std",
 	"sp-std/std",
+	"pallet-insecure-randomness-collective-flip/std",
+	"pallet-transaction-payment/std",
+	"pallet-timestamp/std",
 	# ethink
 	"ep-eth/std",
 
 ]
 runtime-benchmarks = [
+	"frame-benchmarking/runtime-benchmarks",
 	"frame-support/runtime-benchmarks",
 	"frame-system/runtime-benchmarks",
+	"sp-runtime/runtime-benchmarks",
+	"pallet-balances/runtime-benchmarks",
+	"pallet-contracts/runtime-benchmarks",
+	"pallet-timestamp/runtime-benchmarks",
+	"pallet-utility/runtime-benchmarks",
+
 ]
 try-runtime = [
 	"frame-support/try-runtime",

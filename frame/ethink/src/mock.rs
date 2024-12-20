@@ -10,7 +10,7 @@ use frame_support::{
     traits::{ConstBool, Everything},
     weights::{
         constants::{BlockExecutionWeight, ExtrinsicBaseWeight, WEIGHT_REF_TIME_PER_SECOND},
-        IdentityFee,
+        IdentityFee, Weight,
     },
 };
 use frame_system::{
