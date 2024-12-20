@@ -22,10 +22,10 @@ log.workspace = true
 # TODO rm
 hex.workspace = true
 hex-literal.workspace = true
+libsecp256k1 = { workspace = true, features = ["static-context", "hmac"] }
 
 [dev-dependencies]
 hex.workspace = true
-libsecp256k1 = { workspace = true, features = ["static-context", "hmac"] }
 rlp.workspace = true
 wat = "1"
 # Substrate
