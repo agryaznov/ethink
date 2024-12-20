@@ -33,4 +33,6 @@ frame-support.workspace = true
 
 [features]
 default = []
-runtime-benchmarks = []
+runtime-benchmarks = [
+	"pallet-ethink/runtime-benchmarks"
+]
