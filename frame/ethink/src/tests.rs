@@ -68,10 +68,18 @@ const CONTRACT_CODE: &str = r#"
 )
 "#;
 
+const DUMMY: &str = r#"
+(module
+	(func (export "deploy"))
+	(func (export "call"))
+)
+"#;
+
 #[test]
 fn calling_contract_account_executes_it() {
     let wasm = wat::parse_str(CONTRACT_CODE).unwrap();
-
+//    let wasm = wat::parse_str(DUMMY).unwrap();
+    println!("WASM NOT DUMMY: {}", hex::encode(&wasm));
     ExtBuilder::default().build().execute_with(|| {
         let _ = test_utils::set_balance(&ALITH, 10_000_000_000);
         // Instantiate contract and deposit balance (ED) to it

@@ -18,12 +18,14 @@ use frame_system::{
     EnsureSigned,
 };
 use pallet_contracts::Schedule;
+use pallet_contracts::{Code, CollectEvents, DebugInfo};
 use pallet_transaction_payment::CurrencyAdapter;
 use sp_core::ConstU128;
 use sp_core::{ConstU32, ConstU64, ConstU8, H256, U256};
 use sp_runtime::traits::AccountIdLookup;
 use sp_runtime::traits::IdentifyAccount;
 use sp_runtime::traits::Verify;
+use sp_runtime::BuildStorage;
 use sp_runtime::{DispatchError, Perbill};
 
 // Well-known accounts taken from Moonbeam
@@ -229,3 +231,38 @@ parameter_types! {
 
 // Implement ethink! executor for Contracts
 pallet_ethink::impl_executor!(Test, Contracts);
+
+const CONTRACT: &str = "0061736d0100000001090260027f7f00600000022702057365616c300e7365616c5f7465726d696e617465000003656e76066d656d6f7279020101010303020101071102066465706c6f7900010463616c6c00020a0e0202000b0900410041141000000b0b1a010041000b143cd0a705a2dc65e5b1e1205896baa2be8a07c6e00018046e616d65011101000e7365616c5f7465726d696e617465";
+pub fn new_test_ext() -> sp_io::TestExternalities {
+    let mut storage = frame_system::GenesisConfig::<Test>::default()
+        .build_storage()
+        .unwrap();
+	pallet_balances::GenesisConfig::<Test> {
+		balances: vec![(ALITH, 100_000_000_000)],
+	}
+	.assimilate_storage(&mut storage)
+	.unwrap();
+
+    let mut ext: sp_io::TestExternalities = storage.into();
+    ext.execute_with(|| {
+        let a = Contracts::bare_instantiate(
+            ALITH,
+            0,
+            Weight::MAX,
+            None,
+            Code::Upload(hex::decode(CONTRACT).expect("cant decode wasm binary")),
+            vec![],
+            vec![],
+            DebugInfo::Skip,
+            CollectEvents::Skip,
+        )
+        .result
+        .expect("Failed to instantiate contract")
+        .account_id;
+
+        println!("CCCCONRACT: {:?}", hex::decode("bc6d24328ec3c5f6e3e3137fff98cbe8ce8207a1"));
+
+        System::set_block_number(1);
+    });
+    ext
+}
