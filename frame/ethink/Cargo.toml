@@ -23,14 +23,14 @@ log.workspace = true
 hex.workspace = true
 hex-literal.workspace = true
 libsecp256k1 = { workspace = true, features = ["static-context", "hmac"] }
+pallet-contracts = { workspace = true, default-features = false }
 
 [dev-dependencies]
+wat = "1"
 hex.workspace = true
 rlp.workspace = true
-wat = "1"
 # Substrate
 pallet-balances = { workspace = true, default-features = false }
-pallet-contracts = { workspace = true, default-features = false }
 pallet-utility = { workspace = true, default-features = false }
 pallet-timestamp = { workspace = true, default-features = false }
 pallet-transaction-payment = { workspace = true, default-features = false }
@@ -55,6 +55,7 @@ std = [
 	"pallet-transaction-payment/std",
 	"pallet-timestamp/std",
 	"pallet-contracts/std",
+	"pallet-balances/std",
 	"pallet-utility/std",
 	# ethink
 	"ep-eth/std",
