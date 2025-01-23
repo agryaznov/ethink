@@ -19,16 +19,14 @@ sp-runtime = { workspace = true, default-features = false }
 sp-std = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 log.workspace = true
-# TODO rm
 hex.workspace = true
-hex-literal.workspace = true
 libsecp256k1 = { workspace = true, features = ["static-context", "hmac"] }
 pallet-contracts = { workspace = true, default-features = false }
 
 [dev-dependencies]
 wat = "1"
-hex.workspace = true
 rlp.workspace = true
+hex-literal.workspace = true
 # Substrate
 pallet-balances = { workspace = true, default-features = false }
 pallet-utility = { workspace = true, default-features = false }

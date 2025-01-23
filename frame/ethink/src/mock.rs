@@ -65,10 +65,6 @@ pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::Account
 pub type Balance = u128;
 
 type Block = frame_system::mocking::MockBlock<Test>;
-type EventRecord = frame_system::EventRecord<
-    <Test as frame_system::Config>::RuntimeEvent,
-    <Test as frame_system::Config>::Hash,
->;
 
 frame_support::construct_runtime!(
     pub enum Test
@@ -232,20 +228,26 @@ parameter_types! {
 // Implement ethink! executor for Contracts
 pallet_ethink::impl_executor!(Test, Contracts);
 
-const CONTRACT: &str = "0061736d0100000001090260027f7f00600000022702057365616c300e7365616c5f7465726d696e617465000003656e76066d656d6f7279020101010303020101071102066465706c6f7900010463616c6c00020a0e0202000b0900410041141000000b0b1a010041000b143cd0a705a2dc65e5b1e1205896baa2be8a07c6e00018046e616d65011101000e7365616c5f7465726d696e617465";
+// Binary of a contract (see its wat in tests::calling_contract_account_executes_it)
+const CONTRACT: &str =
+    "0061736d0100000001090260027f7f00600000022702057365616c300e7365616c5f7465726d6\
+     96e617465000003656e76066d656d6f7279020101010303020101071102066465706c6f790001\
+     0463616c6c00020a0e0202000b0900410041141000000b0b1a010041000b143cd0a705a2dc65e\
+     5b1e1205896baa2be8a07c6e00018046e616d65011101000e7365616c5f7465726d696e617465";
+
 pub fn new_test_ext() -> sp_io::TestExternalities {
     let mut storage = frame_system::GenesisConfig::<Test>::default()
         .build_storage()
         .unwrap();
-	pallet_balances::GenesisConfig::<Test> {
-		balances: vec![(ALITH, 100_000_000_000)],
-	}
-	.assimilate_storage(&mut storage)
-	.unwrap();
+    pallet_balances::GenesisConfig::<Test> {
+        balances: vec![(ALITH, 100_000_000_000)],
+    }
+    .assimilate_storage(&mut storage)
+    .unwrap();
 
     let mut ext: sp_io::TestExternalities = storage.into();
     ext.execute_with(|| {
-        let a = Contracts::bare_instantiate(
+        Contracts::bare_instantiate(
             ALITH,
             0,
             Weight::MAX,
@@ -257,10 +259,7 @@ pub fn new_test_ext() -> sp_io::TestExternalities {
             CollectEvents::Skip,
         )
         .result
-        .expect("Failed to instantiate contract")
-        .account_id;
-
-        println!("CCCCONRACT: {:?}", hex::decode("bc6d24328ec3c5f6e3e3137fff98cbe8ce8207a1"));
+        .expect("Failed to instantiate contract");
 
         System::set_block_number(1);
     });
