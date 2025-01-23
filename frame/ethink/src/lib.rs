@@ -49,12 +49,14 @@ use sp_std::{marker::PhantomData, prelude::*};
 mod benchmarking;
 mod exec;
 
+pub mod weights;
+
 #[cfg(all(feature = "std", test))]
 mod mock;
 #[cfg(all(feature = "std", test))]
 mod tests;
 
-pub use self::pallet::*;
+pub use self::{pallet::*, weights::WeightInfo};
 pub use ep_eth::{EthTransaction, LegacyTransactionMessage, Receipt, TransactionAction};
 pub use exec::Executor;
 
@@ -161,6 +163,8 @@ pub mod pallet {
         type Currency: Inspect<Self::AccountId> + Mutate<Self::AccountId>;
         /// Contracts engine
         type Contracts: Executor<Self>;
+        /// Weights for extrinsics
+        type WeightInfo: WeightInfo;
     }
 
     #[pallet::call]
@@ -174,8 +178,7 @@ pub mod pallet {
     {
         /// Transact a call coming from Ethereum RPC
         #[pallet::call_index(0)]
-        // TODO benchmarks for weight
-        #[pallet::weight(42)]
+        #[pallet::weight(<T as pallet::Config>::WeightInfo::transact())]
         pub fn transact(origin: OriginFor<T>, tx: EthTransaction) -> DispatchResult {
             let origin: frame_system::RawOrigin<T::AccountId> =
                 ensure_eth_transaction(origin)?.into();

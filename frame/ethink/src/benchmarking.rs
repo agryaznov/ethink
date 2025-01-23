@@ -3,8 +3,8 @@ use crate::{
     PostDispatchInfo, RawOrigin, U256,
 };
 use ep_eth::{
-    AccountId20, LegacyTransaction, LegacyTransactionMessage,
-    TransactionAction, TransactionSignature, H256,
+    AccountId20, LegacyTransaction, LegacyTransactionMessage, TransactionAction,
+    TransactionSignature, H256,
 };
 use frame_benchmarking::v2::*;
 use sp_std::vec;
