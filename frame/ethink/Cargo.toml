@@ -19,18 +19,16 @@ sp-runtime = { workspace = true, default-features = false }
 sp-std = { workspace = true, default-features = false }
 sp-core = { workspace = true, default-features = false }
 log.workspace = true
-# TODO rm
-hex.workspace = true
-hex-literal.workspace = true
-
-[dev-dependencies]
 hex.workspace = true
 libsecp256k1 = { workspace = true, features = ["static-context", "hmac"] }
-rlp.workspace = true
+pallet-contracts = { workspace = true, default-features = false }
+
+[dev-dependencies]
 wat = "1"
+rlp.workspace = true
+hex-literal.workspace = true
 # Substrate
 pallet-balances = { workspace = true, default-features = false }
-pallet-contracts = { workspace = true, default-features = false }
 pallet-utility = { workspace = true, default-features = false }
 pallet-timestamp = { workspace = true, default-features = false }
 pallet-transaction-payment = { workspace = true, default-features = false }
@@ -55,6 +53,7 @@ std = [
 	"pallet-transaction-payment/std",
 	"pallet-timestamp/std",
 	"pallet-contracts/std",
+	"pallet-balances/std",
 	"pallet-utility/std",
 	# ethink
 	"ep-eth/std",

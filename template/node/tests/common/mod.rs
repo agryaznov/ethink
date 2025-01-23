@@ -29,8 +29,8 @@ pub mod prepare;
 
 pub mod consts {
     use alloy::primitives::{address, Address};
-    // Well-known accounts taken from Moonbeam
     pub const NODE_BIN: &'static str = env!("CARGO_BIN_EXE_ethink-node");
+    // Well-known accounts taken from Moonbeam
     // TODO remove strs
     pub const ALITH_ADDRESS: &'static str = "0xf24FF3a9CF04c71Dbc94D0b566f7A27B94566cac";
     pub const ALITH: Address = address!("f24FF3a9CF04c71Dbc94D0b566f7A27B94566cac");

@@ -1,6 +1,6 @@
 //! Mocked rutnime for tests
 
-use crate::{self as pallet_ethink, Config};
+use crate::{self as pallet_ethink, Config, WeightInfo};
 use ep_eth::AccountId20;
 use ep_eth::EthereumSignature;
 use frame_support::{
@@ -24,6 +24,7 @@ use sp_core::{ConstU32, ConstU64, ConstU8, H256, U256};
 use sp_runtime::traits::AccountIdLookup;
 use sp_runtime::traits::IdentifyAccount;
 use sp_runtime::traits::Verify;
+use sp_runtime::BuildStorage;
 use sp_runtime::{DispatchError, Perbill};
 
 // Well-known accounts taken from Moonbeam
@@ -63,10 +64,13 @@ pub type AccountId = <<Signature as Verify>::Signer as IdentifyAccount>::Account
 pub type Balance = u128;
 
 type Block = frame_system::mocking::MockBlock<Test>;
-type EventRecord = frame_system::EventRecord<
-    <Test as frame_system::Config>::RuntimeEvent,
-    <Test as frame_system::Config>::Hash,
->;
+
+// Weights for mocked env
+impl WeightInfo for () {
+    fn transact() -> Weight {
+        Weight::from_parts(1_000, 0).saturating_add(Weight::from_parts(0, 6))
+    }
+}
 
 frame_support::construct_runtime!(
     pub enum Test
@@ -214,6 +218,7 @@ impl Config for Test {
     type Currency = Balances;
     type Contracts = Contracts;
     type Call = RuntimeCall;
+    type WeightInfo = ();
 }
 
 parameter_types! {
@@ -229,3 +234,44 @@ parameter_types! {
 
 // Implement ethink! executor for Contracts
 pallet_ethink::impl_executor!(Test, Contracts);
+
+#[cfg(feature = "runtime-benchmarks")]
+pub fn new_test_ext() -> sp_io::TestExternalities {
+    use pallet_contracts::{Code, CollectEvents, DebugInfo};
+
+    // Binary of a contract (see its wat in tests::calling_contract_account_executes_it)
+    const CONTRACT: &str =
+        "0061736d0100000001090260027f7f00600000022702057365616c300e7365616c5f7465726d6\
+     96e617465000003656e76066d656d6f7279020101010303020101071102066465706c6f790001\
+     0463616c6c00020a0e0202000b0900410041141000000b0b1a010041000b143cd0a705a2dc65e\
+     5b1e1205896baa2be8a07c6e00018046e616d65011101000e7365616c5f7465726d696e617465";
+
+    let mut storage = frame_system::GenesisConfig::<Test>::default()
+        .build_storage()
+        .unwrap();
+    pallet_balances::GenesisConfig::<Test> {
+        balances: vec![(ALITH, 100_000_000_000)],
+    }
+    .assimilate_storage(&mut storage)
+    .unwrap();
+
+    let mut ext: sp_io::TestExternalities = storage.into();
+    ext.execute_with(|| {
+        Contracts::bare_instantiate(
+            ALITH,
+            0,
+            Weight::MAX,
+            None,
+            Code::Upload(hex::decode(CONTRACT).expect("cant decode wasm binary")),
+            vec![],
+            vec![],
+            DebugInfo::Skip,
+            CollectEvents::Skip,
+        )
+        .result
+        .expect("Failed to instantiate contract");
+
+        System::set_block_number(1);
+    });
+    ext
+}

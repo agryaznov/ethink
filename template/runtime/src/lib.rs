@@ -493,6 +493,7 @@ impl pallet_ethink::Config for Runtime {
     type Currency = Balances;
     type Contracts = Contracts;
     type Call = RuntimeCall;
+    type WeightInfo = pallet_ethink::weights::SubstrateWeight<Self>;
 }
 
 // Create the runtime by composing the FRAME pallets that were previously configured.
