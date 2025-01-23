@@ -8,7 +8,7 @@
 //! WASM-EXECUTION: `Compiled`, CHAIN: `None`, DB CACHE: 1024
 
 // Executed Command:
-// /home/me/dev/polka/ethink/target/debug/ethink-node
+// ./target/release/ethink-node
 // benchmark
 // pallet
 // --pallet=pallet_ethink
@@ -26,9 +26,13 @@
 use frame_support::{traits::Get, weights::Weight};
 use core::marker::PhantomData;
 
+pub trait WeightInfo {
+	fn transact() -> Weight;
+}
+
 /// Weight functions for `pallet_ethink`.
-pub struct WeightInfo<T>(PhantomData<T>);
-impl<T: frame_system::Config> pallet_ethink::WeightInfo for WeightInfo<T> {
+pub struct SubstrateWeight<T>(PhantomData<T>);
+impl<T: frame_system::Config> WeightInfo for SubstrateWeight<T> {
 	/// Storage: `System::Account` (r:2 w:1)
 	/// Proof: `System::Account` (`max_values`: None, `max_size`: Some(116), added: 2591, mode: `MaxEncodedLen`)
 	/// Storage: `Contracts::ContractInfoOf` (r:1 w:0)
@@ -45,8 +49,8 @@ impl<T: frame_system::Config> pallet_ethink::WeightInfo for WeightInfo<T> {
 		// Proof Size summary in bytes:
 		//  Measured:  `129`
 		//  Estimated: `6172`
-		// Minimum execution time: 989_032_000 picoseconds.
-		Weight::from_parts(1_008_219_000, 0)
+		// Minimum execution time: 31_719_000 picoseconds.
+		Weight::from_parts(32_651_000, 0)
 			.saturating_add(Weight::from_parts(0, 6172))
 			.saturating_add(T::DbWeight::get().reads(7))
 			.saturating_add(T::DbWeight::get().writes(3))
