@@ -68,18 +68,9 @@ const CONTRACT_CODE: &str = r#"
 )
 "#;
 
-const DUMMY: &str = r#"
-(module
-	(func (export "deploy"))
-	(func (export "call"))
-)
-"#;
-
 #[test]
 fn calling_contract_account_executes_it() {
     let wasm = wat::parse_str(CONTRACT_CODE).unwrap();
-//    let wasm = wat::parse_str(DUMMY).unwrap();
-    println!("WASM NOT DUMMY: {}", hex::encode(&wasm));
     ExtBuilder::default().build().execute_with(|| {
         let _ = test_utils::set_balance(&ALITH, 10_000_000_000);
         // Instantiate contract and deposit balance (ED) to it
@@ -98,8 +89,6 @@ fn calling_contract_account_executes_it() {
         .expect("Failed to instantiate contract")
         .account_id;
 
-        println!("CONTRACT ADDR: {:?}", &contract_addr);
-
         // Compose transaction
         let input = EthTxInput {
             action: TransactionAction::Call(contract_addr.into()),
@@ -107,7 +96,6 @@ fn calling_contract_account_executes_it() {
             ..Default::default()
         };
         let eth_tx = compose_and_sign_tx(input);
-        println!("Signed Eth Tx: {:#?}", &eth_tx);
 
         let origin = RuntimeOrigin::from(pallet_ethink::RawOrigin::EthTransaction(ALITH.into()));
         // Ensure Baltathar has no balance before the call
