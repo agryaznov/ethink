@@ -20,17 +20,15 @@
 #![allow(non_snake_case)]
 use alloy::{
     network::EthereumWallet,
-    primitives::{address, Address, U256},
+    primitives::U256,
     providers::{Provider, ProviderBuilder},
     signers::local::PrivateKeySigner,
 };
-use serde_json::Deserializer;
-use sp_core::{ecdsa, Pair};
 use std::sync::Once;
 
 use common::{codegen::*, consts::*, *};
-use ep_eth::{AccountId20, EnvelopedEncodable, EthTxInput, TransactionAction};
-use ethink_runtime::{Weight, ED};
+use ep_eth::AccountId20;
+use ethink_runtime::ED;
 
 mod common;
 

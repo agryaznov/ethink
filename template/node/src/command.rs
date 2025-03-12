@@ -6,7 +6,6 @@ use crate::{
 use ethink_runtime::Block;
 use sc_cli::SubstrateCli;
 use sc_service::PartialComponents;
-use sp_runtime::traits::BlakeTwo256;
 
 impl SubstrateCli for Cli {
     fn impl_name() -> String {
