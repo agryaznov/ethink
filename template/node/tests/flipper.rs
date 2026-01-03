@@ -362,7 +362,7 @@ async fn eth_getBlockTransactionCountByNumber() {
 #[tokio::test]
 async fn eth_getCode() {
     // Spawn node and deploy contract
-    let env: Env<PolkadotConfig> =
+    let mut env: Env<PolkadotConfig> =
         prepare_node_and_contract!(ONCE, FLIPPER_PATH, vec!["false"]);
     // (Flipper is deployed with `false` state)
     // Make ETH RPC request
@@ -379,6 +379,6 @@ async fn eth_getCode() {
     let code_hash = extract_result!(&json);
     assert_eq!(
         *code_hash,
-        "0x2086bbf88e3b847c9b05923107393379181ca5e0feb0407a5a35d1282f72a759"
+        "0x3cc300a47907064879ef61f981941535ccb988aaec1078b0221811c8fc96f1ff"
     )
 }

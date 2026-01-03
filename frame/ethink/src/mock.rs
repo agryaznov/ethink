@@ -24,6 +24,7 @@ use sp_core::{ConstU32, ConstU64, ConstU8, H256, U256};
 use sp_runtime::traits::AccountIdLookup;
 use sp_runtime::traits::IdentifyAccount;
 use sp_runtime::traits::Verify;
+use sp_runtime::BuildStorage;
 use sp_runtime::{DispatchError, Perbill};
 
 // Well-known accounts taken from Moonbeam
