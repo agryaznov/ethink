@@ -20,12 +20,10 @@
 #![allow(non_snake_case)]
 use alloy::{
     network::EthereumWallet,
-    primitives::{address, Address, U256},
+    primitives::U256,
     providers::{Provider, ProviderBuilder},
     signers::local::PrivateKeySigner,
 };
-use serde_json::Deserializer;
-use sp_core::{ecdsa, Pair};
 use std::sync::Once;
 
 use common::{codegen::*, consts::*, *};

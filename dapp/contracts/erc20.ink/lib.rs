@@ -232,4 +232,3 @@ mod erc20 {
         }
     }
 }
-// Tests are removed as having them requires a fork of ink to use AccountId20

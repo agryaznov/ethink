@@ -1,5 +1,8 @@
 > [!WARNING]
-> This is an **Early Prototype**. It works, but not (*yet*) intended for production use!!
+> **Deprecation note:**
+> 
+> This project proved the viability of the idea of making Polkadot smart contracts compatible with tooling and wallets form the Ethereum world. It also provided working prototype. At that point, and following community discussion on the [Polkadot Forum](https://forum.polkadot.network/t/ethereum-rpc-compatibility-for-polkadot-smart-contracts/7375), Parity&rsquo;s internal team took over the initiative and started to work on the [revive](https://forum.polkadot.network/t/contracts-on-assethub-roadmap/9513), having a wider scope and [support](https://forum.polkadot.network/t/openzeppelin-support-for-polkadot-hub-and-polkadot-cloud-in-2025/11854) from OpenZeppelin. Thus this project has completed its task and now archived.
+
 
 <div align="center">
     <img src=".images/ink+mm.png" alt="ink! + MetaMask logo" />
@@ -10,7 +13,10 @@
 This project is an **experimental** add-on to Polkadot SDK's [pallet-contracts](https://github.com/paritytech/polkadot-sdk/tree/master/substrate/frame/contracts) to make it Ethereum RPC -compatible.
 
 > [!TIP]
-> **In a nutshell**, it allows your parachain users to **call <a href="https://use.ink/" target="_blank">_ink!_</a> smart contracts via <a href="https://metamask.io/" target="_blank">_MetaMask_**</a>. 
+> **In a nutshell**:
+> 
+> + it allows your parachain users to **interact with <a href="https://use.ink/" target="_blank">_ink!_</a> smart contracts via <a href="https://metamask.io/" target="_blank">_MetaMask_**</a>. 
+> + it allows polkadot smart contract developers to **use Ethereum tooling**, like <a href="https://use.ink/" target="_blank">Foundry</a>.
 
 ## Quickstart 
 
